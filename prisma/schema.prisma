@@ -1,0 +1,2835 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Plans & Features ────────────────────────────────────────────
+
+model Plan {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  code            String   @unique
+  displayName     String
+  description     String?
+  status          String   @default("ACTIVE") // ACTIVE, ARCHIVED
+  priceMonthly    Decimal? @db.Decimal(12, 2)
+  priceYearly     Decimal? @db.Decimal(12, 2)
+  currency        String   @default("USD")
+  trialDurationDays Int    @default(14)
+  sortOrder       Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  features        PlanFeature[]
+  subscriptions   Subscription[]
+  billingInvoices BillingInvoice[]
+}
+
+model Feature {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  displayName String
+  description String?
+  category    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  planFeatures PlanFeature[]
+}
+
+model PlanFeature {
+  id            String   @id @default(uuid())
+  planId        String
+  featureId     String
+  isEnabled     Boolean  @default(true)
+  limit         Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  plan    Plan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  feature Feature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, featureId])
+}
+
+// ─── Subscriptions ───────────────────────────────────────────────
+
+model Subscription {
+  id                    String   @id @default(uuid())
+  organizationId        String
+  planId                String
+  status                SubscriptionStatus @default(ACTIVE)
+  billingInterval       String   @default("MONTHLY") // MONTHLY, YEARLY
+  startDate             DateTime
+  endDate               DateTime?
+  currentPeriodStart    DateTime?
+  currentPeriodEnd      DateTime?
+  trialEndsAt           DateTime?
+  canceledAt            DateTime?
+  cancelAtPeriodEnd     Boolean  @default(false)
+  providerRef           String?
+  cancelReason          String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  plan          Plan         @relation(fields: [planId], references: [id], onDelete: Restrict)
+  billingInvoices BillingInvoice[]
+
+  @@index([organizationId])
+  @@index([planId])
+  @@index([status])
+  @@index([organizationId, status])
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  TRIALING
+  EXPIRED
+  SUSPENDED
+}
+
+// ─── Platform-level configuration (singleton) ─────────────────────
+
+model PlatformConfig {
+  id                 String   @id @default("singleton")
+  promoActive        Boolean  @default(true)
+  aiProviderName     String?  // e.g. "openrouter"
+  aiModelId          String?  // e.g. "openai/gpt-5-mini"
+  aiModelDisplayName String?
+  aiBaseUrl          String?
+  updatedAt          DateTime @updatedAt
+}
+
+// ─── Organization ────────────────────────────────────────────────
+
+model Organization {
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  customDomain    String?  @unique
+  type            OrganizationType
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  branches       Branch[]
+  members        OrganizationMember[]
+  auditLogs      AuditLog[]
+  subscriptions  Subscription[]
+  people         Person[]
+  students       Student[]
+  staff          Staff[]
+  teachers       Teacher[]
+  trainers       Trainer[]
+  parents        Parent[]
+  academicYears  AcademicYear[]
+  levels         Level[]
+  subjects       Subject[]
+  programs       Program[]
+  modules        Module[]
+  groups        Group[]
+  enrollments   Enrollment[]
+  rooms         Room[]
+  schedules     Schedule[]
+  classSessions ClassSession[]
+  attendanceRecords AttendanceRecord[]
+  assessments    Assessment[]
+  grades         Grade[]
+  feePlans       FeePlan[]
+  discounts      Discount[]
+  invoices       Invoice[]
+  payments       Payment[]
+  refunds        Refund[]
+   invoiceItems   InvoiceItem[]
+  financialTransactions FinancialTransaction[]
+  notifications  Notification[]
+  automationRules AutomationRule[]
+  automationLogs AutomationExecutionLog[]
+  aiProviders    AIProvider[]
+  aiModels       AIModel[]
+  aiUsages       AIUsage[]
+  aiCreditBalances AICreditBalance[]
+  aiCreditTransactions AICreditTransaction[]
+  admissions     Admission[]
+  teacherSubjects TeacherSubject[]
+  homeworks      Homework[]
+  documents      SchoolDocument[]
+  reportCards    ReportCard[]
+  promotions     Promotion[]
+  announcements  Announcement[]
+  gradingConfig  GradingConfig?
+  homeworkSubmissions HomeworkSubmission[]
+  leads          Lead[]
+  trialSessions  TrialSession[]
+  teacherAvailabilities TeacherAvailability[]
+  teacherCompensations TeacherCompensation[]
+  monthlySubscriptions MonthlySubscription[]
+  progressNotes  StudentProgressNote[]
+  communicationLogs CommunicationLog[]
+  corporateClients  CorporateClient[]
+  corporateLearners CorporateLearner[]
+  corporateContracts CorporateContract[]
+  certificates      Certificate[]
+  certTemplates     CertificateTemplate[]
+  competencies      Competency[]
+  competencyRecords CompetencyRecord[]
+  trainingMaterials TrainingMaterial[]
+  trainingAssignments TrainingAssignment[]
+  trainingAssignmentSubmissions TrainingAssignmentSubmission[]
+  proposals         Proposal[]
+  programPackages   ProgramPackage[]
+  // Phase 5: Communication
+  userPreferences        UserPreference[]
+  communicationProviders CommunicationProvider[]
+  communicationTemplates CommunicationTemplate[]
+  communicationCampaigns CommunicationCampaign[]
+  campaignDeliveries     CampaignDelivery[]
+  messages               Message[]
+  contactRequests        ContactRequest[]
+  communicationSettings  CommunicationSetting?
+  // Phase 6: AI Intelligence
+  knowledgeBases         KnowledgeBase[]
+  knowledgeDocuments     KnowledgeDocument[]
+  aiConversations        AIConversation[]
+  aiConversationMessages AIConversationMessage[]
+  aiRecommendations      AIRecommendation[]
+  aiInsights             AIInsight[]
+  // Phase 7: SaaS Billing
+  billingInvoices        BillingInvoice[]
+  billingInvoiceItems    BillingInvoiceItem[]
+  billingPayments        BillingPayment[]
+  billingRefunds         BillingRefund[]
+}
+
+enum OrganizationType {
+  PRIVATE_SCHOOL
+  SUPPORT_CENTER
+  TRAINING_CENTER
+}
+
+// ─── Branch ──────────────────────────────────────────────────────
+
+model Branch {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String
+  code            String
+  address         String?
+  phone           String?
+  email           String?
+  isActive        Boolean  @default(true)
+  isMain          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  users        User[]
+  people       Person[]
+  groups       Group[]
+  enrollments  Enrollment[]
+  rooms        Room[]
+  admissions   Admission[]
+  announcements Announcement[]
+  leads        Lead[]
+  teacherAvailabilities TeacherAvailability[]
+  teacherCompensations TeacherCompensation[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+}
+
+// ─── Users & Members ─────────────────────────────────────────────
+
+enum PlatformRole {
+  PLATFORM_OWNER
+  USER
+}
+
+model User {
+  id              String   @id @default(uuid())
+  email           String   @unique
+  name            String
+  passwordHash    String
+  avatarUrl       String?
+  isActive        Boolean  @default(true)
+  role            PlatformRole @default(USER)
+  lastLoginAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  branchId        String?
+  branch          Branch?             @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  organizationMemberships OrganizationMember[]
+  userRoles       UserRole[]
+  sessions        Session[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model OrganizationMember {
+  id              String   @id @default(uuid())
+  organizationId  String
+  userId          String
+  roleId          String
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role         Role         @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+// ─── Roles & Permissions ─────────────────────────────────────────
+
+model Role {
+  id              String   @id @default(uuid())
+  name            String
+  displayName     String
+  description     String?
+  isSystem        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  permissions RolePermission[]
+  members     OrganizationMember[]
+  userRoles   UserRole[]
+
+  @@unique([name])
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  displayName String
+  description String?
+  module      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  id           String   @id @default(uuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime @default(now())
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+// ─── User-Role (Global) ──────────────────────────────────────────
+
+model UserRole {
+  id        String   @id @default(uuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([userId])
+}
+
+// ─── Sessions ────────────────────────────────────────────────────
+
+model Session {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+// ─── People ──────────────────────────────────────────────────────
+
+enum PersonStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum GuardianRelationship {
+  FATHER
+  MOTHER
+  GUARDIAN
+  OTHER
+}
+
+model Person {
+  id              String   @id @default(uuid())
+  organizationId  String
+  branchId        String?
+  firstName       String
+  lastName        String
+  middleName      String?
+  email           String?
+  phone           String?
+  dateOfBirth     DateTime?
+  gender          Gender?
+  address         String?
+  city            String?
+  state           String?
+  country         String?
+  avatarUrl       String?
+  status          PersonStatus @default(ACTIVE)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  archivedAt      DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch       Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  student    Student?
+  staff      Staff?
+  parent     Parent?
+  guardianships StudentGuardian[]
+
+  @@index([organizationId])
+  @@index([branchId])
+  @@index([organizationId, firstName, lastName])
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  GRADUATED
+  TRANSFERRED
+  SUSPENDED
+  WITHDRAWN
+  PAUSED
+  DROPPED
+  COMPLETED
+}
+
+// ─── Phase 3: Support Center Vertical ──────────────────────────
+
+enum LeadStatus {
+  LEAD
+  CONTACTED
+  INTERESTED
+  TRIAL_SCHEDULED
+  TRIAL_ATTENDED
+  ENROLLED
+  LOST
+}
+
+enum LeadSource {
+  WALK_IN
+  PHONE
+  WHATSAPP
+  FACEBOOK
+  INSTAGRAM
+  REFERRAL
+  WEBSITE
+  OTHER
+}
+
+enum TrialStatus {
+  SCHEDULED
+  ATTENDED
+  COMPLETED
+  CANCELLED
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  FREELANCE
+  CONTRACT
+}
+
+enum CompensationStatus {
+  PENDING
+  APPROVED
+  PAID
+  CANCELLED
+}
+
+enum MonthlySubscriptionStatus {
+  PENDING
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELED
+}
+
+model Student {
+  id              String        @id @default(uuid())
+  personId        String        @unique
+  organizationId  String
+  studentId       String?
+  status          StudentStatus @default(ACTIVE)
+  enrollmentDate  DateTime?
+  admissionDate   DateTime?
+  nationality     String?
+  medicalNotes    String?
+  emergencyContact Json?
+  grade           String?
+  metadata        Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  person       Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  guardians    StudentGuardian[]
+  enrollments  Enrollment[]
+  attendanceRecords AttendanceRecord[]
+  grades       Grade[]
+  invoices     Invoice[]
+  admissions   Admission[]
+  documents    SchoolDocument[]
+  homeworkSubmissions HomeworkSubmission[]
+  reportCards  ReportCard[]
+  promotions   Promotion[]
+  trialSessions TrialSession[]
+  monthlySubscriptions MonthlySubscription[]
+  progressNotes StudentProgressNote[]
+  leads        Lead[]
+  corporateLearners CorporateLearner[]
+  certificates Certificate[]
+  competencyRecords CompetencyRecord[]
+  assignmentSubmissions TrainingAssignmentSubmission[]
+
+  @@index([organizationId])
+  @@index([organizationId, studentId])
+  @@index([organizationId, status])
+}
+
+model Staff {
+  id              String   @id @default(uuid())
+  personId        String   @unique
+  organizationId  String
+  employeeId      String?
+  hireDate        DateTime?
+  department      String?
+  position        String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  person       Person       @relation(fields: [personId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  teacher      Teacher?
+  trainer      Trainer?
+
+  @@index([organizationId])
+  @@index([organizationId, employeeId])
+}
+
+model Teacher {
+  id              String   @id @default(uuid())
+  staffId         String   @unique
+  organizationId  String
+  subjects        Json?
+  qualification   String?
+  yearsExperience Int?
+  specialization  String?
+  hourlyRate      Decimal?  @db.Decimal(10, 2)
+  employmentType  EmploymentType @default(FULL_TIME)
+  status          String    @default("ACTIVE")
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  staff        Staff        @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  classSessions ClassSession[]
+  managedGroups Group[]     @relation("ClassTeacher")
+  teachingAssignments TeacherSubject[]
+  homeworks    Homework[]
+  availabilities TeacherAvailability[]
+  compensations TeacherCompensation[]
+  progressNotes StudentProgressNote[]
+  trialSessions TrialSession[]
+
+  @@index([organizationId])
+}
+
+model Trainer {
+  id              String   @id @default(uuid())
+  staffId         String   @unique
+  organizationId  String
+  specialization  String?
+  certifications  Json?
+  specialties     Json?
+  hourlyRate      Decimal? @db.Decimal(10, 2)
+  employmentType  String?
+  status          String   @default("ACTIVE")
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  staff        Staff        @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model Parent {
+  id              String   @id @default(uuid())
+  personId        String   @unique
+  organizationId  String
+  occupation      String?
+  workplace       String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  person       Person       @relation(fields: [personId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model StudentGuardian {
+  id              String   @id @default(uuid())
+  studentId       String
+  personId        String
+  relationship    GuardianRelationship @default(GUARDIAN)
+  isPrimary       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  person  Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, personId])
+  @@index([studentId])
+  @@index([personId])
+}
+
+// ─── Academic / Program Engine ────────────────────────────────────
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  WITHDRAWN
+  TRANSFERRED
+  REPEATING
+}
+
+model AcademicYear {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String
+  startDate       DateTime
+  endDate         DateTime?
+  isCurrent       Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  levels       Level[]
+  subjects     Subject[]
+  groups       Group[]
+  enrollments  Enrollment[]
+  schedules    Schedule[]
+  assessments  Assessment[]
+  admissions   Admission[]
+  homeworks    Homework[]
+  reportCards  ReportCard[]
+  fromPromotions Promotion[] @relation("fromYear")
+  toPromotions   Promotion[] @relation("toYear")
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model Level {
+  id              String   @id @default(uuid())
+  organizationId  String
+  academicYearId  String?
+  name            String
+  code            String?
+  sortOrder       Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  academicYear AcademicYear?  @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  subjects     Subject[]
+  groups       Group[]
+  admissions   Admission[]
+  desiredLeads Lead[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([academicYearId])
+}
+
+model Subject {
+  id              String   @id @default(uuid())
+  organizationId  String
+  academicYearId  String?
+  levelId         String?
+  name            String
+  code            String?
+  description     String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  academicYear AcademicYear?  @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  level        Level?         @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  modules      Module[]
+  enrollments  Enrollment[]
+  classSessions ClassSession[]
+  assessments  Assessment[]
+  teacherAssignments TeacherSubject[]
+  homeworks    Homework[]
+  reportCardItems ReportCardItem[]
+  trialSessions TrialSession[]
+  progressNotes StudentProgressNote[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([academicYearId])
+  @@index([levelId])
+}
+
+model Program {
+  id                      String    @id @default(uuid())
+  organizationId          String
+  name                    String
+  code                    String?
+  description             String?
+  trainingCategory        String?
+  duration                String?
+  level                   String?
+  objectives              String?
+  prerequisites           String?
+  price                   Decimal?  @db.Decimal(12, 2)
+  certificateEligibility  Boolean   @default(false)
+  programStatus           String?   @default("ACTIVE")
+  branchId                String?
+  certificateTemplateId   String?
+  isActive                Boolean   @default(true)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  organization        Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  modules             Module[]
+  groups              Group[]
+  enrollments         Enrollment[]
+  competencies        Competency[]
+  certificates        Certificate[]
+  materials           TrainingMaterial[]
+  assignments         TrainingAssignment[]
+  packages            ProgramPackage[]
+  corporateContracts  CorporateContract[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model Module {
+  id              String   @id @default(uuid())
+  organizationId  String
+  programId       String?
+  subjectId       String?
+  trainerId       String?
+  name            String
+  code            String?
+  description     String?
+  objectives      String?
+  duration        String?
+  prerequisites   String?
+  materials       Json?
+  sortOrder       Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  program      Program?      @relation(fields: [programId], references: [id], onDelete: SetNull)
+  subject      Subject?      @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  classSessions ClassSession[]
+  assessments  Assessment[]
+  competencies Competency[]
+  trainingMaterials TrainingMaterial[]
+  trainingAssignments TrainingAssignment[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([programId])
+  @@index([subjectId])
+}
+
+model Group {
+  id              String   @id @default(uuid())
+  organizationId  String
+  branchId        String?
+  academicYearId  String?
+  levelId         String?
+  programId       String?
+  name            String
+  code            String?
+  capacity        Int?
+  classTeacherId  String?
+  cohortStatus    String?
+  startDate       DateTime?
+  endDate         DateTime?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch       Branch?        @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  academicYear AcademicYear?  @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  level        Level?         @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  program      Program?       @relation(fields: [programId], references: [id], onDelete: SetNull)
+  classTeacher Teacher?       @relation("ClassTeacher", fields: [classTeacherId], references: [id], onDelete: SetNull)
+  enrollments  Enrollment[]
+  classSessions ClassSession[]
+  attendanceRecords AttendanceRecord[]
+  assessments  Assessment[]
+  teacherAssignments TeacherSubject[]
+  homeworks    Homework[]
+  reportCards  ReportCard[]
+  fromPromotions Promotion[] @relation("fromGroup")
+  toPromotions   Promotion[] @relation("toGroup")
+  announcements Announcement[]
+  trialSessions  TrialSession[]
+  progressNotes  StudentProgressNote[]
+  certificates   Certificate[]
+  corporateContracts CorporateContract[]
+  trainingMaterials TrainingMaterial[]
+  trainingAssignments TrainingAssignment[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([branchId])
+  @@index([academicYearId])
+  @@index([levelId])
+  @@index([programId])
+}
+
+model Enrollment {
+  id              String           @id @default(uuid())
+  organizationId  String
+  branchId        String?
+  studentId       String
+  academicYearId  String?
+  programId       String?
+  subjectId       String?
+  groupId         String?
+  feePlanId       String?
+  monthlyFee      Decimal? @db.Decimal(12, 2)
+  status          EnrollmentStatus @default(ACTIVE)
+  startDate       DateTime         @default(now())
+  endDate         DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch       Branch?        @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  student      Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academicYear AcademicYear?  @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  program      Program?       @relation(fields: [programId], references: [id], onDelete: SetNull)
+  subject      Subject?       @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  group        Group?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  feePlan      FeePlan?       @relation(fields: [feePlanId], references: [id], onDelete: SetNull)
+  monthlySubscriptions MonthlySubscription[]
+
+  @@index([organizationId])
+  @@index([studentId])
+  @@index([academicYearId])
+  @@index([programId])
+  @@index([groupId])
+  @@index([organizationId, studentId])
+}
+
+// ─── Rooms + Scheduling Engine ────────────────────────────────────
+
+enum RoomStatus {
+  AVAILABLE
+  MAINTENANCE
+  UNAVAILABLE
+}
+
+enum RoomType {
+  CLASSROOM
+  LAB
+  AUDITORIUM
+  OFFICE
+  CONFERENCE
+  COMPUTER_LAB
+  WORKSHOP
+  OTHER
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model Room {
+  id              String     @id @default(uuid())
+  organizationId  String
+  branchId        String?
+  name            String
+  capacity        Int        @default(30)
+  status          RoomStatus @default(AVAILABLE)
+  type            RoomType   @default(CLASSROOM)
+  isActive        Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch       Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  classSessions ClassSession[]
+  trialSessions TrialSession[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([branchId])
+}
+
+model Schedule {
+  id              String   @id @default(uuid())
+  organizationId  String
+  academicYearId  String?
+  name            String
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  academicYear AcademicYear? @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  classSessions ClassSession[]
+
+  @@index([organizationId])
+}
+
+model ClassSession {
+  id              String      @id @default(uuid())
+  organizationId  String
+  scheduleId      String?
+  groupId         String?
+  teacherId       String?
+  roomId          String
+  subjectId       String?
+  moduleId        String?
+  dayOfWeek       DayOfWeek
+  startTime       String      // "HH:MM"
+  endTime         String      // "HH:MM"
+  startDate       DateTime
+  endDate         DateTime?
+  isRecurring     Boolean     @default(true)
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  schedule     Schedule?     @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+  group        Group?        @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  teacher      Teacher?      @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  room         Room          @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  subject      Subject?      @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  module       Module?       @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  attendanceRecords AttendanceRecord[]
+
+  @@index([organizationId])
+  @@index([scheduleId])
+  @@index([groupId])
+  @@index([teacherId])
+  @@index([roomId])
+  @@index([dayOfWeek])
+}
+
+// ─── Attendance + Academic Tracking ──────────────────────────────
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+model AttendanceRecord {
+  id              String           @id @default(uuid())
+  organizationId  String
+  studentId       String
+  classSessionId  String?
+  groupId         String?
+  date            DateTime
+  status          AttendanceStatus @default(PRESENT)
+  notes           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  organization  Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student       Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classSession  ClassSession? @relation(fields: [classSessionId], references: [id], onDelete: SetNull)
+  group         Group?        @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, studentId, classSessionId, date])
+  @@unique([organizationId, studentId, groupId, date])
+  @@index([organizationId])
+  @@index([studentId])
+  @@index([classSessionId])
+  @@index([groupId])
+  @@index([date])
+}
+
+model Assessment {
+  id              String   @id @default(uuid())
+  organizationId  String
+  subjectId       String?
+  moduleId        String?
+  groupId         String?
+  academicYearId  String?
+  name            String
+  description     String?
+  type            String   @default("EXAM") // EXAM, QUIZ, TEST, ASSIGNMENT, PROJECT
+  term            String?  // TERM_1, TERM_2, TERM_3
+  maxScore        Float    @default(100)
+  weight          Float?   // percentage weight for final grade
+  date            DateTime?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  subject      Subject?      @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  module       Module?       @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  group        Group?        @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  academicYear AcademicYear? @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  grades       Grade[]
+
+  @@index([organizationId])
+  @@index([subjectId])
+  @@index([moduleId])
+  @@index([groupId])
+  @@index([academicYearId])
+}
+
+model Grade {
+  id              String   @id @default(uuid())
+  organizationId  String
+  studentId       String
+  assessmentId    String
+  score           Float
+  comments        String?
+  gradedAt        DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  assessment   Assessment   @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, studentId, assessmentId])
+  @@index([organizationId])
+  @@index([studentId])
+  @@index([assessmentId])
+}
+
+// ─── Finance Engine ───────────────────────────────────────────────
+
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  PARTIAL_REFUND
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CARD
+  MOBILE_MONEY
+  CHECK
+  OTHER
+}
+
+model FeePlan {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String
+  description     String?
+  amount          Decimal  @db.Decimal(12, 2)
+  currency        String   @default("USD")
+  frequency       String   // ONE_TIME, MONTHLY, YEARLY, CUSTOM
+  programId       String?
+  subjectId       String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoices     Invoice[]
+  discounts    Discount[]
+  monthlySubscriptions MonthlySubscription[]
+  enrollments  Enrollment[]
+
+  @@index([organizationId])
+}
+
+model Discount {
+  id              String   @id @default(uuid())
+  organizationId  String
+  feePlanId       String?
+  name            String
+  description     String?
+  type            String   // PERCENTAGE, FIXED
+  value           Decimal  @db.Decimal(12, 2)
+  maxUses         Int?
+  usedCount       Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  feePlan      FeePlan?     @relation(fields: [feePlanId], references: [id], onDelete: SetNull)
+  invoices     Invoice[]
+
+  @@index([organizationId])
+}
+
+model Invoice {
+  id              String        @id @default(uuid())
+  organizationId  String
+  studentId       String
+  feePlanId       String?
+  invoiceNumber   String        @unique
+  status          InvoiceStatus @default(DRAFT)
+  subtotal        Decimal       @db.Decimal(12, 2)
+  discountAmount  Decimal       @default(0) @db.Decimal(12, 2)
+  totalAmount     Decimal       @db.Decimal(12, 2)
+  paidAmount      Decimal       @default(0) @db.Decimal(12, 2)
+  currency        String        @default("USD")
+  dueDate         DateTime?
+  issuedAt        DateTime      @default(now())
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feePlan      FeePlan?     @relation(fields: [feePlanId], references: [id], onDelete: SetNull)
+  discount     Discount?    @relation(fields: [discountId], references: [id], onDelete: SetNull)
+  corporateClient CorporateClient? @relation(fields: [corporateClientId], references: [id], onDelete: SetNull)
+  items        InvoiceItem[]
+  payments     Payment[]
+  refunds      Refund[]
+  monthlySubscriptions MonthlySubscription[]
+
+  discountId String?
+  corporateClientId String?
+
+  @@index([organizationId])
+  @@index([studentId])
+  @@index([status])
+  @@index([invoiceNumber])
+  @@index([corporateClientId])
+}
+
+model InvoiceItem {
+  id              String   @id @default(uuid())
+  organizationId  String
+  invoiceId       String
+  description     String
+  quantity        Int      @default(1)
+  unitPrice       Decimal  @db.Decimal(12, 2)
+  amount          Decimal  @db.Decimal(12, 2)
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([invoiceId])
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  organizationId  String
+  invoiceId       String
+  receiptNumber   String        @unique
+  amount          Decimal       @db.Decimal(12, 2)
+  method          PaymentMethod @default(CASH)
+  status          PaymentStatus @default(COMPLETED)
+  reference       String?
+  notes           String?
+  paidAt          DateTime      @default(now())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  refund       Refund?
+
+  @@index([organizationId])
+  @@index([invoiceId])
+  @@index([receiptNumber])
+}
+
+model Refund {
+  id              String   @id @default(uuid())
+  organizationId  String
+  invoiceId       String
+  paymentId       String   @unique
+  amount          Decimal  @db.Decimal(12, 2)
+  reason          String?
+  refundedAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  payment      Payment      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([invoiceId])
+}
+
+model FinancialTransaction {
+  id              String   @id @default(uuid())
+  organizationId  String
+  type            String   // INVOICE, PAYMENT, REFUND, ADJUSTMENT
+  referenceId     String?
+  amount          Decimal  @db.Decimal(12, 2)
+  currency        String   @default("USD")
+  description     String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ─── SaaS Billing ───────────────────────────────────────────────
+
+model BillingInvoice {
+  id                String   @id @default(uuid())
+  organizationId    String
+  planId            String
+  subscriptionId    String?
+  invoiceNumber     String   @unique
+  status            String   @default("DRAFT") // DRAFT, OPEN, PAID, VOID, UNCOLLECTIBLE
+  subtotal          Decimal  @db.Decimal(12, 2)
+  discountAmount    Decimal  @default(0) @db.Decimal(12, 2)
+  taxAmount         Decimal  @default(0) @db.Decimal(12, 2)
+  totalAmount       Decimal  @db.Decimal(12, 2)
+  currency          String   @default("USD")
+  couponId          String?
+  issuedAt          DateTime @default(now())
+  dueDate           DateTime?
+  paidAt            DateTime?
+  billingPeriodStart DateTime?
+  billingPeriodEnd  DateTime?
+  metadata          Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  plan          Plan           @relation(fields: [planId], references: [id], onDelete: Restrict)
+  subscription  Subscription?  @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  coupon        Coupon?        @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  items         BillingInvoiceItem[]
+  payments      BillingPayment[]
+
+  @@index([organizationId])
+  @@index([subscriptionId])
+  @@index([status])
+  @@index([invoiceNumber])
+  @@index([issuedAt])
+}
+
+model BillingInvoiceItem {
+  id              String   @id @default(uuid())
+  organizationId  String
+  invoiceId       String
+  description     String
+  quantity        Int      @default(1)
+  unitPrice       Decimal  @db.Decimal(12, 2)
+  amount          Decimal  @db.Decimal(12, 2)
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoice      BillingInvoice    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([invoiceId])
+}
+
+model BillingPayment {
+  id                String   @id @default(uuid())
+  organizationId    String
+  invoiceId         String
+  amount            Decimal  @db.Decimal(12, 2)
+  currency          String   @default("USD")
+  status            String   @default("PENDING") // PENDING, PROCESSING, SUCCEEDED, FAILED, REFUNDED, CANCELED
+  provider          String?  // stripe, mock
+  providerRef       String?
+  paymentMethodType String?  // card, bank_transfer
+  failureReason     String?
+  idempotencyKey    String?  @unique
+  createdAt         DateTime @default(now())
+  completedAt       DateTime?
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoice      BillingInvoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  refunds      BillingRefund[]
+
+  @@index([organizationId])
+  @@index([invoiceId])
+  @@index([status])
+  @@index([providerRef])
+}
+
+model BillingRefund {
+  id              String   @id @default(uuid())
+  organizationId  String
+  paymentId       String
+  amount          Decimal  @db.Decimal(12, 2)
+  reason          String?
+  status          String   @default("PENDING") // PENDING, SUCCEEDED, FAILED
+  providerRef     String?
+  createdAt       DateTime @default(now())
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  payment      BillingPayment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([paymentId])
+}
+
+model Coupon {
+  id              String   @id @default(uuid())
+  code            String   @unique
+  description     String?
+  discountType    String   // PERCENTAGE, FIXED_AMOUNT
+  discountValue   Decimal  @db.Decimal(12, 2)
+  currency        String?
+  maxUses         Int?
+  usedCount       Int      @default(0)
+  isActive        Boolean  @default(true)
+  validFrom       DateTime @default(now())
+  validUntil      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  invoices BillingInvoice[]
+  usages   CouponUsage[]
+
+  @@index([code])
+}
+
+model CouponUsage {
+  id              String   @id @default(uuid())
+  couponId        String
+  organizationId  String
+  invoiceId       String?
+  usedAt          DateTime @default(now())
+
+  coupon       Coupon    @relation(fields: [couponId], references: [id], onDelete: Cascade)
+
+  @@index([couponId])
+  @@index([organizationId])
+}
+
+model WebhookEvent {
+  id              String   @id @default(uuid())
+  provider        String
+  providerEventId String
+  eventType       String
+  payload         Json?
+  status          String   @default("RECEIVED") // RECEIVED, PROCESSED, FAILED, SKIPPED
+  organizationId  String?
+  createdAt       DateTime @default(now())
+  processedAt     DateTime?
+
+  @@unique([provider, providerEventId])
+  @@index([provider])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model UsageRecord {
+  id              String   @id @default(uuid())
+  organizationId  String
+  featureKey      String
+  quantity        Int      @default(1)
+  periodStart     DateTime @default(now())
+  periodEnd       DateTime?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  @@index([organizationId])
+  @@index([organizationId, featureKey])
+  @@index([periodStart])
+}
+
+model AuditLog {
+  id              String   @id @default(uuid())
+  organizationId  String
+  userId          String?
+  action          String
+  resource        String
+  resourceId      String?
+  metadata        Json?
+  ipAddress       String?
+  userAgent       String?
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// ─── Notifications ─────────────────────────────────────────────
+
+model Notification {
+  id              String   @id @default(uuid())
+  organizationId  String
+  userId          String
+  title           String
+  body            String
+  type            String   // INFO, WARNING, SUCCESS, ERROR
+  category        String?  // attendance, finance, academic, system
+  referenceType   String?  // e.g. Invoice, Student
+  referenceId     String?
+  sourceEvent     String?  // e.g. payment.overdue, student.absent
+  read            Boolean  @default(false)
+  archived        Boolean  @default(false)
+  metadata        Json?
+  readAt          DateTime?
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([read])
+  @@index([archived])
+  @@index([createdAt])
+}
+
+// ─── Automation Rules ──────────────────────────────────────────
+
+model AutomationRule {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String
+  description     String?
+  enabled         Boolean  @default(true)
+  trigger         String   // e.g. payment.overdue, student.absent
+  conditions      Json     // { field, operator, value }[]
+  actions         Json     // { type, config }[]
+  lastTriggeredAt DateTime?
+  executionCount  Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  logs         AutomationExecutionLog[]
+
+  @@index([organizationId])
+  @@index([trigger])
+  @@index([enabled])
+}
+
+model AutomationExecutionLog {
+  id              String   @id @default(uuid())
+  organizationId  String
+  ruleId          String
+  eventType       String
+  payload         Json?
+  conditionsMet   Boolean
+  actionsExecuted Json?
+  status          String   // SUCCESS, FAILED, SKIPPED
+  error           String?
+  executedAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  rule          AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([ruleId])
+  @@index([status])
+  @@index([executedAt])
+}
+
+// ─── AI Foundation ────────────────────────────────────────────
+
+model AIProvider {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String   // e.g. "openrouter"
+  displayName     String
+  apiKey          String   // encrypted at rest
+  baseUrl         String?
+  isActive        Boolean  @default(true)
+  config          Json?    // provider-specific config
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  models       AIModel[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model AIModel {
+  id              String   @id @default(uuid())
+  organizationId  String
+  providerId      String
+  modelId         String   // e.g. "openai/gpt-4o"
+  displayName     String
+  capabilities    String[] // ["chat", "completion", "embedding"]
+  inputCostPer1K  Decimal  @db.Decimal(10, 6) // per 1K tokens
+  outputCostPer1K Decimal  @db.Decimal(10, 6)
+  maxTokens       Int      @default(4096)
+  isActive        Boolean  @default(true)
+  isDefault       Boolean  @default(false)
+  tier            String   @default("CORE") // CORE, ADVANCED, ENTERPRISE
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  provider     AIProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  usages       AIUsage[]
+
+  @@unique([organizationId, modelId])
+  @@index([organizationId])
+  @@index([providerId])
+  @@index([isActive])
+}
+
+model AIUsage {
+  id              String   @id @default(uuid())
+  organizationId  String
+  userId          String?
+  modelId         String
+  feature         String   // "chat", "analysis", "report", etc.
+  inputTokens     Int      @default(0)
+  outputTokens    Int      @default(0)
+  cachedTokens    Int      @default(0)
+  estimatedCost   Decimal  @db.Decimal(10, 6)
+  creditsConsumed Int      @default(0)
+  status          String   @default("SUCCESS") // SUCCESS, FAILED, RATE_LIMITED
+  durationMs      Int?
+  errorMessage    String?
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  model        AIModel  @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([modelId])
+  @@index([feature])
+  @@index([createdAt])
+}
+
+model AICreditBalance {
+  id              String   @id @default(uuid())
+  organizationId  String   @unique
+  monthlyAllowance Int     @default(0)
+  usedThisMonth   Int      @default(0)
+  periodStart     DateTime @default(now())
+  periodEnd       DateTime?
+  softLimitPct    Int      @default(80) // warning at 80%
+  hardLimitPct    Int      @default(100) // block at 100%
+  extraCredits    Int      @default(0) // purchased/added extra
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  transactions    AICreditTransaction[]
+
+  @@index([organizationId])
+}
+
+model AICreditTransaction {
+  id              String   @id @default(uuid())
+  organizationId  String
+  balanceId       String
+  type            String   // CONSUME, REFUND, GRANT, ADJUST, RESET
+  amount          Int      // positive for grant/refund, negative for consume
+  description     String?
+  referenceId     String?  // link to AIUsage id
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  balance      AICreditBalance @relation(fields: [balanceId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([balanceId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ─── Phase 2: Private School Vertical ─────────────────────────
+
+// ─── Admissions ───────────────────────────────────────────────
+
+enum AdmissionStatus {
+  PENDING
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  WAITLISTED
+  WITHDRAWN
+}
+
+model Admission {
+  id              String          @id @default(uuid())
+  organizationId  String
+  branchId        String?
+  studentId       String?
+  academicYearId  String?
+  applicantName   String
+  applicantEmail  String?
+  applicantPhone  String?
+  dateOfBirth     DateTime?
+  gender          Gender?
+  nationality     String?
+  previousSchool  String?
+  desiredLevelId  String?
+  guardianName    String?
+  guardianPhone   String?
+  guardianEmail   String?
+  relationship    GuardianRelationship?
+  status          AdmissionStatus @default(PENDING)
+  notes           String?
+  documents       Json?
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch        Branch?        @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  student       Student?       @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  academicYear  AcademicYear?  @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  desiredLevel  Level?         @relation(fields: [desiredLevelId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([academicYearId])
+}
+
+// ─── Teacher-Subject Assignments ─────────────────────────────
+
+model TeacherSubject {
+  id              String   @id @default(uuid())
+  organizationId  String
+  teacherId       String
+  subjectId       String
+  groupId         String?
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  teacher      Teacher      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subject      Subject      @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  group        Group?       @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, teacherId, subjectId, groupId])
+  @@index([organizationId])
+  @@index([teacherId])
+  @@index([subjectId])
+}
+
+// ─── Homework / Assignments ──────────────────────────────────
+
+enum HomeworkStatus {
+  DRAFT
+  ASSIGNED
+  SUBMITTED
+  LATE
+  MISSING
+}
+
+model Homework {
+  id              String   @id @default(uuid())
+  organizationId  String
+  subjectId       String?
+  groupId         String?
+  academicYearId  String?
+  title           String
+  description     String?
+  instructions    String?
+  deadline        DateTime?
+  maxScore        Float?
+  attachments     Json?
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  subject      Subject?       @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  group        Group?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  academicYear AcademicYear?  @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  submissions  HomeworkSubmission[]
+  teacher      Teacher?       @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  teacherId    String?
+
+  @@index([organizationId])
+  @@index([subjectId])
+  @@index([groupId])
+}
+
+model HomeworkSubmission {
+  id              String         @id @default(uuid())
+  organizationId  String
+  homeworkId      String
+  studentId       String
+  status          HomeworkStatus @default(ASSIGNED)
+  score           Float?
+  feedback        String?
+  submittedAt     DateTime?
+  attachments     Json?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  homework     Homework     @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, homeworkId, studentId])
+  @@index([organizationId])
+  @@index([homeworkId])
+  @@index([studentId])
+}
+
+// ─── Student Documents ───────────────────────────────────────
+
+model SchoolDocument {
+  id              String   @id @default(uuid())
+  organizationId  String
+  studentId       String
+  name            String
+  category        String   // ENROLLMENT, IDENTIFICATION, CERTIFICATE, ADMINISTRATIVE, REPORT_CARD
+  description     String?
+  fileUrl         String
+  fileSize        Int?
+  mimeType        String?
+  uploadedBy      String?
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([studentId])
+  @@index([category])
+}
+
+// ─── Report Cards ────────────────────────────────────────────
+
+enum ReportCardStatus {
+  DRAFT
+  FINALIZED
+}
+
+model ReportCard {
+  id              String           @id @default(uuid())
+  organizationId  String
+  studentId       String
+  academicYearId  String?
+  groupId         String?
+  term            String?          // TERM_1, TERM_2, TERM_3
+  status          ReportCardStatus @default(DRAFT)
+  overallAverage  Float?
+  classRank       Int?
+  totalStudents   Int?
+  promotionStatus String?          // PROMOTED, REPEAT, CONDITIONAL, PENDING
+  teacherRemarks  String?
+  adminRemarks    String?
+  finalizedAt     DateTime?
+  finalizedBy     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academicYear AcademicYear?  @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  group        Group?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  items        ReportCardItem[]
+
+  @@unique([organizationId, studentId, academicYearId, groupId, term])
+  @@index([organizationId])
+  @@index([studentId])
+  @@index([academicYearId])
+  @@index([status])
+}
+
+model ReportCardItem {
+  id              String   @id @default(uuid())
+  reportCardId    String
+  subjectId       String?
+  subjectName     String
+  average         Float
+  coefficient     Float    @default(1)
+  grade1         Float?
+  grade2         Float?
+  grade3         Float?
+  remarks         String?
+  createdAt       DateTime @default(now())
+
+  reportCard ReportCard @relation(fields: [reportCardId], references: [id], onDelete: Cascade)
+  subject    Subject?   @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+
+  @@index([reportCardId])
+}
+
+// ─── Promotion ───────────────────────────────────────────────
+
+enum PromotionStatus {
+  PENDING
+  PROMOTED
+  REPEAT
+  CONDITIONAL
+}
+
+model Promotion {
+  id                  String           @id @default(uuid())
+  organizationId      String
+  studentId           String
+  fromAcademicYearId  String?
+  toAcademicYearId    String?
+  fromGroupId         String?
+  toGroupId           String?
+  status              PromotionStatus  @default(PENDING)
+  reason              String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student         Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  fromAcademicYear AcademicYear?  @relation("fromYear", fields: [fromAcademicYearId], references: [id], onDelete: SetNull)
+  toAcademicYear   AcademicYear?  @relation("toYear", fields: [toAcademicYearId], references: [id], onDelete: SetNull)
+  fromGroup        Group?         @relation("fromGroup", fields: [fromGroupId], references: [id], onDelete: SetNull)
+  toGroup          Group?         @relation("toGroup", fields: [toGroupId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([studentId])
+  @@index([status])
+}
+
+// ─── School Announcements ────────────────────────────────────
+
+enum AnnouncementAudience {
+  ALL_STUDENTS
+  ALL_PARENTS
+  ALL_TEACHERS
+  ALL_STAFF
+  SPECIFIC_CLASS
+  SPECIFIC_BRANCH
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Announcement {
+  id              String                @id @default(uuid())
+  organizationId  String
+  branchId        String?
+  groupId         String?
+  title           String
+  content         String
+  audience        AnnouncementAudience  @default(ALL_STUDENTS)
+  status          AnnouncementStatus    @default(DRAFT)
+  publishedAt     DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch       Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  group        Group?       @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([audience])
+}
+
+// ─── Grading Config ─────────────────────────────────────────
+
+model GradingConfig {
+  id              String   @id @default(uuid())
+  organizationId  String   @unique
+  minScore        Float    @default(0)
+  maxScore        Float    @default(20)
+  passingScore    Float    @default(10)
+  roundingRule    String   @default("ROUND") // ROUND, CEIL, FLOOR, NONE
+  enableRanking   Boolean  @default(true)
+  enablePromotion Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+// ─── Phase 3: Support Center Models ────────────────────────────
+
+model Lead {
+  id              String       @id @default(uuid())
+  organizationId  String
+  branchId        String?
+  studentName     String
+  parentName      String?
+  phone           String?
+  email           String?
+  desiredLevelId  String?
+  desiredSubjectId String?
+  preferredSchedule String?
+  source          LeadSource   @default(WALK_IN)
+  status          LeadStatus   @default(LEAD)
+  assignedToId    String?
+  notes           String?
+  studentId       String?
+  convertedAt     DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch        Branch?        @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  desiredLevel  Level?         @relation(fields: [desiredLevelId], references: [id], onDelete: SetNull)
+  student       Student?       @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  trialSessions TrialSession[]
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([source])
+  @@index([branchId])
+  @@index([createdAt])
+}
+
+model TrialSession {
+  id              String       @id @default(uuid())
+  organizationId  String
+  leadId          String
+  studentId       String?
+  subjectId       String?
+  groupId         String?
+  teacherId       String?
+  roomId          String?
+  scheduledDate   DateTime
+  startTime       String
+  endTime         String
+  status          TrialStatus  @default(SCHEDULED)
+  attended        Boolean?
+  result          String?
+  notes           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lead         Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  student      Student?      @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  subject      Subject?      @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  group        Group?        @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  teacher      Teacher?      @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  room         Room?         @relation(fields: [roomId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([leadId])
+  @@index([status])
+  @@index([scheduledDate])
+}
+
+model TeacherAvailability {
+  id              String   @id @default(uuid())
+  organizationId  String
+  teacherId       String
+  branchId        String?
+  dayOfWeek       DayOfWeek
+  startTime       String   // "HH:MM"
+  endTime         String   // "HH:MM"
+  isAvailable     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  teacher      Teacher      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  branch       Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, teacherId, dayOfWeek, startTime])
+  @@index([organizationId])
+  @@index([teacherId])
+  @@index([dayOfWeek])
+}
+
+model TeacherCompensation {
+  id              String           @id @default(uuid())
+  organizationId  String
+  teacherId       String
+  branchId        String?
+  month           Int              // 1-12
+  year            Int
+  hourlyRate      Decimal          @db.Decimal(10, 2)
+  totalHours      Decimal          @default(0) @db.Decimal(8, 2)
+  totalSessions   Int              @default(0)
+  grossAmount     Decimal          @db.Decimal(12, 2)
+  adjustments     Decimal          @default(0) @db.Decimal(12, 2)
+  netAmount       Decimal          @db.Decimal(12, 2)
+  status          CompensationStatus @default(PENDING)
+  notes           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  teacher      Teacher      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  branch       Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, teacherId, month, year])
+  @@index([organizationId])
+  @@index([teacherId])
+  @@index([month, year])
+}
+
+model MonthlySubscription {
+  id              String                   @id @default(uuid())
+  organizationId  String
+  enrollmentId    String
+  studentId       String
+  feePlanId       String?
+  month           Int                      // 1-12
+  year            Int
+  amount          Decimal                  @db.Decimal(12, 2)
+  discountAmount  Decimal                  @default(0) @db.Decimal(12, 2)
+  status          MonthlySubscriptionStatus @default(PENDING)
+  dueDate         DateTime?
+  invoiceId       String?
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  enrollment   Enrollment     @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  student      Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feePlan      FeePlan?       @relation(fields: [feePlanId], references: [id], onDelete: SetNull)
+  invoice      Invoice?       @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, enrollmentId, month, year])
+  @@index([organizationId])
+  @@index([studentId])
+  @@index([enrollmentId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model StudentProgressNote {
+  id              String   @id @default(uuid())
+  organizationId  String
+  studentId       String
+  teacherId       String?
+  subjectId       String?
+  groupId         String?
+  content         String
+  category        String?  // OBSERVATION, PROGRESS, BEHAVIOR, ACADEMIC
+  isPrivate       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher      Teacher?     @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  subject      Subject?     @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  group        Group?       @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([studentId])
+  @@index([teacherId])
+  @@index([subjectId])
+}
+
+model CommunicationLog {
+  id              String   @id @default(uuid())
+  organizationId  String
+  senderId        String?
+  recipientType   String   // STUDENT, PARENT, TEACHER, GROUP, ALL
+  recipientId     String?
+  channel         String   // EMAIL, SMS, WHATSAPP, PUSH, IN_APP
+  subject         String?
+  content         String
+  status          String   @default("QUEUED") // QUEUED, SENDING, SENT, DELIVERED, FAILED, CANCELED
+  provider        String?  // e.g. "resend", "twilio"
+  providerMessageId String?
+  errorCode       String?
+  errorMessage    String?
+  sentAt          DateTime?
+  deliveredAt     DateTime?
+  failedAt        DateTime?
+  retryCount      Int      @default(0)
+  idempotencyKey  String?  @unique
+  referenceType   String?
+  referenceId     String?
+  campaignId      String?
+  templateId      String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([recipientType, recipientId])
+  @@index([channel])
+  @@index([status])
+  @@index([campaignId])
+  @@index([createdAt])
+}
+
+// ─── Phase 4: Training Center Vertical ─────────────────────────
+
+// New enums for training center
+
+enum TrainingProgramStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum CohortStatus {
+  PLANNED
+  OPEN
+  ACTIVE
+  COMPLETED
+  CANCELED
+  ARCHIVED
+}
+
+enum CertificateStatus {
+  PENDING
+  ISSUED
+  REVOKED
+  EXPIRED
+}
+
+enum CorporateClientStatus {
+  PROSPECT
+  ACTIVE
+  INACTIVE
+}
+
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELED
+}
+
+enum ProposalStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum CompetencyLevel {
+  NOT_STARTED
+  IN_PROGRESS
+  ACHIEVED
+  MASTERED
+}
+
+enum TrainingAssignmentStatus {
+  NOT_SUBMITTED
+  SUBMITTED
+  LATE
+  GRADED
+}
+
+enum BillingModel {
+  PER_LEARNER
+  PER_COHORT
+  PER_PROGRAM
+  FIXED_CONTRACT
+}
+
+// ─── Corporate Client ─────────────────────────────────────────
+
+model CorporateClient {
+  id              String                @id @default(uuid())
+  organizationId  String
+  companyName     String
+  logoUrl         String?
+  contactName     String
+  contactEmail    String?
+  contactPhone    String?
+  address         String?
+  industry        String?
+  taxIdentifier   String?
+  notes           String?
+  status          CorporateClientStatus @default(PROSPECT)
+  isActive        Boolean               @default(true)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  organization  Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  contracts     CorporateContract[]
+  learners      CorporateLearner[]
+  proposals     Proposal[]
+  invoices      Invoice[]
+
+  @@unique([organizationId, companyName])
+  @@index([organizationId])
+  @@index([status])
+}
+
+// ─── Corporate Learner (Employee) ─────────────────────────────
+
+model CorporateLearner {
+  id                String   @id @default(uuid())
+  organizationId    String
+  corporateClientId String
+  studentId         String?
+  employeeName      String
+  employeeCode      String?
+  department        String?
+  jobTitle          String?
+  email             String?
+  phone             String?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organization    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  corporateClient CorporateClient @relation(fields: [corporateClientId], references: [id], onDelete: Cascade)
+  student         Student?        @relation(fields: [studentId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, corporateClientId, employeeCode])
+  @@index([organizationId])
+  @@index([corporateClientId])
+  @@index([studentId])
+}
+
+// ─── Corporate Training Contract ──────────────────────────────
+
+model CorporateContract {
+  id                String         @id @default(uuid())
+  organizationId    String
+  corporateClientId String
+  programId         String?
+  cohortId          String?
+  startDate         DateTime
+  endDate           DateTime?
+  agreedPrice       Decimal        @db.Decimal(12, 2)
+  learnerCapacity   Int?
+  billingModel      BillingModel   @default(PER_LEARNER)
+  paymentTerms      String?
+  status            ContractStatus @default(DRAFT)
+  notes             String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  organization    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  corporateClient CorporateClient @relation(fields: [corporateClientId], references: [id], onDelete: Cascade)
+  program         Program?        @relation(fields: [programId], references: [id], onDelete: SetNull)
+  cohort          Group?          @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([corporateClientId])
+  @@index([status])
+}
+
+// ─── Certificate ──────────────────────────────────────────────
+
+model Certificate {
+  id                String           @id @default(uuid())
+  organizationId    String
+  studentId         String
+  programId         String?
+  cohortId          String?
+  certificateNumber String
+  verificationToken String           @default(uuid())
+  issueDate         DateTime         @default(now())
+  expirationDate    DateTime?
+  finalScore        Float?
+  status            CertificateStatus @default(PENDING)
+  issuedBy          String?
+  revokedReason     String?
+  revokedAt         DateTime?
+  metadata          Json?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  program      Program?     @relation(fields: [programId], references: [id], onDelete: SetNull)
+  cohort       Group?       @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, certificateNumber])
+  @@unique([verificationToken])
+  @@index([organizationId])
+  @@index([studentId])
+  @@index([status])
+}
+
+// ─── Certificate Template ─────────────────────────────────────
+
+model CertificateTemplate {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String
+  logoUrl         String?
+  orgName         String?
+  customText      String?
+  signatureAreas  Json?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+// ─── Competency ───────────────────────────────────────────────
+
+model Competency {
+  id              String   @id @default(uuid())
+  organizationId  String
+  moduleId        String?
+  programId       String?
+  name            String
+  description     String?
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  module       Module?          @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  program      Program?         @relation(fields: [programId], references: [id], onDelete: SetNull)
+  records      CompetencyRecord[]
+
+  @@index([organizationId])
+  @@index([moduleId])
+  @@index([programId])
+}
+
+// ─── Competency Record (Learner Tracking) ─────────────────────
+
+model CompetencyRecord {
+  id              String          @id @default(uuid())
+  organizationId  String
+  competencyId    String
+  studentId       String
+  status          CompetencyLevel @default(NOT_STARTED)
+  score           Float?
+  evaluatedBy     String?
+  evaluatedAt     DateTime?
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  competency   Competency    @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  student      Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, competencyId, studentId])
+  @@index([organizationId])
+  @@index([competencyId])
+  @@index([studentId])
+}
+
+// ─── Training Material ────────────────────────────────────────
+
+model TrainingMaterial {
+  id              String   @id @default(uuid())
+  organizationId  String
+  moduleId        String?
+  programId       String?
+  cohortId        String?
+  title           String
+  description     String?
+  type            String   // PDF, DOCUMENT, LINK, PRESENTATION, EXERCISE, RESOURCE
+  fileUrl         String?
+  externalUrl     String?
+  fileSize        Int?
+  mimeType        String?
+  sortOrder       Int      @default(0)
+  isPublished     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  module       Module?      @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  program      Program?     @relation(fields: [programId], references: [id], onDelete: SetNull)
+  cohort       Group?       @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([moduleId])
+  @@index([programId])
+}
+
+// ─── Training Assignment ──────────────────────────────────────
+
+model TrainingAssignment {
+  id              String   @id @default(uuid())
+  organizationId  String
+  moduleId        String?
+  programId       String?
+  cohortId        String?
+  title           String
+  description     String?
+  deadline        DateTime?
+  maxScore        Float?
+  attachments     Json?
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  module       Module?                   @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  program      Program?                  @relation(fields: [programId], references: [id], onDelete: SetNull)
+  cohort       Group?                    @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+  submissions  TrainingAssignmentSubmission[]
+
+  @@index([organizationId])
+  @@index([moduleId])
+  @@index([cohortId])
+}
+
+model TrainingAssignmentSubmission {
+  id              String                 @id @default(uuid())
+  organizationId  String
+  assignmentId    String
+  studentId       String
+  status          TrainingAssignmentStatus @default(NOT_SUBMITTED)
+  score           Float?
+  feedback        String?
+  submittedAt     DateTime?
+  attachments     Json?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  organization Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  assignment   TrainingAssignment     @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  student      Student                @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, assignmentId, studentId])
+  @@index([organizationId])
+  @@index([assignmentId])
+  @@index([studentId])
+}
+
+// ─── Proposal ─────────────────────────────────────────────────
+
+model Proposal {
+  id                String         @id @default(uuid())
+  organizationId    String
+  corporateClientId String?
+  leadId            String?
+  title             String
+  programs          Json?
+  learnerCount      Int?
+  estimatedDuration String?
+  proposedPrice     Decimal        @db.Decimal(12, 2)
+  validUntil        DateTime?
+  status            ProposalStatus @default(DRAFT)
+  notes             String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  corporateClient CorporateClient? @relation(fields: [corporateClientId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([corporateClientId])
+  @@index([status])
+}
+
+// ─── Program Package ──────────────────────────────────────────
+
+model ProgramPackage {
+  id              String   @id @default(uuid())
+  organizationId  String
+  programId       String?
+  name            String
+  description     String?
+  price           Decimal  @db.Decimal(12, 2)
+  includes        Json?
+  sortOrder       Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  program      Program?     @relation(fields: [programId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([programId])
+}
+
+// ─── Phase 5: Communication & Notification Center ──────────────
+
+// User Notification Preferences
+model UserPreference {
+  id              String   @id @default(uuid())
+  organizationId  String
+  userId          String
+  category        String   // attendance, finance, academic, system, automation, marketing
+  channel         String   // IN_APP, EMAIL, SMS, WHATSAPP, PUSH
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId, category, channel])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+// Communication Providers (email, sms, whatsapp)
+model CommunicationProvider {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String
+  channel         String   // EMAIL, SMS, WHATSAPP
+  provider        String   // e.g. "resend", "twilio", "whatsapp_business"
+  config          Json     // encrypted provider config (API keys, etc.)
+  enabled         Boolean  @default(true)
+  status          String   @default("INACTIVE") // ACTIVE, INACTIVE, ERROR
+  lastTestedAt    DateTime?
+  lastTestStatus  String?  // SUCCESS, FAILED
+  lastTestError   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, channel])
+  @@index([organizationId])
+  @@index([channel])
+}
+
+// Communication Templates
+model CommunicationTemplate {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String
+  code            String   // e.g. PAYMENT_REMINDER, SESSION_REMINDER
+  channel         String   // EMAIL, SMS, WHATSAPP, IN_APP
+  language        String   @default("en") // en, ar, fr
+  subject         String?  // for email
+  body            String
+  variables       Json?    // list of variable names
+  isSystem        Boolean  @default(false) // system templates protected from deletion
+  status          String   @default("ACTIVE") // ACTIVE, INACTIVE, ARCHIVED
+  createdBy       String?
+  updatedBy       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  campaigns     CommunicationCampaign[]
+
+  @@unique([organizationId, code, channel, language])
+  @@index([organizationId])
+  @@index([code])
+  @@index([channel])
+}
+
+// Communication Campaigns
+model CommunicationCampaign {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String
+  description     String?
+  templateId      String?
+  channels        Json     // ["EMAIL", "SMS", "IN_APP"]
+  audience        Json     // audience filter config
+  recipientCount  Int      @default(0)
+  status          String   @default("DRAFT") // DRAFT, SCHEDULED, RUNNING, COMPLETED, CANCELED, FAILED
+  scheduledAt     DateTime?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  sentCount       Int      @default(0)
+  deliveredCount  Int      @default(0)
+  failedCount     Int      @default(0)
+  createdBy       String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  org           Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  template      CommunicationTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  deliveries    CampaignDelivery[]
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+// Campaign Delivery Tracking
+model CampaignDelivery {
+  id              String   @id @default(uuid())
+  organizationId  String
+  campaignId      String
+  recipientId     String
+  recipientType   String   // STUDENT, PARENT, TEACHER, TRAINER, CORPORATE
+  channel         String
+  status          String   @default("QUEUED") // QUEUED, SENT, DELIVERED, FAILED
+  sentAt          DateTime?
+  deliveredAt     DateTime?
+  failedAt        DateTime?
+  errorCode       String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  campaign     CommunicationCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([campaignId])
+  @@index([status])
+}
+
+// User-to-User Messaging (lightweight)
+model Message {
+  id              String   @id @default(uuid())
+  organizationId  String
+  senderId        String
+  senderType      String   // STUDENT, PARENT, TEACHER, TRAINER, STAFF, CORPORATE
+  recipientId     String
+  recipientType   String   // STAFF, TEACHER, ADMIN
+  subject         String?
+  content         String
+  read            Boolean  @default(false)
+  readAt          DateTime?
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([createdAt])
+}
+
+// Contact Requests from portal users
+model ContactRequest {
+  id              String   @id @default(uuid())
+  organizationId  String
+  senderId        String?
+  senderType      String   // STUDENT, PARENT, LEARNER, CORPORATE
+  senderName      String
+  senderEmail     String?
+  senderPhone     String?
+  subject         String
+  message         String
+  category        String   @default("GENERAL") // GENERAL, PAYMENT, ACADEMIC, TECHNICAL, COMPLAINT
+  status          String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  assignedTo      String?
+  resolvedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+// Organization Communication Settings
+model CommunicationSetting {
+  id              String   @id @default(uuid())
+  organizationId  String   @unique
+  senderName      String?
+  senderEmail     String?
+  replyToEmail    String?
+  defaultLanguage String   @default("en")
+  timezone        String   @default("UTC")
+  allowedChannels Json?    // ["EMAIL", "SMS", "WHATSAPP", "IN_APP"]
+  emailEnabled    Boolean  @default(true)
+  smsEnabled      Boolean  @default(false)
+  whatsappEnabled Boolean  @default(false)
+  pushEnabled     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+// ─── Phase 6: AI Intelligence ───────────────────────────────
+
+// Knowledge Base
+model KnowledgeBase {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String
+  description     String?
+  isActive        Boolean  @default(true)
+  documentCount   Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  documents    KnowledgeDocument[]
+
+  @@index([organizationId])
+}
+
+model KnowledgeDocument {
+  id              String   @id @default(uuid())
+  organizationId  String
+  knowledgeBaseId String
+  title           String
+  content         String
+  source          String?
+  tags            String[]
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization  Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  knowledgeBase KnowledgeBase @relation(fields: [knowledgeBaseId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([knowledgeBaseId])
+}
+
+model AIConversation {
+  id              String   @id @default(uuid())
+  organizationId  String
+  userId          String
+  title           String?
+  vertical        String?
+  feature         String?
+  status          String   @default("ACTIVE")
+  messageCount    Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization             @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  messages     AIConversationMessage[]
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([feature])
+}
+
+model AIConversationMessage {
+  id              String   @id @default(uuid())
+  organizationId  String
+  conversationId  String
+  role            String
+  content         String
+  toolCalls       Json?
+  tokensUsed      Int      @default(0)
+  creditsConsumed Int      @default(0)
+  model           String?
+  createdAt       DateTime @default(now())
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model AIRecommendation {
+  id              String   @id @default(uuid())
+  organizationId  String
+  userId          String?
+  type            String
+  priority        String   @default("MEDIUM")
+  title           String
+  description     String
+  entityType      String?
+  entityId        String?
+  suggestedAction String?
+  status          String   @default("PENDING")
+  metadata        Json?
+  expiresAt       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([type])
+  @@index([status])
+  @@index([priority])
+}
+
+model AIInsight {
+  id              String   @id @default(uuid())
+  organizationId  String
+  category        String
+  title           String
+  summary         String
+  details         Json?
+  severity        String   @default("INFO")
+  isRead          Boolean  @default(false)
+  isActedUpon     Boolean  @default(false)
+  expiresAt       DateTime?
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([category])
+  @@index([severity])
+  @@index([createdAt])
+}

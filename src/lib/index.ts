@@ -1,0 +1,15 @@
+export { prisma, db } from "./prisma";
+export * from "./workspace";
+export * from "./entitlements";
+export * from "./subscription";
+export * from "./people";
+export * from "./students";
+export * from "./staff";
+export * from "./parents";
+export * from "./org-context";
+export * from "./academic";
+export * from "./rooms";
+export * from "./scheduling";
+export * from "./attendance";
+export * from "./assessment";
+export * from "./finance";
