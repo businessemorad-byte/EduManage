@@ -75,6 +75,17 @@ export async function GET() {
   let sessionsTable: boolean | null = null;
   let failures: Record<string, ReturnType<typeof publicFailure>> | undefined;
 
+  // Platform Owner account diagnostics: booleans only, never the email,
+  // hash or any credential material.
+  const ownerEmailConfigured = Boolean(process.env.PLATFORM_OWNER_EMAIL);
+  let ownerAccount: {
+    configured: boolean;
+    exists: boolean | null;
+    roleCorrect: boolean | null;
+    active: boolean | null;
+    passwordHashPresent: boolean | null;
+  } | null = null;
+
   if (databaseUrlConfigured) {
     let firstAnalysis: DbFailureAnalysis | null = null;
 
@@ -94,15 +105,42 @@ export async function GET() {
         `;
         usersTable = Boolean(result[0]?.users);
         sessionsTable = Boolean(result[0]?.sessions);
+
+        if (usersTable && ownerEmailConfigured && process.env.PLATFORM_OWNER_EMAIL) {
+          const owners = await db.$queryRaw<
+            { total: number; owners: number; active: number; with_hash: number }[]
+          >`
+            SELECT
+              COUNT(*)::int AS total,
+              COUNT(*) FILTER (WHERE role = 'PLATFORM_OWNER')::int AS owners,
+              COUNT(*) FILTER (WHERE "isActive" = true)::int AS active,
+              COUNT(*) FILTER (WHERE "passwordHash" IS NOT NULL AND length("passwordHash") > 0)::int AS with_hash
+            FROM "User"
+            WHERE email = ${process.env.PLATFORM_OWNER_EMAIL}
+          `;
+          const row = owners[0];
+          ownerAccount = {
+            configured: true,
+            exists: Boolean(row && row.total > 0),
+            roleCorrect: Boolean(row && row.owners > 0),
+            active: Boolean(row && row.active > 0),
+            passwordHashPresent: Boolean(row && row.with_hash > 0),
+          };
+        }
       } catch (error: unknown) {
         firstAnalysis = logProbeFailure("auth_tables", error);
       }
     }
 
-    if (firstAnalysis) {
+    if (firstAnalysis || (ownerEmailConfigured && ownerAccount === null)) {
       failures = {};
-      if (!selectOneOk) failures.selectOne = publicFailure(firstAnalysis);
-      else failures.authTables = publicFailure(firstAnalysis);
+      if (!selectOneOk) failures.selectOne = publicFailure(firstAnalysis!);
+      else if (firstAnalysis) failures.authTables = publicFailure(firstAnalysis);
+      else failures.ownerProbe = {
+        errorCode: "SKIPPED",
+        driverCode: null,
+        category: "owner_probe_skipped",
+      };
     }
   }
 
@@ -120,6 +158,7 @@ export async function GET() {
         ...(usersTable !== null || sessionsTable !== null
           ? { usersTable, sessionsTable }
           : {}),
+        ...(ownerAccount ? { platformOwner: ownerAccount } : {}),
         ...(failures ? { errorCode: Object.values(failures)[0]?.errorCode ?? null } : {}),
         ...(failures ? { failures } : {}),
         urlShape: urlShape(process.env.DATABASE_URL),
