@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/client";
+import { Prisma } from "@/generated/prisma/client";
 
 export async function getSupportCenterDashboard(organizationId: string, params?: { branchId?: string; month?: number; year?: number }) {
   const now = new Date();
@@ -152,3 +152,5 @@ export async function getRoomUtilization(organizationId: string, params?: { bran
 
   return results;
 }
+
+

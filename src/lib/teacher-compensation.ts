@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/client";
+import { Prisma } from "@/generated/prisma/client";
 
 export async function calculateTeacherCompensation(data: {
   organizationId: string;
@@ -11,7 +11,7 @@ export async function calculateTeacherCompensation(data: {
   const teacher = await db.teacher.findFirst({ where: { id: data.teacherId, organizationId: data.organizationId } });
   if (!teacher) throw new Error("Teacher not found");
 
-  const hourlyRate = teacher.hourlyRate ?? new Decimal(0);
+  const hourlyRate = teacher.hourlyRate ?? new Prisma.Decimal(0);
 
   const startOfMonth = new Date(data.year, data.month - 1, 1);
   const endOfMonth = new Date(data.year, data.month, 0, 23, 59, 59);
@@ -47,16 +47,16 @@ export async function calculateTeacherCompensation(data: {
       month: data.month,
       year: data.year,
       hourlyRate,
-      totalHours: new Decimal(totalHours),
+      totalHours: new Prisma.Decimal(totalHours),
       totalSessions: sessions.length,
       grossAmount,
-      adjustments: new Decimal(0),
+      adjustments: new Prisma.Decimal(0),
       netAmount,
       status: "PENDING",
     },
     update: {
       hourlyRate,
-      totalHours: new Decimal(totalHours),
+      totalHours: new Prisma.Decimal(totalHours),
       totalSessions: sessions.length,
       grossAmount,
       netAmount,
@@ -138,3 +138,5 @@ export async function getTeacherWorkload(organizationId: string, teacherId: stri
     subjects: Array.from(subjectSet),
   };
 }
+
+

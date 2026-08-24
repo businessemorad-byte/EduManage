@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/client";
+import { Prisma } from "@/generated/prisma/client";
 
 // ─── MRR Calculation ─────────────────────────────────────────
 
@@ -9,11 +9,11 @@ export async function calculateMRR(): Promise<{ mrr: number; count: number }> {
     include: { plan: true },
   });
 
-  let mrr = new Decimal(0);
+  let mrr = new Prisma.Decimal(0);
   for (const sub of activeSubs) {
     const monthly = sub.billingInterval === "YEARLY"
-      ? (sub.plan.priceYearly ?? sub.plan.priceMonthly ?? new Decimal(0)).div(12)
-      : (sub.plan.priceMonthly ?? new Decimal(0));
+      ? (sub.plan.priceYearly ?? sub.plan.priceMonthly ?? new Prisma.Decimal(0)).div(12)
+      : (sub.plan.priceMonthly ?? new Prisma.Decimal(0));
     mrr = mrr.add(monthly);
   }
 
@@ -130,3 +130,5 @@ export async function getBillingHistory(organizationId: string, params?: { limit
 
   return { invoices, payments };
 }
+
+

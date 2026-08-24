@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/client";
+import { Prisma } from "@/generated/prisma/client";
 
 export async function generateMonthlySubscriptions(data: {
   organizationId: string;
@@ -13,7 +13,7 @@ export async function generateMonthlySubscriptions(data: {
   });
   if (!enrollment) throw new Error("Enrollment not found");
 
-  const amount = enrollment.monthlyFee ?? enrollment.feePlan?.amount ?? new Decimal(0);
+  const amount = enrollment.monthlyFee ?? enrollment.feePlan?.amount ?? new Prisma.Decimal(0);
   const dueDate = new Date(data.year, data.month, 5);
 
   const existing = await db.monthlySubscription.findUnique({
@@ -85,3 +85,5 @@ export async function markOverdueSubscriptions(organizationId: string) {
     data: { status: "OVERDUE" },
   });
 }
+
+

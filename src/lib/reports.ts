@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/client";
+import { Prisma } from "@/generated/prisma/client";
 
 export type DateRange = { startDate?: string; endDate?: string };
 
@@ -58,8 +58,8 @@ export async function getReportsOverview(organizationId: string) {
     db.invoice.aggregate({ where: { organizationId, status: { in: ["PENDING", "PARTIAL", "OVERDUE"] } }, _sum: { totalAmount: true, paidAmount: true } }),
   ]);
 
-  const totalPaid = paidAgg._sum.amount ?? new Decimal(0);
-  const totalOutstanding = (outstandingAgg._sum.totalAmount ?? new Decimal(0)).minus(outstandingAgg._sum.paidAmount ?? new Decimal(0));
+  const totalPaid = paidAgg._sum.amount ?? new Prisma.Decimal(0);
+  const totalOutstanding = (outstandingAgg._sum.totalAmount ?? new Prisma.Decimal(0)).minus(outstandingAgg._sum.paidAmount ?? new Prisma.Decimal(0));
 
   return { totalStudents, activeStudents, newStudentsThisMonth, totalStaff, totalGroups, totalSessions, totalLeads, totalAdmissions, attendanceRate, totalRevenue: totalPaid.toNumber(), totalOutstanding: totalOutstanding.toNumber() };
 }
@@ -299,3 +299,4 @@ export async function getSchedulingReport(organizationId: string, range: DateRan
     byRoom: Object.entries(byRoom).map(([room, count]) => ({ room, count })),
   };
 }
+

@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/client";
+import { Prisma } from "@/generated/prisma/client";
 import { emitEvent, EVENT_TYPES } from "@/lib/events";
 import { calculateDiscount } from "@/lib/billing/coupons";
 
@@ -27,13 +27,13 @@ export async function createBillingInvoice(params: {
   const plan = await db.plan.findUnique({ where: { id: params.planId } });
   if (!plan) throw new Error("Plan not found");
 
-  const subtotal = new Decimal(params.amount);
-  let discountAmount = new Decimal(0);
+  const subtotal = new Prisma.Decimal(params.amount);
+  let discountAmount = new Prisma.Decimal(0);
 
   if (params.couponId) {
     const coupon = await db.coupon.findUnique({ where: { id: params.couponId } });
     if (coupon && coupon.isActive) {
-      discountAmount = new Decimal(calculateDiscount(coupon.discountType, Number(coupon.discountValue), params.amount));
+      discountAmount = new Prisma.Decimal(calculateDiscount(coupon.discountType, Number(coupon.discountValue), params.amount));
     }
   }
 
@@ -49,7 +49,7 @@ export async function createBillingInvoice(params: {
       status: "OPEN",
       subtotal,
       discountAmount,
-      taxAmount: new Decimal(0),
+      taxAmount: new Prisma.Decimal(0),
       totalAmount,
       currency: params.currency ?? plan.currency,
       couponId: params.couponId ?? null,
@@ -109,3 +109,5 @@ export async function listBillingInvoices(organizationId: string, params?: { sta
     take: params?.limit,
   });
 }
+
+

@@ -1,15 +1,15 @@
 import { db } from "@/lib/prisma";
 import type { InvoiceStatus, PaymentMethod } from "@/generated/prisma/client";
-import { Decimal } from "@prisma/client/runtime/client";
+import { Prisma } from "@/generated/prisma/client";
 import { emitEvent, EVENT_TYPES } from "@/lib/events";
 
 // ─── Helpers ─────────────────────────────────────────────────────
 
-function toDecimal(v: number | Decimal): Decimal {
-  return typeof v === "number" ? new Decimal(v) : v;
+function toDecimal(v: number | Prisma.Decimal): Prisma.Decimal {
+  return typeof v === "number" ? new Prisma.Decimal(v) : v;
 }
 
-export function formatAmount(amount: Decimal, currency = "USD"): string {
+export function formatAmount(amount: Prisma.Decimal, currency = "USD"): string {
   return `${currency} ${amount.toFixed(2)}`;
 }
 
@@ -30,7 +30,7 @@ export async function createFeePlan(data: {
       organizationId: data.organizationId,
       name: data.name,
       description: data.description ?? null,
-      amount: new Decimal(data.amount),
+      amount: new Prisma.Decimal(data.amount),
       currency: data.currency ?? "USD",
       frequency: data.frequency,
       programId: data.programId ?? null,
@@ -67,7 +67,7 @@ export async function createDiscount(data: {
       name: data.name,
       description: data.description ?? null,
       type: data.type,
-      value: new Decimal(data.value),
+      value: new Prisma.Decimal(data.value),
       feePlanId: data.feePlanId ?? null,
       maxUses: data.maxUses ?? null,
     },
@@ -81,11 +81,11 @@ export async function listDiscounts(organizationId: string) {
   });
 }
 
-function calculateDiscountAmount(discountType: string, discountValue: Decimal, subtotal: Decimal): Decimal {
+function calculateDiscountAmount(discountType: string, discountValue: Prisma.Decimal, subtotal: Prisma.Decimal): Prisma.Decimal {
   if (discountType === "PERCENTAGE") {
     return subtotal.mul(discountValue).div(100);
   }
-  return Decimal.min(discountValue, subtotal);
+  return Prisma.Decimal.min(discountValue, subtotal);
 }
 
 // ─── Invoices ────────────────────────────────────────────────────
@@ -119,19 +119,19 @@ export async function createInvoice(data: {
     0
   );
 
-  let discountAmount = new Decimal(0);
+  let discountAmount = new Prisma.Decimal(0);
   if (data.discountId) {
     const discount = await db.discount.findUnique({ where: { id: data.discountId } });
     if (discount && discount.organizationId === data.organizationId && discount.isActive) {
       if (discount.maxUses !== null && discount.usedCount >= discount.maxUses) {
         throw new Error("Discount usage limit reached");
       }
-      discountAmount = calculateDiscountAmount(discount.type, discount.value, new Decimal(subtotal));
+      discountAmount = calculateDiscountAmount(discount.type, discount.value, new Prisma.Decimal(subtotal));
       await db.discount.update({ where: { id: discount.id }, data: { usedCount: { increment: 1 } } });
     }
   }
 
-  const totalAmount = new Decimal(subtotal).sub(discountAmount);
+  const totalAmount = new Prisma.Decimal(subtotal).sub(discountAmount);
   const invoiceNumber = generateInvoiceNumber();
 
   const invoice = await db.invoice.create({
@@ -141,7 +141,7 @@ export async function createInvoice(data: {
       feePlanId: data.feePlanId ?? null,
       discountId: data.discountId ?? null,
       invoiceNumber,
-      subtotal: new Decimal(subtotal),
+      subtotal: new Prisma.Decimal(subtotal),
       discountAmount,
       totalAmount,
       dueDate: data.dueDate ? new Date(data.dueDate) : null,
@@ -151,8 +151,8 @@ export async function createInvoice(data: {
           organizationId: data.organizationId,
           description: item.description,
           quantity: item.quantity,
-          unitPrice: new Decimal(item.unitPrice),
-          amount: new Decimal(item.unitPrice * item.quantity),
+          unitPrice: new Prisma.Decimal(item.unitPrice),
+          amount: new Prisma.Decimal(item.unitPrice * item.quantity),
         })),
       },
     },
@@ -233,7 +233,7 @@ export async function createPayment(data: {
         organizationId: data.organizationId,
         invoiceId: data.invoiceId,
         reference: data.reference,
-        amount: new Decimal(data.amount),
+        amount: new Prisma.Decimal(data.amount),
         status: "COMPLETED",
       },
       select: { id: true },
@@ -243,7 +243,7 @@ export async function createPayment(data: {
 
   const paidAmount = toDecimal(invoice.paidAmount);
   const totalAmount = toDecimal(invoice.totalAmount);
-  const paymentAmount = new Decimal(data.amount);
+  const paymentAmount = new Prisma.Decimal(data.amount);
   const remaining = totalAmount.sub(paidAmount);
 
   if (paymentAmount.gt(remaining)) {
@@ -327,13 +327,13 @@ export async function createRefund(data: {
   if (!payment) throw new Error("Payment not found");
   if (payment.status === "REFUNDED") throw new Error("Payment already fully refunded");
 
-  const refundAmount = new Decimal(data.amount);
+  const refundAmount = new Prisma.Decimal(data.amount);
   const paymentAmount = toDecimal(payment.amount);
   const totalRefunded = await db.refund.aggregate({
     where: { paymentId: data.paymentId },
     _sum: { amount: true },
   });
-  const alreadyRefunded = totalRefunded._sum.amount ?? new Decimal(0);
+  const alreadyRefunded = totalRefunded._sum.amount ?? new Prisma.Decimal(0);
   const availableRefund = paymentAmount.sub(alreadyRefunded);
 
   if (refundAmount.gt(availableRefund)) {
@@ -364,7 +364,7 @@ export async function createRefund(data: {
     where: { paymentId: data.paymentId },
     _sum: { amount: true },
   });
-  const totalRefundForPayment = (totalPaymentRefunds._sum.amount ?? new Decimal(0)) as Decimal;
+  const totalRefundForPayment = (totalPaymentRefunds._sum.amount ?? new Prisma.Decimal(0)) as Prisma.Decimal;
   const newPaymentStatus = totalRefundForPayment.gte(paymentAmount) ? "REFUNDED" : "PARTIAL_REFUND";
   await db.payment.update({ where: { id: data.paymentId }, data: { status: newPaymentStatus } });
 
@@ -393,10 +393,10 @@ export async function getFinanceSummary(organizationId: string) {
     db.invoice.aggregate({ where: { organizationId, status: { in: ["PENDING", "PARTIAL", "OVERDUE"] } }, _sum: { totalAmount: true, paidAmount: true } }),
   ]);
 
-  const totalInvoiced = invoiced._sum.totalAmount ?? new Decimal(0);
-  const totalPaid = paid._sum.amount ?? new Decimal(0);
-  const totalRefunded = refunded._sum.amount ?? new Decimal(0);
-  const totalOutstanding = (outstanding._sum.totalAmount ?? new Decimal(0)).sub(outstanding._sum.paidAmount ?? new Decimal(0));
+  const totalInvoiced = invoiced._sum.totalAmount ?? new Prisma.Decimal(0);
+  const totalPaid = paid._sum.amount ?? new Prisma.Decimal(0);
+  const totalRefunded = refunded._sum.amount ?? new Prisma.Decimal(0);
+  const totalOutstanding = (outstanding._sum.totalAmount ?? new Prisma.Decimal(0)).sub(outstanding._sum.paidAmount ?? new Prisma.Decimal(0));
 
   return {
     totalInvoiced,
@@ -412,7 +412,7 @@ export type FinancialEvent = {
   type: "payment.created" | "payment.overdue" | "invoice.created";
   organizationId: string;
   invoiceId?: string;
-  amount: Decimal;
+  amount: Prisma.Decimal;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- deprecated: use onEvent() from @/lib/events instead
@@ -425,3 +425,5 @@ export async function emitFinancialEvent(event: FinancialEvent) {
     payload: { invoiceId: event.invoiceId, amount: event.amount.toNumber() },
   });
 }
+
+

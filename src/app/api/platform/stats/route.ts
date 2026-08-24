@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/client";
+import { Prisma } from "@/generated/prisma/client";
 import { requirePlatformAuthResponse } from "@/lib/platform-auth";
 
 export async function GET() {
@@ -82,7 +82,7 @@ export async function GET() {
 
     // Plan distribution over live subscriptions.
     const planDistribution: Record<string, number> = {};
-    let estimatedMrr = new Decimal(0);
+    let estimatedMrr = new Prisma.Decimal(0);
     for (const sub of subsByPlan) {
       const name = sub.plan.displayName;
       planDistribution[name] = (planDistribution[name] ?? 0) + 1;
@@ -152,3 +152,5 @@ export async function GET() {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireOrgContext } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { db } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/client";
+import { Prisma } from "@/generated/prisma/client";
 
 export async function GET() {
   try {
@@ -63,8 +63,8 @@ export async function GET() {
       db.room.count({ where: { organizationId, status: "AVAILABLE", isActive: true } }),
     ]);
 
-    const totalDue = (invoices._sum.totalAmount ?? new Decimal(0)) as Decimal;
-    const totalPaid = (invoices._sum.paidAmount ?? new Decimal(0)) as Decimal;
+    const totalDue = (invoices._sum.totalAmount ?? new Prisma.Decimal(0)) as Prisma.Decimal;
+    const totalPaid = (invoices._sum.paidAmount ?? new Prisma.Decimal(0)) as Prisma.Decimal;
     const outstanding = totalDue.sub(totalPaid);
     const attendanceRate = totalAttendanceThisMonth > 0 ? Math.round((attendanceThisMonth / totalAttendanceThisMonth) * 100) : 0;
     const collectionRate = totalDue.gt(0) ? Math.round(totalPaid.div(totalDue).mul(100).toNumber()) : 0;
@@ -78,7 +78,7 @@ export async function GET() {
       finance: {
         outstanding: outstanding.toNumber(),
         collectionRate,
-        monthlyRevenue: (payments._sum.amount ?? new Decimal(0)).toNumber(),
+        monthlyRevenue: (payments._sum.amount ?? new Prisma.Decimal(0)).toNumber(),
       },
       scheduling: {
         todaySessions,
@@ -92,3 +92,5 @@ export async function GET() {
     return NextResponse.json({ error: message }, { status });
   }
 }
+
+

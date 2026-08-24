@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/client";
+import { Prisma } from "@/generated/prisma/client";
 import { calculateCredits, checkCredits, consumeCredits } from "@/lib/ai-credits";
 import { emitEvent } from "@/lib/events";
 import { getPlatformConfig, AI_ENV } from "@/lib/billing/platform-config";
@@ -104,8 +104,8 @@ async function ensurePlatformDefaultModel(organizationId: string) {
       modelId: config.aiModelId,
       displayName: config.aiModelDisplayName,
       capabilities: ["chat"],
-      inputCostPer1K: new Decimal(0),
-      outputCostPer1K: new Decimal(0),
+      inputCostPer1K: new Prisma.Decimal(0),
+      outputCostPer1K: new Prisma.Decimal(0),
       maxTokens: 4096,
       tier: "CORE",
       isDefault: true,
@@ -205,10 +205,10 @@ export async function aiRequest(
     });
 
     // 4. Calculate cost
-    const cost = new Decimal(result.inputTokens)
+    const cost = new Prisma.Decimal(result.inputTokens)
       .div(1000)
       .mul(model.inputCostPer1K)
-      .add(new Decimal(result.outputTokens).div(1000).mul(model.outputCostPer1K));
+      .add(new Prisma.Decimal(result.outputTokens).div(1000).mul(model.outputCostPer1K));
 
     // 5. Calculate credits
     const credits = calculateCredits({
@@ -343,8 +343,8 @@ export async function createModel(data: {
       modelId: data.modelId,
       displayName: data.displayName,
       capabilities: data.capabilities ?? ["chat"],
-      inputCostPer1K: new Decimal(data.inputCostPer1K),
-      outputCostPer1K: new Decimal(data.outputCostPer1K),
+      inputCostPer1K: new Prisma.Decimal(data.inputCostPer1K),
+      outputCostPer1K: new Prisma.Decimal(data.outputCostPer1K),
       maxTokens: data.maxTokens ?? 4096,
       tier: data.tier ?? "CORE",
       isDefault: data.isDefault ?? false,
@@ -378,3 +378,5 @@ export async function getUsageStats(organizationId: string, days = 30) {
 
   return { total, byModel, byFeature };
 }
+
+
