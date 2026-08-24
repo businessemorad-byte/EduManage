@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { hashPassword, createSession } from "@/lib/auth";
 import { SESSION_COOKIE_NAME, SESSION_MAX_AGE } from "@/lib/constants";
+import { logger, prismaErrorCode } from "@/lib/logger";
 
 export async function POST(request: Request) {
   try {
@@ -50,7 +51,12 @@ export async function POST(request: Request) {
     });
 
     return response;
-  } catch {
+  } catch (error: unknown) {
+    logger.error("Register failed", error, {
+      prismaCode: prismaErrorCode(error),
+      databaseUrlConfigured: Boolean(process.env.DATABASE_URL),
+      nodeEnv: process.env.NODE_ENV,
+    });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
