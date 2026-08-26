@@ -28,11 +28,9 @@ vi.mock("@/lib/prisma", () => {
     group: model(),
     room: model(),
   };
-  // markAttendance runs inside a transaction over attendanceRecord;
-  // the tx handle exposes the same model mock.
-  const makeTx = () => ({ attendanceRecord: db.attendanceRecord });
+  // The tx handle exposes all models (mirrors real Prisma behaviour).
   (db as Record<string, unknown>).$transaction = vi.fn(
-    async (fn: (tx: unknown) => unknown) => fn(makeTx())
+    async (fn: (tx: unknown) => unknown) => fn(db)
   );
   return { db };
 });
@@ -48,7 +46,7 @@ vi.mock("@/lib/events", () => ({
 }));
 
 import { db } from "@/lib/prisma";
-import { checkPaidAccess } from "@/lib/billing/enforcement";
+import { checkPaidAccess, getSubscriptionState } from "@/lib/billing/enforcement";
 import {
   resolveEntitlements,
   hasEntitlement,
@@ -71,9 +69,10 @@ beforeEach(() => {
   vi.resetAllMocks();
   mockedDb.subscription.findFirst.mockResolvedValue(null);
   // resetAllMocks strips the factory-set implementation — restore it.
+  // Pass all db models to the tx handle (mirrors real Prisma behaviour).
   (db as unknown as { $transaction: { mockImplementation: (fn: unknown) => void } })
     .$transaction.mockImplementation(async (fn: (tx: unknown) => unknown) =>
-      fn({ attendanceRecord: mockedDb.attendanceRecord })
+      fn(db)
     );
 });
 
@@ -217,6 +216,262 @@ describe("QA - Entitlement resolution", () => {
     const result = await checkUsageLimit("org1", FeatureKey.MAX_STUDENTS, 10_000);
     expect(result.allowed).toBe(true);
     expect(result.limit).toBeNull();
+  });
+});
+
+// ─── currentPeriodEnd enforcement ─────────────────────────────────
+
+describe("QA - currentPeriodEnd enforcement (getSubscriptionState)", () => {
+  it("ACTIVE + future currentPeriodEnd → hasAccess: true", async () => {
+    const future = new Date(Date.now() + 30 * 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: future,
+    });
+    const state = await getSubscriptionState("org1");
+    expect(state.hasAccess).toBe(true);
+    expect(state.state).toBe("ACTIVE");
+    expect(state.lapsed).toBe(false);
+  });
+
+  it("ACTIVE + expired currentPeriodEnd → hasAccess: false (EXPIRED)", async () => {
+    const past = new Date(Date.now() - 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: past,
+    });
+    const state = await getSubscriptionState("org1");
+    expect(state.hasAccess).toBe(false);
+    expect(state.state).toBe("EXPIRED");
+    expect(state.lapsed).toBe(true);
+  });
+
+  it("TRIAL + future currentPeriodEnd → hasAccess: true", async () => {
+    const future = new Date(Date.now() + 7 * 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      status: "TRIAL",
+      currentPeriodEnd: future,
+    });
+    const state = await getSubscriptionState("org1");
+    expect(state.hasAccess).toBe(true);
+    expect(state.state).toBe("TRIAL");
+    expect(state.lapsed).toBe(false);
+  });
+
+  it("TRIAL + expired currentPeriodEnd → hasAccess: false (EXPIRED)", async () => {
+    const past = new Date(Date.now() - 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      status: "TRIAL",
+      currentPeriodEnd: past,
+    });
+    const state = await getSubscriptionState("org1");
+    expect(state.hasAccess).toBe(false);
+    expect(state.state).toBe("EXPIRED");
+    expect(state.lapsed).toBe(true);
+  });
+
+  it("TRIALING + future currentPeriodEnd → hasAccess: true", async () => {
+    const future = new Date(Date.now() + 7 * 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      status: "TRIALING",
+      currentPeriodEnd: future,
+    });
+    const state = await getSubscriptionState("org1");
+    expect(state.hasAccess).toBe(true);
+  });
+
+  it("TRIALING + expired currentPeriodEnd → hasAccess: false", async () => {
+    const past = new Date(Date.now() - 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      status: "TRIALING",
+      currentPeriodEnd: past,
+    });
+    const state = await getSubscriptionState("org1");
+    expect(state.hasAccess).toBe(false);
+    expect(state.state).toBe("EXPIRED");
+  });
+
+  it("ACTIVE + null currentPeriodEnd → hasAccess: true (no period to lapse)", async () => {
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: null,
+    });
+    const state = await getSubscriptionState("org1");
+    expect(state.hasAccess).toBe(true);
+    expect(state.lapsed).toBe(false);
+  });
+
+  it("CANCELLED + future currentPeriodEnd → hasAccess: false (status not in ACCESS_STATUSES)", async () => {
+    const future = new Date(Date.now() + 30 * 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      status: "CANCELLED",
+      currentPeriodEnd: future,
+    });
+    const state = await getSubscriptionState("org1");
+    expect(state.hasAccess).toBe(false);
+    expect(state.lapsed).toBe(false);
+  });
+
+  it("boundary: currentPeriodEnd exactly now → lapsed", async () => {
+    const now = new Date();
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: now,
+    });
+    const state = await getSubscriptionState("org1");
+    // `now > sub.currentPeriodEnd` is false when they're equal,
+    // so the subscription is still valid at the exact boundary.
+    expect(state.hasAccess).toBe(true);
+    expect(state.lapsed).toBe(false);
+  });
+
+  it("boundary: currentPeriodEnd 1ms in the past → lapsed", async () => {
+    const justPast = new Date(Date.now() - 1);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: justPast,
+    });
+    const state = await getSubscriptionState("org1");
+    expect(state.hasAccess).toBe(false);
+    expect(state.lapsed).toBe(true);
+  });
+});
+
+describe("QA - currentPeriodEnd enforcement (resolveEntitlements)", () => {
+  it("ACTIVE + expired currentPeriodEnd → active: false", async () => {
+    const past = new Date(Date.now() - 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: past,
+    });
+    const result = await resolveEntitlements("org1");
+    expect(result.active).toBe(false);
+  });
+
+  it("ACTIVE + future currentPeriodEnd → active: true", async () => {
+    const future = new Date(Date.now() + 30 * 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: future,
+    });
+    const result = await resolveEntitlements("org1");
+    expect(result.active).toBe(true);
+  });
+
+  it("TRIAL + expired currentPeriodEnd → active: false, hasEntitlement: false", async () => {
+    const past = new Date(Date.now() - 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue(
+      activeSubscription({
+        status: "TRIAL",
+        currentPeriodEnd: past,
+        plan: {
+          displayName: "Standard",
+          name: "standard",
+          features: [
+            { isEnabled: true, limit: null, feature: { key: FeatureKey.AI_ENABLED } },
+          ],
+        },
+      })
+    );
+    const resolved = await resolveEntitlements("org1");
+    expect(resolved.active).toBe(false);
+    await expect(hasEntitlement("org1", FeatureKey.AI_ENABLED)).resolves.toBe(false);
+  });
+
+  it("TRIAL + future currentPeriodEnd → active: true, hasEntitlement: true", async () => {
+    const future = new Date(Date.now() + 7 * 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue(
+      activeSubscription({
+        status: "TRIAL",
+        currentPeriodEnd: future,
+        plan: {
+          displayName: "Standard",
+          name: "standard",
+          features: [
+            { isEnabled: true, limit: null, feature: { key: FeatureKey.AI_ENABLED } },
+          ],
+        },
+      })
+    );
+    const resolved = await resolveEntitlements("org1");
+    expect(resolved.active).toBe(true);
+    await expect(hasEntitlement("org1", FeatureKey.AI_ENABLED)).resolves.toBe(true);
+  });
+
+  it("ACTIVE + null currentPeriodEnd → active: true", async () => {
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: null,
+    });
+    const result = await resolveEntitlements("org1");
+    expect(result.active).toBe(true);
+  });
+});
+
+describe("QA - currentPeriodEnd enforcement (checkPaidAccess)", () => {
+  it("ACTIVE + expired currentPeriodEnd → blocked 402", async () => {
+    const past = new Date(Date.now() - 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: past,
+    });
+    const result = await checkPaidAccess("org1");
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.status).toBe(402);
+      expect(result.payload.code).toBe("SUBSCRIPTION_INACTIVE");
+      expect(result.payload.state).toBe("EXPIRED");
+    }
+  });
+
+  it("ACTIVE + future currentPeriodEnd → allowed", async () => {
+    const future = new Date(Date.now() + 30 * 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: future,
+    });
+    const result = await checkPaidAccess("org1");
+    expect(result).toEqual({ ok: true });
+  });
+
+  it("TRIAL + expired currentPeriodEnd → blocked 402", async () => {
+    const past = new Date(Date.now() - 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      status: "TRIAL",
+      currentPeriodEnd: past,
+    });
+    const result = await checkPaidAccess("org1");
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.status).toBe(402);
+      expect(result.payload.state).toBe("EXPIRED");
+    }
+  });
+
+  it("TRIAL + future currentPeriodEnd → allowed", async () => {
+    const future = new Date(Date.now() + 7 * 86400000);
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      status: "TRIAL",
+      currentPeriodEnd: future,
+    });
+    const result = await checkPaidAccess("org1");
+    expect(result).toEqual({ ok: true });
+  });
+
+  it("ACTIVE + null currentPeriodEnd → allowed", async () => {
+    mockedDb.subscription.findFirst.mockResolvedValue({
+      ...activeSubscription(),
+      currentPeriodEnd: null,
+    });
+    const result = await checkPaidAccess("org1");
+    expect(result).toEqual({ ok: true });
   });
 });
 

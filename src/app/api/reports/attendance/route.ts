@@ -1,14 +1,14 @@
 "use server";
 
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { PERMISSIONS } from "@/lib/rbac";
 import { getAttendanceReport, parseDateRange } from "@/lib/reports";
 
 export async function GET(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, PERMISSIONS.REPORTS_READ);
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const sp = new URL(request.url).searchParams;

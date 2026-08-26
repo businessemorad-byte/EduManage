@@ -24,7 +24,7 @@ export function DataTable<T extends object>({
   columns,
   data,
   onRowClick,
-  emptyMessage = "No data found.",
+  emptyMessage = "Aucune donnée trouvée.",
   pageSize = 20,
   searchKeys,
   searchQuery,
@@ -98,7 +98,7 @@ export function DataTable<T extends object>({
       {totalPages > 1 && (
         <div className="flex items-center justify-between border-t border-zinc-100 px-4 py-3 dark:border-zinc-800">
           <p className="text-xs text-zinc-500">
-            Showing {page * pageSize + 1}–{Math.min((page + 1) * pageSize, filtered.length)} of {filtered.length}
+            Affichage {page * pageSize + 1}–{Math.min((page + 1) * pageSize, filtered.length)} sur {filtered.length}
           </p>
           <div className="flex items-center gap-1">
             <button

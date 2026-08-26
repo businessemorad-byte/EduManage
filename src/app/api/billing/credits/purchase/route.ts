@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { getCreditPackage } from "@/lib/billing-config";
 import { grantCredits } from "@/lib/ai-credits";
@@ -12,7 +12,7 @@ import { createBillingPayment, completePayment } from "@/lib/billing/payments";
 
 export async function POST(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "BILLING_PAYMENTS");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 

@@ -1,4 +1,4 @@
-export function LoadingState({ message = "Loading..." }: { message?: string }) {
+export function LoadingState({ message = "Chargement..." }: { message?: string }) {
   return (
     <div className="flex items-center justify-center p-16">
       <div className="flex flex-col items-center gap-3">

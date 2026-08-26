@@ -18,22 +18,24 @@ export async function GET() {
 
   const config = await getPlatformConfig();
 
+  const aiKeyConfigured = Boolean(process.env[AI_ENV.apiKey]);
+
   return NextResponse.json({
-    config: {
-      promoActive: config.promoActive,
+    promotion: {
+      active: config.promoActive,
       firstMonthDiscountPct: PROMOTION_CONFIG.firstMonthDiscountPct,
-      annualBilledMonths: ANNUAL_BILLING_CONFIG.billedMonths,
-      creditPackages: CREDIT_PACKAGES,
-      ai: {
-        providerName: config.aiProviderName,
-        modelId: config.aiModelId,
-        displayName: config.aiModelDisplayName,
-        baseUrl: config.aiBaseUrl,
-        // Intentionally no API key here.
-      },
+      label: config.promoActive ? `-${PROMOTION_CONFIG.firstMonthDiscountPct}% sur le 1er mois` : "",
     },
-    aiKeyConfigured: Boolean(process.env[AI_ENV.apiKey]),
-    envKeys: Object.values(AI_ENV),
+    creditPackages: CREDIT_PACKAGES,
+    annualBilledMonths: ANNUAL_BILLING_CONFIG.billedMonths,
+    ai: {
+      providerName: config.aiProviderName,
+      modelId: config.aiModelId,
+      modelDisplayName: config.aiModelDisplayName,
+      baseUrl: config.aiBaseUrl,
+      apiKeyConfigured: aiKeyConfigured,
+      source: aiKeyConfigured ? "env" as const : "none" as const,
+    },
   });
 }
 

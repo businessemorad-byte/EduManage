@@ -95,8 +95,8 @@ export async function createTrainer(input: CreateTrainerInput) {
   });
 }
 
-export async function updateStaff(id: string, input: UpdateStaffInput) {
-  const staff = await db.staff.findUnique({ where: { id } });
+export async function updateStaff(id: string, organizationId: string, input: UpdateStaffInput) {
+  const staff = await db.staff.findUnique({ where: { id, organizationId } });
   if (!staff) throw new Error("Staff not found");
 
   if (input.person) {
@@ -116,17 +116,17 @@ export async function updateStaff(id: string, input: UpdateStaffInput) {
   });
 }
 
-export async function archiveStaff(id: string) {
-  const staff = await db.staff.findUnique({ where: { id } });
+export async function archiveStaff(id: string, organizationId: string) {
+  const staff = await db.staff.findUnique({ where: { id, organizationId } });
   if (!staff) throw new Error("Staff not found");
 
   await archivePerson(staff.personId);
   return { success: true };
 }
 
-export async function getStaffById(id: string) {
+export async function getStaffById(id: string, organizationId: string) {
   return db.staff.findUnique({
-    where: { id },
+    where: { id, organizationId },
     include: {
       person: true,
       organization: { select: { id: true, name: true, type: true } },

@@ -42,11 +42,21 @@ export async function resolveEntitlements(
     };
   }
 
-  const isActive = [
+  const isActiveStatus = [
     SubscriptionStatus.ACTIVE,
     SubscriptionStatus.TRIAL,
     SubscriptionStatus.TRIALING,
   ].includes(subscription.status as SubscriptionStatus);
+
+  // A period that has ended without renewal means the subscription
+  // is no longer usable, regardless of the stored status.
+  const now = new Date();
+  const lapsed =
+    isActiveStatus &&
+    subscription.currentPeriodEnd !== null &&
+    now > subscription.currentPeriodEnd;
+
+  const isActive = !lapsed && isActiveStatus;
 
   const entitlements: Entitlement[] = subscription.plan.features.map((pf) => ({
     featureKey: pf.feature.key as FeatureKey,

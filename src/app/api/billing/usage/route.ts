@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { getUsageDashboard } from "@/lib/billing/usage";
 
 export async function GET() {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "BILLING_READ");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 

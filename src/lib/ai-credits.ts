@@ -154,47 +154,49 @@ export async function consumeCredits(
   usageId: string,
   description?: string
 ): Promise<CreditConsumeResult> {
-  const balance = await getBalance(organizationId);
-  const availableMonthly = Math.max(0, balance.monthlyAllowance - balance.usedThisMonth);
-  const totalAvailable = availableMonthly + balance.extraCredits;
+  // Use a transaction to prevent race conditions from concurrent credit consumption
+  return db.$transaction(async (tx) => {
+    const balance = await tx.aICreditBalance.findUnique({
+      where: { organizationId },
+      select: { id: true, monthlyAllowance: true, usedThisMonth: true, extraCredits: true },
+    });
 
-  if (totalAvailable < amount) {
-    return {
-      success: false,
-      remaining: Math.max(0, balance.extraCredits + availableMonthly),
-    };
-  }
+    if (!balance) {
+      return { success: false, remaining: 0 };
+    }
 
-  const fromMonthly = Math.min(amount, availableMonthly);
-  const fromExtra = amount - fromMonthly;
+    const availableMonthly = Math.max(0, balance.monthlyAllowance - balance.usedThisMonth);
+    const totalAvailable = availableMonthly + balance.extraCredits;
 
-  const updated = await db.aICreditBalance.update({
-    where: { id: balance.id },
-    data: {
-      usedThisMonth: { increment: fromMonthly },
-      ...(fromExtra > 0 ? { extraCredits: { decrement: fromExtra } } : {}),
-    },
+    if (totalAvailable < amount) {
+      return { success: false, remaining: Math.max(0, balance.extraCredits + availableMonthly) };
+    }
+
+    const fromMonthly = Math.min(amount, availableMonthly);
+    const fromExtra = amount - fromMonthly;
+
+    const updated = await tx.aICreditBalance.update({
+      where: { id: balance.id },
+      data: {
+        usedThisMonth: { increment: fromMonthly },
+        ...(fromExtra > 0 ? { extraCredits: { decrement: fromExtra } } : {}),
+      },
+    });
+
+    const transaction = await tx.aICreditTransaction.create({
+      data: {
+        organizationId,
+        balanceId: balance.id,
+        type: "CONSUME",
+        amount: -amount,
+        description: description ?? `AI usage for ${usageId}`,
+        referenceId: usageId,
+      },
+    });
+
+    const remainingTotal = updated.monthlyAllowance + updated.extraCredits - updated.usedThisMonth;
+    return { success: true, remaining: Math.max(0, remainingTotal), transactionId: transaction.id };
   });
-
-  const transaction = await db.aICreditTransaction.create({
-    data: {
-      organizationId,
-      balanceId: balance.id,
-      type: "CONSUME",
-      amount: -amount,
-      description: description ?? `AI usage for ${usageId}`,
-      referenceId: usageId,
-    },
-  });
-
-  const remainingTotal =
-    updated.monthlyAllowance + updated.extraCredits - updated.usedThisMonth;
-
-  return {
-    success: true,
-    remaining: Math.max(0, remainingTotal),
-    transactionId: transaction.id,
-  };
 }
 
 // ─── Refund Credits (on failed request) ────────────────────────
@@ -205,37 +207,64 @@ export async function refundCreditsIfFailed(
   usageId: string,
   reason?: string
 ): Promise<CreditConsumeResult> {
-  const balance = await getBalance(organizationId);
+  return db.$transaction(async (tx) => {
+    // Idempotency guard: if a REFUND for this reference already exists,
+    // skip to prevent double refunds.
+    const existingRefund = await tx.aICreditTransaction.findFirst({
+      where: { organizationId, referenceId: usageId, type: "REFUND" },
+    });
+    if (existingRefund) {
+      const balance = await tx.aICreditBalance.findUnique({
+        where: { organizationId },
+        select: { monthlyAllowance: true, usedThisMonth: true, extraCredits: true },
+      });
+      if (!balance) return { success: false, remaining: 0 };
+      return {
+        success: true,
+        remaining: Math.max(0, balance.monthlyAllowance + balance.extraCredits - balance.usedThisMonth),
+        transactionId: existingRefund.id,
+      };
+    }
 
-  // Refund back into the included monthly pool first, overflow to extras.
-  const refundedToMonthly = Math.min(amount, Math.max(0, balance.usedThisMonth));
-  const refundedToExtra = amount - refundedToMonthly;
+    const balance = await tx.aICreditBalance.findUnique({
+      where: { organizationId },
+      select: { id: true, monthlyAllowance: true, usedThisMonth: true, extraCredits: true },
+    });
 
-  await db.aICreditBalance.update({
-    where: { id: balance.id },
-    data: {
-      usedThisMonth: { decrement: refundedToMonthly },
-      ...(refundedToExtra > 0 ? { extraCredits: { increment: refundedToExtra } } : {}),
-    },
+    if (!balance) {
+      return { success: false, remaining: 0 };
+    }
+
+    // Refund back into the included monthly pool first, overflow to extras.
+    const refundedToMonthly = Math.min(amount, Math.max(0, balance.usedThisMonth));
+    const refundedToExtra = amount - refundedToMonthly;
+
+    await tx.aICreditBalance.update({
+      where: { id: balance.id },
+      data: {
+        usedThisMonth: { decrement: refundedToMonthly },
+        ...(refundedToExtra > 0 ? { extraCredits: { increment: refundedToExtra } } : {}),
+      },
+    });
+
+    const transaction = await tx.aICreditTransaction.create({
+      data: {
+        organizationId,
+        balanceId: balance.id,
+        type: "REFUND",
+        amount,
+        description: reason ?? `Refund for failed usage ${usageId}`,
+        referenceId: usageId,
+      },
+    });
+
+    const total = balance.monthlyAllowance + balance.extraCredits;
+    return {
+      success: true,
+      remaining: Math.max(0, total - (balance.usedThisMonth - amount)),
+      transactionId: transaction.id,
+    };
   });
-
-  const transaction = await db.aICreditTransaction.create({
-    data: {
-      organizationId,
-      balanceId: balance.id,
-      type: "REFUND",
-      amount,
-      description: reason ?? `Refund for failed usage ${usageId}`,
-      referenceId: usageId,
-    },
-  });
-
-  const total = balance.monthlyAllowance + balance.extraCredits;
-  return {
-    success: true,
-    remaining: Math.max(0, total - (balance.usedThisMonth - amount)),
-    transactionId: transaction.id,
-  };
 }
 
 // ─── Grant Credits ─────────────────────────────────────────────
@@ -245,21 +274,27 @@ export async function grantCredits(
   amount: number,
   description?: string
 ) {
-  const balance = await getBalance(organizationId);
+  return db.$transaction(async (tx) => {
+    const balance = await tx.aICreditBalance.findFirst({
+      where: { organizationId },
+    });
 
-  await db.aICreditBalance.update({
-    where: { id: balance.id },
-    data: { extraCredits: { increment: amount } },
-  });
+    if (!balance) throw new Error("Credit balance not found for organization");
 
-  return db.aICreditTransaction.create({
-    data: {
-      organizationId,
-      balanceId: balance.id,
-      type: "GRANT",
-      amount,
-      description: description ?? "Credits granted",
-    },
+    await tx.aICreditBalance.update({
+      where: { id: balance.id },
+      data: { extraCredits: { increment: amount } },
+    });
+
+    return tx.aICreditTransaction.create({
+      data: {
+        organizationId,
+        balanceId: balance.id,
+        type: "GRANT",
+        amount,
+        description: description ?? "Credits granted",
+      },
+    });
   });
 }
 

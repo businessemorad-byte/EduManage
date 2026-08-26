@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { requirePlatformAuthResponse } from "@/lib/platform-auth";
 import { listPlans, createPlan as createPlanLib, updatePlan, archivePlan, setPlanFeatures } from "@/lib/billing/plans";
 
 export async function GET() {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "BILLING_READ");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
@@ -63,7 +63,7 @@ export async function DELETE(request: Request) {
     if ("response" in auth) return auth.response;
 
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const id = searchParams.get("id")!;
     if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
 
     const plan = await archivePlan(id);

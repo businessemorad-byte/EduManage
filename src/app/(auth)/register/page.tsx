@@ -83,6 +83,8 @@ export default function RegisterPage() {
     if (!name.trim() || name.trim().length < 2) return "Le nom doit contenir au moins 2 caractères.";
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Adresse e-mail invalide.";
     if (password.length < 8) return "Le mot de passe doit contenir au moins 8 caractères.";
+    if (!/[A-Z]/.test(password)) return "Le mot de passe doit contenir au moins une lettre majuscule.";
+    if (!/[0-9]/.test(password)) return "Le mot de passe doit contenir au moins un chiffre.";
     if (password !== confirmPassword) return "Les mots de passe ne correspondent pas.";
     return null;
   }

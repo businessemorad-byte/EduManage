@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import {
   createCorporateClient,
@@ -12,13 +12,13 @@ import {
 
 export async function GET(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "CORPORATE_READ");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const searchParams = new URL(request.url).searchParams;
 
-    if (searchParams.get("action") === "learners") {
-      const corporateClientId = searchParams.get("corporateClientId");
+    if (searchParams.get("action")! === "learners") {
+      const corporateClientId = searchParams.get("corporateClientId")!;
       if (!corporateClientId) {
         return NextResponse.json({ error: "corporateClientId is required" }, { status: 400 });
       }
@@ -29,21 +29,23 @@ export async function GET(request: Request) {
     const result = await listCorporateClients(organizationId, {
       status: searchParams.get("status") ?? undefined,
       search: searchParams.get("search") ?? undefined,
-      page: searchParams.get("page") ? Number(searchParams.get("page")) : undefined,
-      limit: searchParams.get("limit") ? Number(searchParams.get("limit")) : undefined,
+      page: searchParams.get("page") ? Number(searchParams.get("page")!) : undefined,
+      limit: searchParams.get("limit") ? Number(searchParams.get("limit")!) : undefined,
     });
 
     return NextResponse.json(result);
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+    const message = err instanceof Error ? err.message : "";
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+    const status = isKnownAuth ? 401 : 500;
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+    return NextResponse.json({ error }, { status });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "CORPORATE_MANAGE");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const body = await request.json();
@@ -78,8 +80,10 @@ export async function POST(request: Request) {
     const client = await createCorporateClient({ ...body, organizationId });
     return NextResponse.json({ client }, { status: 201 });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+    const message = err instanceof Error ? err.message : "";
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+    const status = isKnownAuth ? 401 : 500;
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+    return NextResponse.json({ error }, { status });
   }
 }

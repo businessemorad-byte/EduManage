@@ -53,6 +53,7 @@ const STATUS_STYLES: Record<string, string> = {
   SUSPENDED: "bg-orange-100 text-orange-800",
   EXPIRED: "bg-red-100 text-red-800",
   CANCELLED: "bg-zinc-200 text-zinc-700",
+  PENDING: "bg-zinc-100 text-zinc-600",
 };
 
 function dh(amount: number): string {
@@ -276,7 +277,16 @@ export default function PlatformBillingPage() {
                   <tr key={sub.id} className="border-b last:border-0">
                     <td className="p-3 font-medium">{sub.organizationName}</td>
                     <td className="p-3">
-                      {sub.planName}
+                      <span className="font-medium">{sub.planName}</span>
+                      <span className={`ml-2 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                        sub.planCode === "STARTER" ? "bg-zinc-100 text-zinc-600" :
+                        sub.planCode === "STANDARD" ? "bg-blue-100 text-blue-700" :
+                        sub.planCode === "PRO" ? "bg-purple-100 text-purple-700" :
+                        sub.planCode === "ULTIMATE" ? "bg-amber-100 text-amber-700" :
+                        "bg-zinc-100 text-zinc-600"
+                      }`}>
+                        {sub.planCode}
+                      </span>
                       <span className="block text-xs text-zinc-400">
                         {sub.billingInterval === "YEARLY" ? "Annuel" : "Mensuel"}
                       </span>

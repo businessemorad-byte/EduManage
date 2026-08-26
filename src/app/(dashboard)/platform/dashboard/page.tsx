@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+type MeUser = { name: string; email: string; role: string };
+
 type TopOrg = {
   id: string;
   name: string;
@@ -63,16 +65,22 @@ function formatCompact(n: number): string {
 
 export default function PlatformDashboardPage() {
   const [stats, setStats] = useState<PlatformStats | null>(null);
+  const [userName, setUserName] = useState<string>("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/platform/stats")
-      .then((r) => {
+    Promise.all([
+      fetch("/api/platform/stats").then((r) => {
         if (!r.ok) throw new Error("Failed to load");
         return r.json();
+      }),
+      fetch("/api/auth/me").then((r) => r.json()).catch(() => ({ user: null })),
+    ])
+      .then(([s, me]) => {
+        setStats(s);
+        if (me?.user?.name) setUserName(me.user.name.split(" ")[0]);
       })
-      .then(setStats)
       .catch(() => setError("Could not load platform stats"))
       .finally(() => setLoading(false));
   }, []);
@@ -80,8 +88,8 @@ export default function PlatformDashboardPage() {
   return (
     <div className="animate-fade-in">
       <PageHeader
-        title="Platform Dashboard"
-        description="Monitor platform-wide metrics and performance."
+        title={userName ? `Bonjour, ${userName}` : "Tableau de bord"}
+        description="Vue d'ensemble de la plateforme et des performances."
         icon={<Crown className="h-5 w-5" />}
       />
 
@@ -275,7 +283,7 @@ export default function PlatformDashboardPage() {
       ) : null}
 
       <div className="mt-8">
-        <h3 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-white">Quick Links</h3>
+        <h3 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-white">Liens rapides</h3>
         <div className="grid gap-3 sm:grid-cols-2">
           <Link
             href="/platform/billing"
@@ -285,9 +293,9 @@ export default function PlatformDashboardPage() {
               <CreditCard className="h-5 w-5" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-zinc-900 dark:text-white">Billing & Plans</p>
+              <p className="text-sm font-semibold text-zinc-900 dark:text-white">Facturation & Plans</p>
               <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-                Manage subscription plans, coupons, and view billing metrics
+                Gérez les plans d'abonnement, les promotions et consultez les métriques de facturation
               </p>
             </div>
             <ArrowUpRight className="mt-1 h-4 w-4 text-zinc-300 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-500 dark:text-zinc-600" />

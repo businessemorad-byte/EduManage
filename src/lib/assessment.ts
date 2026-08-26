@@ -27,7 +27,7 @@ export async function createAssessment(data: {
       description: data.description ?? null,
       type: data.type ?? "EXAM",
       term: data.term ?? null,
-      maxScore: data.maxScore ?? 100,
+      maxScore: Math.max(data.maxScore ?? 100, 1),
       weight: data.weight ?? null,
       date: data.date ? new Date(data.date) : null,
     },

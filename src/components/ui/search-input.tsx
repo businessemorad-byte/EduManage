@@ -8,7 +8,7 @@ type SearchInputProps = {
   paramKey?: string;
 };
 
-export function SearchInput({ placeholder = "Search...", paramKey = "search" }: SearchInputProps) {
+export function SearchInput({ placeholder = "Rechercher...", paramKey = "search" }: SearchInputProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();

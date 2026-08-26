@@ -58,8 +58,8 @@ export async function createStudent(input: CreateStudentInput) {
   });
 }
 
-export async function updateStudent(id: string, input: UpdateStudentInput) {
-  const student = await db.student.findUnique({ where: { id } });
+export async function updateStudent(id: string, organizationId: string, input: UpdateStudentInput) {
+  const student = await db.student.findUnique({ where: { id, organizationId } });
   if (!student) throw new Error("Student not found");
 
   if (input.person) {
@@ -86,17 +86,17 @@ export async function updateStudent(id: string, input: UpdateStudentInput) {
   });
 }
 
-export async function archiveStudent(id: string) {
-  const student = await db.student.findUnique({ where: { id } });
+export async function archiveStudent(id: string, organizationId: string) {
+  const student = await db.student.findUnique({ where: { id, organizationId } });
   if (!student) throw new Error("Student not found");
 
   await archivePerson(student.personId);
   return { success: true };
 }
 
-export async function getStudentById(id: string) {
+export async function getStudentById(id: string, organizationId: string) {
   return db.student.findUnique({
-    where: { id },
+    where: { id, organizationId },
     include: {
       person: true,
       organization: { select: { id: true, name: true, type: true } },

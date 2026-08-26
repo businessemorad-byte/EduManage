@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { createHomework, listHomework, updateHomework, submitHomework, gradeSubmission, getStudentHomework } from "@/lib/homework";
 
 export async function GET(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "HOMEWORK_READ");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const { searchParams } = new URL(request.url);
 
-    if (searchParams.get("action") === "student" && searchParams.get("studentId")) {
+    if (searchParams.get("action")! === "student" && searchParams.get("studentId")!) {
       const result = await getStudentHomework(organizationId, searchParams.get("studentId")!, {
-        page: searchParams.get("page") ? Number(searchParams.get("page")) : undefined,
-        limit: searchParams.get("limit") ? Number(searchParams.get("limit")) : undefined,
+        page: searchParams.get("page") ? Number(searchParams.get("page")!) : undefined,
+        limit: searchParams.get("limit") ? Number(searchParams.get("limit")!) : undefined,
       });
       return NextResponse.json(result);
     }
@@ -21,22 +21,29 @@ export async function GET(request: Request) {
     const result = await listHomework(organizationId, {
       subjectId: searchParams.get("subjectId") ?? undefined,
       groupId: searchParams.get("groupId") ?? undefined,
-      isPublished: searchParams.has("isPublished") ? searchParams.get("isPublished") === "true" : undefined,
-      page: searchParams.get("page") ? Number(searchParams.get("page")) : undefined,
-      limit: searchParams.get("limit") ? Number(searchParams.get("limit")) : undefined,
+      isPublished: searchParams.has("isPublished") ? searchParams.get("isPublished")! === "true" : undefined,
+      page: searchParams.get("page") ? Number(searchParams.get("page")!) : undefined,
+      limit: searchParams.get("limit") ? Number(searchParams.get("limit")!) : undefined,
     });
 
     return NextResponse.json(result);
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "HOMEWORK_MANAGE");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const body = await request.json();
@@ -64,15 +71,22 @@ export async function POST(request: Request) {
     const homework = await createHomework({ ...body, organizationId });
     return NextResponse.json({ homework }, { status: 201 });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }
 
 export async function PATCH(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "HOMEWORK_MANAGE");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const body = await request.json();
@@ -84,8 +98,15 @@ export async function PATCH(request: Request) {
     const homework = await updateHomework(body.id, organizationId, body);
     return NextResponse.json({ homework });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }

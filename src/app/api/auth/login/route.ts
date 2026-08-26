@@ -3,9 +3,23 @@ import { db } from "@/lib/prisma";
 import { verifyPassword, createSession } from "@/lib/auth";
 import { SESSION_COOKIE_NAME, SESSION_MAX_AGE } from "@/lib/constants";
 import { logger, prismaErrorCode } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/rate-limit";
+
+const LOGIN_RATE_LIMIT = { windowMs: 15 * 60 * 1000, maxRequests: 10 };
 
 export async function POST(request: Request) {
   try {
+    const forwarded = request.headers.get("x-forwarded-for")!;
+    const ip = forwarded?.split(",")[0]?.trim() ?? "unknown";
+
+    const rateLimit = checkRateLimit(`login:${ip}`, LOGIN_RATE_LIMIT);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many login attempts. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimit.retryAfterMs / 1000)) } }
+      );
+    }
+
     const body = await request.json();
     const { email, password } = body;
 

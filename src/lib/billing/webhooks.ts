@@ -61,10 +61,24 @@ async function handleWebhookEvent(provider: string, eventType: string, payload: 
 // ─── Webhook Signature Verification ──────────────────────────
 
 export function verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
-  // In production, implement HMAC-SHA256 verification per provider
-  // Mock provider always returns true
+  const { createHmac } = require("crypto") as typeof import("crypto");
   const provider = getProvider();
+
   if (provider?.name === "mock") return true;
-  void payload; void signature; void secret;
-  return false;
+
+  // Support common webhook signature header formats:
+  //   "sha256=<hex>"  (Stripe-style, GitHub-style)
+  //   plain hex digest
+  const rawSig = signature.replace(/^sha256=/i, "").trim();
+  if (!rawSig) return false;
+
+  const expected = createHmac("sha256", secret).update(payload, "utf8").digest("hex");
+
+  // Constant-time comparison to prevent timing attacks
+  if (expected.length !== rawSig.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < expected.length; i++) {
+    mismatch |= expected.charCodeAt(i) ^ rawSig.charCodeAt(i);
+  }
+  return mismatch === 0;
 }

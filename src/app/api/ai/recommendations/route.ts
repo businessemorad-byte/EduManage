@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { generateAllRecommendations, saveRecommendations, listRecommendations, updateRecommendationStatus } from "@/lib/ai/recommendations";
 import { checkAIProtection } from "@/lib/ai/protection";
 
 export async function GET(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "AI_RECOMMENDATIONS_READ");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const { searchParams } = new URL(request.url);
@@ -15,15 +15,22 @@ export async function GET(request: Request) {
     const recommendations = await listRecommendations(organizationId, status);
     return NextResponse.json(recommendations);
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const { user, organizationId } = await requireOrgContext();
+    const { user, organizationId } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "AI_RECOMMENDATIONS_READ");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const body = await request.json();
@@ -46,8 +53,15 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }

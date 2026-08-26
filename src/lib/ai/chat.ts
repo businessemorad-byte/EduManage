@@ -17,6 +17,12 @@ export type ChatMessage = {
 };
 
 export async function sendChatMessage(organizationId: string, userId: string, conversationId: string, message: string) {
+  // Verify conversation belongs to the authenticated user
+  const conversation = await db.aIConversation.findUnique({ where: { id: conversationId } });
+  if (!conversation || conversation.organizationId !== organizationId || conversation.userId !== userId) {
+    return { error: "Conversation not found", code: "NOT_FOUND" };
+  }
+
   // Save user message
   await db.aIConversationMessage.create({
     data: {
@@ -27,7 +33,7 @@ export async function sendChatMessage(organizationId: string, userId: string, co
     },
   });
 
-  // Get conversation history
+  // Get conversation history — scoped to conversation (ownership already verified above)
   const history = await db.aIConversationMessage.findMany({
     where: { conversationId, organizationId },
     orderBy: { createdAt: "asc" },
@@ -135,18 +141,18 @@ export async function listConversations(organizationId: string, userId: string) 
   });
 }
 
-export async function getConversation(organizationId: string, id: string) {
+export async function getConversation(organizationId: string, userId: string, id: string) {
   return db.aIConversation.findFirst({
-    where: { id, organizationId },
+    where: { id, organizationId, userId },
     include: {
       messages: { orderBy: { createdAt: "asc" } },
     },
   });
 }
 
-export async function archiveConversation(organizationId: string, id: string) {
+export async function archiveConversation(organizationId: string, userId: string, id: string) {
   return db.aIConversation.updateMany({
-    where: { id, organizationId },
+    where: { id, organizationId, userId },
     data: { status: "ARCHIVED" },
   });
 }

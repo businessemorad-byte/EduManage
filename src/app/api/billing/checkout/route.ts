@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { getOrganizationSubscription, cancelSubscription, activateSubscription } from "@/lib/billing/subscriptions";
 import { createBillingInvoice } from "@/lib/billing/invoices";
@@ -13,7 +13,7 @@ import { PROMOTION_CONFIG } from "@/lib/billing-config";
 
 export async function POST(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "BILLING_SUBSCRIPTIONS");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
@@ -139,6 +139,9 @@ export async function POST(request: Request) {
       },
     }, { status: 201 });
   } catch (e) {
-    return NextResponse.json({ error: e instanceof Error ? e.message : "Internal error" }, { status: 500 });
+    const message = e instanceof Error ? e.message : "";
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+    return NextResponse.json({ error }, { status: isKnownAuth ? 401 : 500 });
   }
 }

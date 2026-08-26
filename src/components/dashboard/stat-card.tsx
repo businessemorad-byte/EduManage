@@ -21,7 +21,7 @@ const gradients = {
 
 export function StatCard({ label, value, subtitle, icon, trend, gradient = "blue" }: StatCardProps) {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-zinc-100 bg-white p-5 transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="group relative overflow-hidden rounded-xl border border-zinc-200 bg-white p-5 transition-all hover:shadow-md dark:border-zinc-700/50 dark:bg-zinc-800/80">
       <div className={`absolute right-0 top-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-gradient-to-br ${gradients[gradient]} opacity-[0.07] transition-transform group-hover:scale-110`} />
       <div className="relative">
         <div className="flex items-start justify-between">

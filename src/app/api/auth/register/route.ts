@@ -3,9 +3,23 @@ import { db } from "@/lib/prisma";
 import { hashPassword, createSession } from "@/lib/auth";
 import { SESSION_COOKIE_NAME, SESSION_MAX_AGE } from "@/lib/constants";
 import { logger, prismaErrorCode } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/rate-limit";
+
+const REGISTER_RATE_LIMIT = { windowMs: 60 * 60 * 1000, maxRequests: 5 };
 
 export async function POST(request: Request) {
   try {
+    const forwarded = request.headers.get("x-forwarded-for")!;
+    const ip = forwarded?.split(",")[0]?.trim() ?? "unknown";
+
+    const rateLimit = checkRateLimit(`register:${ip}`, REGISTER_RATE_LIMIT);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many registration attempts. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimit.retryAfterMs / 1000)) } }
+      );
+    }
+
     const body = await request.json();
     const { email, name, password } = body;
 
@@ -16,9 +30,30 @@ export async function POST(request: Request) {
       );
     }
 
-    if (password.length < 8) {
+    if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { error: "Invalid email address" },
+        { status: 400 }
+      );
+    }
+
+    if (typeof password !== "string" || password.length < 8) {
       return NextResponse.json(
         { error: "Password must be at least 8 characters" },
+        { status: 400 }
+      );
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      return NextResponse.json(
+        { error: "Password must contain at least one uppercase letter" },
+        { status: 400 }
+      );
+    }
+
+    if (!/[0-9]/.test(password)) {
+      return NextResponse.json(
+        { error: "Password must contain at least one number" },
         { status: 400 }
       );
     }

@@ -115,7 +115,7 @@ export async function createInvoice(data: {
     if (item.unitPrice < 0) throw new Error("Item unitPrice cannot be negative");
   }
   const subtotal = data.items.reduce(
-    (sum, item) => sum + item.unitPrice * item.quantity,
+    (sum, item) => sum + new Prisma.Decimal(item.unitPrice).mul(item.quantity).toNumber(),
     0
   );
 
@@ -152,7 +152,7 @@ export async function createInvoice(data: {
           description: item.description,
           quantity: item.quantity,
           unitPrice: new Prisma.Decimal(item.unitPrice),
-          amount: new Prisma.Decimal(item.unitPrice * item.quantity),
+          amount: new Prisma.Decimal(item.unitPrice).mul(item.quantity),
         })),
       },
     },
@@ -218,78 +218,78 @@ export async function createPayment(data: {
 }) {
   if (data.amount <= 0) throw new Error("Payment amount must be positive");
 
-  const invoice = await db.invoice.findFirst({
-    where: { id: data.invoiceId, organizationId: data.organizationId },
-  });
-
-  if (!invoice) throw new Error("Invoice not found");
-  if (invoice.status === "CANCELLED") throw new Error("Cannot pay a cancelled invoice");
-
-  // Duplicate-submission guard: same invoice + same external reference +
-  // same amount already completed ⇒ almost certainly a double click / retry.
-  if (data.reference) {
-    const duplicate = await db.payment.findFirst({
-      where: {
-        organizationId: data.organizationId,
-        invoiceId: data.invoiceId,
-        reference: data.reference,
-        amount: new Prisma.Decimal(data.amount),
-        status: "COMPLETED",
-      },
-      select: { id: true },
-    });
-    if (duplicate) throw new Error(`A payment with reference "${data.reference}" was already recorded for this invoice`);
-  }
-
-  const paidAmount = toDecimal(invoice.paidAmount);
-  const totalAmount = toDecimal(invoice.totalAmount);
-  const paymentAmount = new Prisma.Decimal(data.amount);
-  const remaining = totalAmount.sub(paidAmount);
-
-  if (paymentAmount.gt(remaining)) {
-    throw new Error(`Payment exceeds remaining balance of ${remaining.toFixed(2)}`);
-  }
-
   const receiptNumber = generateReceiptNumber();
 
-  const payment = await db.payment.create({
-    data: {
-      organizationId: data.organizationId,
-      invoiceId: data.invoiceId,
-      receiptNumber,
-      amount: paymentAmount,
-      method: data.method,
-      reference: data.reference ?? null,
-      notes: data.notes ?? null,
-    },
+  const payment = await db.$transaction(async (tx) => {
+    const invoice = await tx.invoice.findFirst({
+      where: { id: data.invoiceId, organizationId: data.organizationId },
+    });
+
+    if (!invoice) throw new Error("Invoice not found");
+    if (invoice.status === "CANCELLED") throw new Error("Cannot pay a cancelled invoice");
+
+    // Duplicate-submission guard
+    if (data.reference) {
+      const duplicate = await tx.payment.findFirst({
+        where: {
+          organizationId: data.organizationId,
+          invoiceId: data.invoiceId,
+          reference: data.reference,
+          amount: new Prisma.Decimal(data.amount),
+          status: "COMPLETED",
+        },
+        select: { id: true },
+      });
+      if (duplicate) throw new Error(`A payment with reference "${data.reference}" was already recorded for this invoice`);
+    }
+
+    const paidAmount = toDecimal(invoice.paidAmount);
+    const totalAmount = toDecimal(invoice.totalAmount);
+    const paymentAmount = new Prisma.Decimal(data.amount);
+    const remaining = totalAmount.sub(paidAmount);
+
+    if (paymentAmount.gt(remaining)) {
+      throw new Error(`Payment exceeds remaining balance of ${remaining.toFixed(2)}`);
+    }
+
+    const payment = await tx.payment.create({
+      data: {
+        organizationId: data.organizationId,
+        invoiceId: data.invoiceId,
+        receiptNumber,
+        amount: paymentAmount,
+        method: data.method,
+        reference: data.reference ?? null,
+        notes: data.notes ?? null,
+      },
+    });
+
+    const newPaidAmount = paidAmount.add(paymentAmount);
+    const newStatus: InvoiceStatus = newPaidAmount.gte(totalAmount) ? "PAID" : "PARTIAL";
+
+    await tx.invoice.update({
+      where: { id: data.invoiceId },
+      data: { paidAmount: newPaidAmount, status: newStatus },
+    });
+
+    await tx.financialTransaction.create({
+      data: {
+        organizationId: data.organizationId,
+        type: "PAYMENT",
+        referenceId: payment.id,
+        amount: paymentAmount,
+        currency: invoice.currency,
+        description: `Payment for ${invoice.invoiceNumber}`,
+      },
+    });
+
+    return payment;
   });
 
-  // Update invoice
-  const newPaidAmount = paidAmount.add(paymentAmount);
-  const newStatus: InvoiceStatus = newPaidAmount.gte(totalAmount) ? "PAID" : "PARTIAL";
-
-  await db.invoice.update({
-    where: { id: data.invoiceId },
-    data: { paidAmount: newPaidAmount, status: newStatus },
-  });
-
-  // Record transaction
-  await db.financialTransaction.create({
-    data: {
-      organizationId: data.organizationId,
-      type: "PAYMENT",
-      referenceId: payment.id,
-      amount: paymentAmount,
-      currency: invoice.currency,
-      description: `Payment for ${invoice.invoiceNumber}`,
-    },
-  });
-
-  // Emit event
   await emitEvent({
     type: EVENT_TYPES.PAYMENT_CREATED,
     organizationId: data.organizationId,
-    payload: { id: payment.id, invoiceId: data.invoiceId, amount: paymentAmount.toNumber() },
+    payload: { id: payment.id, invoiceId: data.invoiceId, amount: Number(payment.amount) },
   });
 
   return payment;
@@ -319,65 +319,66 @@ export async function createRefund(data: {
 }) {
   if (data.amount <= 0) throw new Error("Refund amount must be positive");
 
-  const payment = await db.payment.findFirst({
-    where: { id: data.paymentId, organizationId: data.organizationId },
-    include: { invoice: true },
-  });
+  const refund = await db.$transaction(async (tx) => {
+    const payment = await tx.payment.findFirst({
+      where: { id: data.paymentId, organizationId: data.organizationId },
+      include: { invoice: true },
+    });
 
-  if (!payment) throw new Error("Payment not found");
-  if (payment.status === "REFUNDED") throw new Error("Payment already fully refunded");
+    if (!payment) throw new Error("Payment not found");
+    if (payment.status === "REFUNDED") throw new Error("Payment already fully refunded");
 
-  const refundAmount = new Prisma.Decimal(data.amount);
-  const paymentAmount = toDecimal(payment.amount);
-  const totalRefunded = await db.refund.aggregate({
-    where: { paymentId: data.paymentId },
-    _sum: { amount: true },
-  });
-  const alreadyRefunded = totalRefunded._sum.amount ?? new Prisma.Decimal(0);
-  const availableRefund = paymentAmount.sub(alreadyRefunded);
+    const refundAmount = new Prisma.Decimal(data.amount);
+    const paymentAmount = toDecimal(payment.amount);
+    const totalRefunded = await tx.refund.aggregate({
+      where: { paymentId: data.paymentId },
+      _sum: { amount: true },
+    });
+    const alreadyRefunded = totalRefunded._sum.amount ?? new Prisma.Decimal(0);
+    const availableRefund = paymentAmount.sub(alreadyRefunded);
 
-  if (refundAmount.gt(availableRefund)) {
-    throw new Error(`Refund exceeds available amount of ${availableRefund.toFixed(2)}`);
-  }
+    if (refundAmount.gt(availableRefund)) {
+      throw new Error(`Refund exceeds available amount of ${availableRefund.toFixed(2)}`);
+    }
 
-  const refund = await db.refund.create({
-    data: {
-      organizationId: data.organizationId,
-      invoiceId: payment.invoiceId,
-      paymentId: data.paymentId,
-      amount: refundAmount,
-      reason: data.reason ?? null,
-    },
-  });
+    const refund = await tx.refund.create({
+      data: {
+        organizationId: data.organizationId,
+        invoiceId: payment.invoiceId,
+        paymentId: data.paymentId,
+        amount: refundAmount,
+        reason: data.reason ?? null,
+      },
+    });
 
-  // Update invoice paid amount
-  const newPaidAmount = toDecimal(payment.invoice.paidAmount).sub(refundAmount);
-  const newStatus: InvoiceStatus = newPaidAmount.lte(0) ? "PENDING" : "PARTIAL";
+    const newPaidAmount = toDecimal(payment.invoice.paidAmount).sub(refundAmount);
+    const newStatus: InvoiceStatus = newPaidAmount.lte(0) ? "PENDING" : "PARTIAL";
 
-  await db.invoice.update({
-    where: { id: payment.invoiceId },
-    data: { paidAmount: newPaidAmount, status: newStatus },
-  });
+    await tx.invoice.update({
+      where: { id: payment.invoiceId },
+      data: { paidAmount: newPaidAmount, status: newStatus },
+    });
 
-  // Update payment status
-  const totalPaymentRefunds = await db.refund.aggregate({
-    where: { paymentId: data.paymentId },
-    _sum: { amount: true },
-  });
-  const totalRefundForPayment = (totalPaymentRefunds._sum.amount ?? new Prisma.Decimal(0)) as Prisma.Decimal;
-  const newPaymentStatus = totalRefundForPayment.gte(paymentAmount) ? "REFUNDED" : "PARTIAL_REFUND";
-  await db.payment.update({ where: { id: data.paymentId }, data: { status: newPaymentStatus } });
+    const totalPaymentRefunds = await tx.refund.aggregate({
+      where: { paymentId: data.paymentId },
+      _sum: { amount: true },
+    });
+    const totalRefundForPayment = (totalPaymentRefunds._sum.amount ?? new Prisma.Decimal(0)) as Prisma.Decimal;
+    const newPaymentStatus = totalRefundForPayment.gte(paymentAmount) ? "REFUNDED" : "PARTIAL_REFUND";
+    await tx.payment.update({ where: { id: data.paymentId }, data: { status: newPaymentStatus } });
 
-  // Record transaction
-  await db.financialTransaction.create({
-    data: {
-      organizationId: data.organizationId,
-      type: "REFUND",
-      referenceId: refund.id,
-      amount: refundAmount,
-      currency: payment.invoice.currency,
-      description: `Refund for ${payment.receiptNumber}`,
-    },
+    await tx.financialTransaction.create({
+      data: {
+        organizationId: data.organizationId,
+        type: "REFUND",
+        referenceId: refund.id,
+        amount: refundAmount,
+        currency: payment.invoice.currency,
+        description: `Refund for ${payment.receiptNumber}`,
+      },
+    });
+
+    return refund;
   });
 
   return refund;

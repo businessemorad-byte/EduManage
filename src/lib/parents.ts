@@ -49,8 +49,8 @@ export async function createParent(input: CreateParentInput) {
   });
 }
 
-export async function updateParent(id: string, input: UpdateParentInput) {
-  const parent = await db.parent.findUnique({ where: { id } });
+export async function updateParent(id: string, organizationId: string, input: UpdateParentInput) {
+  const parent = await db.parent.findUnique({ where: { id, organizationId } });
   if (!parent) throw new Error("Parent not found");
 
   if (input.person) {
@@ -68,17 +68,17 @@ export async function updateParent(id: string, input: UpdateParentInput) {
   });
 }
 
-export async function archiveParent(id: string) {
-  const parent = await db.parent.findUnique({ where: { id } });
+export async function archiveParent(id: string, organizationId: string) {
+  const parent = await db.parent.findUnique({ where: { id, organizationId } });
   if (!parent) throw new Error("Parent not found");
 
   await archivePerson(parent.personId);
   return { success: true };
 }
 
-export async function getParentById(id: string) {
+export async function getParentById(id: string, organizationId: string) {
   return db.parent.findUnique({
-    where: { id },
+    where: { id, organizationId },
     include: {
       person: true,
       organization: { select: { id: true, name: true, type: true } },

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useFetch } from "@/hooks/use-fetch";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { StatCardSkeleton } from "@/components/dashboard/skeleton";
@@ -32,11 +33,21 @@ type DashboardData = {
 
 export default function SchoolDashboardPage() {
   const { data, loading } = useFetch<DashboardData>("/api/school/dashboard");
+  const [userName, setUserName] = useState<string>("");
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((me) => {
+        if (me?.user?.name) setUserName(me.user.name.split(" ")[0]);
+      })
+      .catch(() => {});
+  }, []);
 
   if (loading) {
     return (
       <div className="animate-fade-in">
-        <PageHeader title="Dashboard" icon={<LayoutDashboard className="h-5 w-5" />} />
+        <PageHeader title={userName ? `Bonjour, ${userName}` : "Tableau de bord"} icon={<LayoutDashboard className="h-5 w-5" />} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {Array.from({ length: 5 }).map((_, i) => (
             <StatCardSkeleton key={i} />
@@ -64,30 +75,30 @@ export default function SchoolDashboardPage() {
   }
 
   const quickActions = [
-    { label: "Students", href: "/students", icon: <GraduationCap className="h-4 w-4" /> },
-    { label: "Attendance", href: "/attendance", icon: <BarChart3 className="h-4 w-4" /> },
+    { label: "Élèves", href: "/students", icon: <GraduationCap className="h-4 w-4" /> },
+    { label: "Présences", href: "/attendance", icon: <BarChart3 className="h-4 w-4" /> },
     { label: "Finance", href: "/finance", icon: <Wallet className="h-4 w-4" /> },
-    { label: "Timetable", href: "/timetable", icon: <Calendar className="h-4 w-4" /> },
+    { label: "Emploi du temps", href: "/timetable", icon: <Calendar className="h-4 w-4" /> },
   ];
 
   return (
     <div className="animate-fade-in">
       <PageHeader
-        title="Dashboard"
-        description="Welcome back. Here's what's happening today."
+        title={userName ? `Bonjour, ${userName}` : "Tableau de bord"}
+        description="Voici ce qui se passe aujourd'hui."
         icon={<LayoutDashboard className="h-5 w-5" />}
       />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard
-          label="Active Students"
+          label="Élèves actifs"
           value={data.students.active}
-          subtitle={`${data.students.total} total enrolled`}
+          subtitle={`${data.students.total} inscrits au total`}
           icon={<GraduationCap className="h-5 w-5" />}
           gradient="blue"
         />
         <StatCard
-          label="Teachers"
+          label="Enseignants"
           value={data.teachers.total}
           icon={<UserCheck className="h-5 w-5" />}
           gradient="green"
@@ -99,15 +110,15 @@ export default function SchoolDashboardPage() {
           gradient="purple"
         />
         <StatCard
-          label="Pending Admissions"
+          label="Admissions en attente"
           value={data.admissions.pending}
           icon={<ClipboardCheck className="h-5 w-5" />}
           gradient="amber"
         />
         <StatCard
-          label="Today's Sessions"
+          label="Sessions aujourd'hui"
           value={data.scheduling.todaySessions}
-          subtitle={`${data.scheduling.totalSessions} total weekly sessions`}
+          subtitle={`${data.scheduling.totalSessions} sessions hebdomadaires`}
           icon={<Calendar className="h-5 w-5" />}
           gradient="violet"
         />
@@ -119,13 +130,13 @@ export default function SchoolDashboardPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400">
               <BarChart3 className="h-4 w-4" />
             </div>
-            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Attendance Rate</span>
+            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Taux de présence</span>
           </div>
           <p className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
             {data.attendance.rate}%
           </p>
           <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
-            {data.attendance.thisMonth} records this month
+            {data.attendance.thisMonth} enregistrements ce mois
           </p>
         </div>
 
@@ -134,13 +145,13 @@ export default function SchoolDashboardPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
               <CreditCard className="h-4 w-4" />
             </div>
-            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Outstanding</span>
+            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Impayés</span>
           </div>
           <p className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-            ${data.finance.outstanding.toLocaleString()}
+            {data.finance.outstanding.toLocaleString()} MAD
           </p>
           <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
-            {data.finance.collectionRate}% collection rate
+            {data.finance.collectionRate}% taux de recouvrement
           </p>
         </div>
 
@@ -149,10 +160,10 @@ export default function SchoolDashboardPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-900/20 dark:text-brand-400">
               <TrendingUp className="h-4 w-4" />
             </div>
-            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Monthly Revenue</span>
+            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Revenu mensuel</span>
           </div>
           <p className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-            ${data.finance.monthlyRevenue.toLocaleString()}
+            {data.finance.monthlyRevenue.toLocaleString()} MAD
           </p>
         </div>
 
@@ -161,7 +172,7 @@ export default function SchoolDashboardPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400">
               <Building2 className="h-4 w-4" />
             </div>
-            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Available Rooms</span>
+            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Salles disponibles</span>
           </div>
           <p className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
             {data.scheduling.availableRooms}
@@ -170,7 +181,7 @@ export default function SchoolDashboardPage() {
       </div>
 
       <div className="rounded-xl border border-zinc-100 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-        <h3 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-white">Quick Actions</h3>
+        <h3 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-white">Actions rapides</h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {quickActions.map((action) => (
             <Link

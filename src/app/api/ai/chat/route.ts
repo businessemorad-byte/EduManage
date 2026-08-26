@@ -1,16 +1,19 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
+import { hasPermission } from "@/lib/rbac";
 import { sendChatMessage, createConversation, listConversations, getConversation, archiveConversation } from "@/lib/ai/chat";
 import { checkAIProtection } from "@/lib/ai/protection";
 
 export async function GET(request: Request) {
   try {
-    const { user, organizationId } = await requireOrgContext();
+    const { user, organizationId } = await requireOrgId();
+    const allowed = await hasPermission(user.id, organizationId, "AI_ASSISTANT");
+    if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const { searchParams } = new URL(request.url);
-    const conversationId = searchParams.get("conversationId");
+    const conversationId = searchParams.get("conversationId")!;
 
     if (conversationId) {
-      const conversation = await getConversation(organizationId, conversationId);
+      const conversation = await getConversation(organizationId, user.id, conversationId);
       if (!conversation) {
         return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
       }
@@ -20,15 +23,24 @@ export async function GET(request: Request) {
     const conversations = await listConversations(organizationId, user.id);
     return NextResponse.json(conversations);
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const { user, organizationId } = await requireOrgContext();
+    const { user, organizationId } = await requireOrgId();
+    const allowed = await hasPermission(user.id, organizationId, "AI_ASSISTANT");
+    if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const body = await request.json();
 
     // Protection check
@@ -49,7 +61,7 @@ export async function POST(request: Request) {
       if (!body.conversationId) {
         return NextResponse.json({ error: "conversationId is required" }, { status: 400 });
       }
-      await archiveConversation(organizationId, body.conversationId);
+      await archiveConversation(organizationId, user.id, body.conversationId);
       return NextResponse.json({ success: true });
     }
 
@@ -64,8 +76,15 @@ export async function POST(request: Request) {
     }
     return NextResponse.json(result);
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }

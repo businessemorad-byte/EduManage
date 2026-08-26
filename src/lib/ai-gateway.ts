@@ -1,6 +1,6 @@
 import { db } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
-import { calculateCredits, checkCredits, consumeCredits } from "@/lib/ai-credits";
+import { calculateCredits, checkCredits, consumeCredits, refundCreditsIfFailed } from "@/lib/ai-credits";
 import { emitEvent } from "@/lib/events";
 import { getPlatformConfig, AI_ENV } from "@/lib/billing/platform-config";
 
@@ -178,7 +178,20 @@ export async function aiRequest(
 
   const adapter = getProvider(model.provider.name);
 
-  // 2. Create usage record (pending)
+  // 2. Estimate maximum credits based on model limits
+  //    Input estimated from message content; output at model maxTokens.
+  const estimatedInputTokens = Math.max(
+    1,
+    Math.ceil(params.messages.reduce((sum, m) => sum + m.content.length, 0) / 4)
+  );
+  const estimatedCredits = calculateCredits({
+    inputTokens: Math.min(estimatedInputTokens, model.maxTokens),
+    outputTokens: model.maxTokens,
+    modelTier: model.tier,
+    feature: params.feature,
+  });
+
+  // 3. Create usage record (pending)
   const usage = await db.aIUsage.create({
     data: {
       organizationId: params.organizationId,
@@ -193,8 +206,30 @@ export async function aiRequest(
     },
   });
 
+  // 4. Pre-reserve credits BEFORE calling the provider.
+  //    This prevents wasteful provider calls when credits are
+  //    insufficient and eliminates the race condition where two
+  //    concurrent requests both pass checkCredits().
+  const reservation = await consumeCredits(
+    params.organizationId,
+    estimatedCredits,
+    usage.id,
+    `Reservation: AI ${params.feature} (${model.modelId})`
+  );
+  if (!reservation.success) {
+    await db.aIUsage.update({
+      where: { id: usage.id },
+      data: { status: "RATE_LIMITED" },
+    });
+    return {
+      error: "Vos crédits IA sont épuisés.",
+      code: "CREDITS_EXHAUSTED",
+      retryable: false,
+    };
+  }
+
   try {
-    // 3. Call provider
+    // 5. Call provider
     const result = await adapter.chat({
       model: model.modelId,
       messages: params.messages,
@@ -204,21 +239,32 @@ export async function aiRequest(
       baseUrl: model.provider.baseUrl ?? undefined,
     });
 
-    // 4. Calculate cost
+    // 6. Calculate actual cost
     const cost = new Prisma.Decimal(result.inputTokens)
       .div(1000)
       .mul(model.inputCostPer1K)
       .add(new Prisma.Decimal(result.outputTokens).div(1000).mul(model.outputCostPer1K));
 
-    // 5. Calculate credits
-    const credits = calculateCredits({
+    // 7. Calculate actual credits
+    const actualCredits = calculateCredits({
       inputTokens: result.inputTokens,
       outputTokens: result.outputTokens,
       modelTier: model.tier,
       feature: params.feature,
     });
 
-    // 6. Update usage record
+    // 8. Refund the delta if we over-estimated
+    const delta = estimatedCredits - actualCredits;
+    if (delta > 0) {
+      await refundCreditsIfFailed(
+        params.organizationId,
+        delta,
+        `${usage.id}-adjust`,
+        `Credit adjustment: estimated ${estimatedCredits}, actual ${actualCredits}`
+      );
+    }
+
+    // 9. Update usage record to reflect actual values
     await db.aIUsage.update({
       where: { id: usage.id },
       data: {
@@ -226,33 +272,16 @@ export async function aiRequest(
         outputTokens: result.outputTokens,
         cachedTokens: result.cachedTokens,
         estimatedCost: cost,
-        creditsConsumed: credits,
+        creditsConsumed: actualCredits,
         status: "SUCCESS",
       },
     });
-
-    // 7. Consume the credits from the organization's balance
-    //    (monthly pool first, then purchased extras).
-    const consumption = await consumeCredits(
-      params.organizationId,
-      credits,
-      usage.id,
-      `AI ${params.feature} (${model.modelId})`
-    );
-    if (!consumption.success && credits > 0) {
-      // Balance changed mid-request; refund is a no-op here but the
-      // failed consumption is surfaced via the usage record.
-      await db.aIUsage.update({
-        where: { id: usage.id },
-        data: { status: "RATE_LIMITED" },
-      });
-    }
 
     await emitEvent({
       type: "ai.request.completed",
       organizationId: params.organizationId,
       userId: params.userId,
-      payload: { usageId: usage.id, model: model.modelId, credits },
+      payload: { usageId: usage.id, model: model.modelId, credits: actualCredits },
     });
 
     return {
@@ -263,11 +292,21 @@ export async function aiRequest(
       outputTokens: result.outputTokens,
       cachedTokens: result.cachedTokens,
       estimatedCost: Number(cost),
-      creditsConsumed: credits,
+      creditsConsumed: actualCredits,
       usageId: usage.id,
     };
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
+
+    // 10. Refund the full pre-reserved amount on failure.
+    //     This is idempotent: refundCreditsIfFailed checks for an
+    //     existing REFUND transaction with the same referenceId.
+    await refundCreditsIfFailed(
+      params.organizationId,
+      estimatedCredits,
+      usage.id,
+      `Refund: AI request failed (${errorMessage})`
+    );
 
     await db.aIUsage.update({
       where: { id: usage.id },
@@ -275,7 +314,7 @@ export async function aiRequest(
     });
 
     return {
-      error: errorMessage,
+      error: "Erreur du fournisseur IA. Les crédits ont été restaurés.",
       code: "PROVIDER_ERROR",
       retryable: true,
     };
@@ -287,7 +326,7 @@ export async function aiRequest(
 export async function listProviders(organizationId: string) {
   return db.aIProvider.findMany({
     where: { organizationId },
-    include: { models: true },
+    select: { id: true, name: true, displayName: true, baseUrl: true, isActive: true, organizationId: true, createdAt: true, updatedAt: true, models: true },
   });
 }
 

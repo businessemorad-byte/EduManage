@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma";
 import { hashPassword, createSession } from "@/lib/auth";
 import { SESSION_COOKIE_NAME, SESSION_MAX_AGE } from "@/lib/constants";
 import { getOrgPricingData, type OrgTypeSlug, type PlanSlug } from "@/lib/pricing-plans";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const VALID_ORG_TYPES: OrgTypeSlug[] = ["private_school", "support_center", "training_center"];
 const ORG_TYPE_MAP: Record<OrgTypeSlug, string> = {
@@ -20,6 +21,15 @@ function slugify(text: string): string {
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? request.headers.get("x-real-ip") ?? "unknown";
+    const rl = checkRateLimit(`signup:${ip}`, { windowMs: 60 * 60 * 1000, maxRequests: 3 });
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Trop de tentatives. Veuillez réessayer plus tard." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rl.retryAfterMs / 1000)) } }
+      );
+    }
+
     const body = await request.json();
     const { name, email, password, orgType, planSlug, orgName } = body;
 
@@ -47,6 +57,20 @@ export async function POST(request: Request) {
     if (typeof password !== "string" || password.length < 8) {
       return NextResponse.json(
         { error: "Le mot de passe doit contenir au moins 8 caractères." },
+        { status: 400 }
+      );
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      return NextResponse.json(
+        { error: "Le mot de passe doit contenir au moins une lettre majuscule." },
+        { status: 400 }
+      );
+    }
+
+    if (!/[0-9]/.test(password)) {
+      return NextResponse.json(
+        { error: "Le mot de passe doit contenir au moins un chiffre." },
         { status: 400 }
       );
     }
@@ -203,8 +227,8 @@ export async function POST(request: Request) {
 
     return response;
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.error("[SIGNUP ERROR]", msg, e);
+    const msg = e instanceof Error ? e.message : "Unknown error";
+    console.error("[SIGNUP ERROR]", msg);
     return NextResponse.json(
       { error: "Impossible de créer votre espace pour le moment. Veuillez réessayer." },
       { status: 500 }

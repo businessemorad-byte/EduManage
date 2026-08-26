@@ -16,28 +16,30 @@ vi.mock("@/lib/prisma", () => {
     groupBy: vi.fn().mockResolvedValue([]),
   });
 
-  return {
-    db: {
-      person: model(),
-      student: model(),
-      staff: model(),
-      teacher: model(),
-      trainer: model(),
-      invoice: model(),
-      payment: model(),
-      refund: model(),
-      financialTransaction: model(),
-      assessment: model(),
-      grade: model(),
-      reportCard: model(),
-      gradingConfig: model(),
-      auditLog: model(),
-      notification: model(),
-      attendanceRecord: model(),
-      homework: model(),
-      homeworkSubmission: model(),
-    },
+  const db: Record<string, ReturnType<typeof model>> = {
+    person: model(),
+    student: model(),
+    staff: model(),
+    teacher: model(),
+    trainer: model(),
+    invoice: model(),
+    payment: model(),
+    refund: model(),
+    financialTransaction: model(),
+    assessment: model(),
+    grade: model(),
+    reportCard: model(),
+    gradingConfig: model(),
+    auditLog: model(),
+    notification: model(),
+    attendanceRecord: model(),
+    homework: model(),
+    homeworkSubmission: model(),
   };
+  (db as Record<string, unknown>).$transaction = vi.fn(
+    async (fn: (tx: unknown) => unknown) => fn(db)
+  );
+  return { db };
 });
 
 import { db } from "@/lib/prisma";

@@ -71,8 +71,9 @@ vi.mock("@/lib/prisma", () => {
       billingPayment: model(),
       organization: model(),
   };
+  // The tx handle exposes all models (mirrors real Prisma behaviour).
   (models as Record<string, unknown>).$transaction = vi.fn(
-    async (fn: (tx: unknown) => unknown) => fn({ attendanceRecord: models.attendanceRecord })
+    async (fn: (tx: unknown) => unknown) => fn(models)
   );
   return { db: models };
 });

@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { createSession, listSessions } from "@/lib/scheduling";
 import type { ConflictError } from "@/lib/scheduling";
 
 export async function GET(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "SCHEDULES_READ");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const { searchParams } = new URL(request.url);
@@ -16,20 +16,27 @@ export async function GET(request: Request) {
       groupId: searchParams.get("groupId") ?? undefined,
       teacherId: searchParams.get("teacherId") ?? undefined,
       roomId: searchParams.get("roomId") ?? undefined,
-      dayOfWeek: searchParams.get("dayOfWeek") as "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY" | undefined,
+      dayOfWeek: searchParams.get("dayOfWeek")! as "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY" | undefined,
     });
 
     return NextResponse.json({ sessions });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "SCHEDULES_MANAGE");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const body = await request.json();
@@ -67,8 +74,15 @@ export async function POST(request: Request) {
       throw err;
     }
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }

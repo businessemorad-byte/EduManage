@@ -80,8 +80,8 @@ describe("Tenant Isolation — Regression Tests", () => {
       const routePath = path.resolve("src/app/api/rooms/[id]/route.ts");
       const content = fs.readFileSync(routePath, "utf-8");
 
-      expect(content).toContain("await requireOrgContext()");
-      expect(content).toMatch(/\{\s*organizationId,\s*user\s*\} = await requireOrgContext\(\)/);
+      expect(content).toContain("await requireOrgId()");
+      expect(content).toMatch(/\{\s*organizationId,\s*user\s*\} = await requireOrgId\(\)/);
       expect(content).toContain("hasPermission(user.id, organizationId");
       expect(content).toContain("updateRoom(id, organizationId");
       expect(content).toContain("deleteRoom(id, organizationId)");
@@ -95,8 +95,8 @@ describe("Tenant Isolation — Regression Tests", () => {
       const routePath = path.resolve("src/app/api/sessions/[id]/route.ts");
       const content = fs.readFileSync(routePath, "utf-8");
 
-      expect(content).toContain("await requireOrgContext()");
-      expect(content).toMatch(/\{\s*organizationId,\s*user\s*\} = await requireOrgContext\(\)/);
+      expect(content).toContain("await requireOrgId()");
+      expect(content).toMatch(/\{\s*organizationId,\s*user\s*\} = await requireOrgId\(\)/);
       expect(content).toContain("hasPermission(user.id, organizationId");
       expect(content).toContain("deleteSession(id, organizationId)");
     });
@@ -114,10 +114,10 @@ describe("Tenant Isolation — Regression Tests", () => {
   });
 
   describe("Proxy: security headers present", () => {
-    it("proxy.ts includes security headers", async () => {
+    it("middleware.ts includes security headers", async () => {
       const fs = await import("fs");
       const path = await import("path");
-      const proxyPath = path.resolve("src/proxy.ts");
+      const proxyPath = path.resolve("src/middleware.ts");
       const content = fs.readFileSync(proxyPath, "utf-8");
 
       expect(content).toContain("X-Content-Type-Options");
@@ -131,7 +131,7 @@ describe("Tenant Isolation — Regression Tests", () => {
     it("billing webhook is a public path", async () => {
       const fs = await import("fs");
       const path = await import("path");
-      const proxyPath = path.resolve("src/proxy.ts");
+      const proxyPath = path.resolve("src/middleware.ts");
       const content = fs.readFileSync(proxyPath, "utf-8");
 
       expect(content).toContain("/api/billing/webhook");

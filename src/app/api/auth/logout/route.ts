@@ -12,11 +12,17 @@ export async function POST() {
       await deleteSession(token);
     }
 
-    const response = NextResponse.json({ success: true });
-    response.cookies.delete(SESSION_COOKIE_NAME);
+    const response = NextResponse.redirect(new URL("/", process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"));
+    response.cookies.set(SESSION_COOKIE_NAME, "", {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+    });
 
     return response;
   } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.redirect(new URL("/login", process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"));
   }
 }

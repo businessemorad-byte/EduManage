@@ -16,7 +16,15 @@ vi.mock("@/lib/prisma", () => {
     groupBy: vi.fn().mockResolvedValue([]),
   });
 
-  return { db: { aICreditBalance: model(), aICreditTransaction: model(), subscription: model() } };
+  const db: Record<string, ReturnType<typeof model>> = {
+    aICreditBalance: model(),
+    aICreditTransaction: model(),
+    subscription: model(),
+  };
+  (db as Record<string, unknown>).$transaction = vi.fn(
+    async (fn: (tx: unknown) => unknown) => fn(db)
+  );
+  return { db };
 });
 
 import { db } from "@/lib/prisma";

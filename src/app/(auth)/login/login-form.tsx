@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function getPostLoginRedirect(from: string, role: string): string {
-  if (from && from !== "/") return from;
+  // Prevent open redirect: only allow relative paths starting with /
+  // Reject protocol-relative (//evil.com), absolute (https://evil.com), and javascript: URIs
+  if (from && from.startsWith("/") && !from.startsWith("//") && !from.includes("://")) {
+    return from;
+  }
   if (role === "PLATFORM_OWNER") return "/platform/dashboard";
   return "/school/dashboard";
 }

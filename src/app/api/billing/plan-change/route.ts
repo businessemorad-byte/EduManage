@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { upgradeSubscription, downgradeSubscription } from "@/lib/billing/subscriptions";
 import { getOrganizationSubscription } from "@/lib/billing/subscriptions";
@@ -9,7 +9,7 @@ import { FeatureKey } from "@/lib/constants";
 
 export async function POST(request: Request) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "BILLING_SUBSCRIPTIONS");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireOrgContext } from "@/lib/org-context";
+import { requireOrgId } from "@/lib/org-context";
 import { hasPermission } from "@/lib/rbac";
 import { getStaffById, updateStaff, archiveStaff } from "@/lib/staff";
 
@@ -8,21 +8,28 @@ export async function GET(
   { params }: RouteContext<"/api/staff/[id]">
 ) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "TEACHERS_READ");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const { id } = await params;
 
-    const staff = await getStaffById(id);
-    if (!staff || staff.organizationId !== organizationId) {
+    const staff = await getStaffById(id, organizationId);
+    if (!staff) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
     return NextResponse.json({ staff });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }
 
@@ -31,18 +38,18 @@ export async function PATCH(
   { params }: RouteContext<"/api/staff/[id]">
 ) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "TEACHERS_UPDATE");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const { id } = await params;
     const body = await request.json();
 
-    const existing = await getStaffById(id);
-    if (!existing || existing.organizationId !== organizationId) {
+    const existing = await getStaffById(id, organizationId);
+    if (!existing) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const staff = await updateStaff(id, {
+    const staff = await updateStaff(id, organizationId, {
       person: body.person,
       employeeId: body.employeeId,
       hireDate: body.hireDate,
@@ -53,9 +60,16 @@ export async function PATCH(
 
     return NextResponse.json({ staff });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }
 
@@ -64,21 +78,28 @@ export async function DELETE(
   { params }: RouteContext<"/api/staff/[id]">
 ) {
   try {
-    const { organizationId, user } = await requireOrgContext();
+    const { organizationId, user } = await requireOrgId();
     const allowed = await hasPermission(user.id, organizationId, "TEACHERS_DELETE");
     if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const { id } = await params;
 
-    const existing = await getStaffById(id);
-    if (!existing || existing.organizationId !== organizationId) {
+    const existing = await getStaffById(id, organizationId);
+    if (!existing) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    await archiveStaff(id);
+    await archiveStaff(id, organizationId);
     return NextResponse.json({ success: true });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    const status = message === "Not authenticated" || message === "No organization context" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+
+    const message = err instanceof Error ? err.message : "";
+
+    const isKnownAuth = message === "Not authenticated" || message === "No organization context" || message === "Organization not selected";
+
+    const status = isKnownAuth ? 401 : 500;
+
+    const error = isKnownAuth ? message : (process.env.NODE_ENV === "production" ? "Internal server error" : message || "Internal server error");
+
+    return NextResponse.json({ error }, { status });
   }
 }
