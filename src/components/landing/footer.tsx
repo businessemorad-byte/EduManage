@@ -1,73 +1,48 @@
 import Link from "next/link";
 import { GraduationCap } from "lucide-react";
+import { localizedLink, type Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+import LocaleSwitcher from "./locale-switcher";
 
-const footerLinks = {
-  Produit: [
-    { label: "Fonctionnalités", href: "#fonctionnalites" },
-    { label: "Tarifs", href: "#tarifs" },
-    { label: "IA", href: "#ia" },
-    { label: "Sécurité", href: "#" },
-    { label: "Roadmap", href: "#" },
-  ],
-  Solutions: [
-    { label: "Écoles privées", href: "/solutions/ecoles" },
-    { label: "Centres de soutien", href: "/solutions/centres-soutien" },
-    { label: "Centres de formation", href: "/solutions/formation" },
-  ],
-  Ressources: [
-    { label: "Documentation", href: "#" },
-    { label: "Centre d'aide", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "FAQ", href: "#" },
-  ],
-  Entreprise: [
-    { label: "À propos", href: "#" },
-    { label: "Contact", href: "#" },
-    { label: "Partenaires", href: "#" },
-  ],
-  Légal: [
-    { label: "Confidentialité", href: "#" },
-    { label: "Conditions", href: "#" },
-    { label: "Mentions légales", href: "#" },
-  ],
+type FooterProps = {
+  lang: Locale;
+  footer: Dictionary["footer"];
+  common: Dictionary["common"];
 };
 
-export default function LandingFooter() {
+export default function LandingFooter({ lang, footer, common }: FooterProps) {
+  const link = (href: string) => localizedLink(href, lang);
+
   return (
-    <footer className="border-t border-zinc-100 bg-white" id="ressources">
+    <footer className="border-t border-zinc-100 bg-white">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-6">
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2.5">
+            <Link href={link("/")} className="flex items-center gap-2.5">
               <GraduationCap className="h-7 w-7 text-brand-600" strokeWidth={2.2} />
-              <span className="text-lg font-bold tracking-tight text-zinc-900">
-                EduManage
-              </span>
+              <span className="text-lg font-bold tracking-tight text-zinc-900">EduManage</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-zinc-500">
-              Le système d&apos;exploitation intelligent pour les organisations
-              éducatives modernes.
+              {footer.tagline}
             </p>
-            <div className="mt-5 flex items-center gap-2 text-xs text-zinc-400">
-              <span className="font-semibold text-zinc-600">FR</span>
-              <span>/</span>
-              <span className="cursor-pointer transition-colors hover:text-zinc-600">EN</span>
+            <div className="mt-5">
+              <LocaleSwitcher lang={lang} label={common.language} />
             </div>
           </div>
 
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
+          {footer.columns.map((col) => (
+            <div key={col.title}>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-900">
-                {category}
+                {col.title}
               </h3>
               <ul className="mt-4 space-y-2.5">
-                {links.map((link) => (
-                  <li key={link.label}>
+                {col.links.map((item) => (
+                  <li key={item.label}>
                     <Link
-                      href={link.href}
+                      href={link(item.href)}
                       className="text-sm text-zinc-500 transition-colors hover:text-zinc-900"
                     >
-                      {link.label}
+                      {item.label}
                     </Link>
                   </li>
                 ))}
@@ -78,8 +53,9 @@ export default function LandingFooter() {
 
         <div className="mt-14 border-t border-zinc-100 pt-8">
           <p className="text-xs text-zinc-400">
-            © {new Date().getFullYear()} EduManage. Tous droits réservés.
+            © {new Date().getFullYear()} EduManage. {footer.bottom}
           </p>
+          <p className="mt-1 text-xs text-zinc-400">{footer.madeWith}</p>
         </div>
       </div>
     </footer>

@@ -65,7 +65,7 @@ describe("Tenant Isolation — Regression Tests", () => {
     it("groups route uses spread-then-override pattern", async () => {
       const fs = await import("fs");
       const path = await import("path");
-      const routePath = path.resolve("src/app/api/groups/route.ts");
+      const routePath = path.resolve("src/app/(core)/api/groups/route.ts");
       const content = fs.readFileSync(routePath, "utf-8");
 
       expect(content).toContain("{ ...body, organizationId }");
@@ -77,7 +77,7 @@ describe("Tenant Isolation — Regression Tests", () => {
     it("rooms PATCH uses destructured organizationId", async () => {
       const fs = await import("fs");
       const path = await import("path");
-      const routePath = path.resolve("src/app/api/rooms/[id]/route.ts");
+      const routePath = path.resolve("src/app/(core)/api/rooms/[id]/route.ts");
       const content = fs.readFileSync(routePath, "utf-8");
 
       expect(content).toContain("await requireOrgId()");
@@ -92,7 +92,7 @@ describe("Tenant Isolation — Regression Tests", () => {
     it("sessions DELETE uses destructured organizationId", async () => {
       const fs = await import("fs");
       const path = await import("path");
-      const routePath = path.resolve("src/app/api/sessions/[id]/route.ts");
+      const routePath = path.resolve("src/app/(core)/api/sessions/[id]/route.ts");
       const content = fs.readFileSync(routePath, "utf-8");
 
       expect(content).toContain("await requireOrgId()");
@@ -106,7 +106,7 @@ describe("Tenant Isolation — Regression Tests", () => {
     it("announcements archive passes organizationId", async () => {
       const fs = await import("fs");
       const path = await import("path");
-      const routePath = path.resolve("src/app/api/announcements/route.ts");
+      const routePath = path.resolve("src/app/(core)/api/announcements/route.ts");
       const content = fs.readFileSync(routePath, "utf-8");
 
       expect(content).toContain("archiveAnnouncement(body.id, organizationId)");
@@ -117,7 +117,7 @@ describe("Tenant Isolation — Regression Tests", () => {
     it("middleware.ts includes security headers", async () => {
       const fs = await import("fs");
       const path = await import("path");
-      const proxyPath = path.resolve("src/middleware.ts");
+      const proxyPath = path.resolve("src/proxy.ts");
       const content = fs.readFileSync(proxyPath, "utf-8");
 
       expect(content).toContain("X-Content-Type-Options");
@@ -131,7 +131,7 @@ describe("Tenant Isolation — Regression Tests", () => {
     it("billing webhook is a public path", async () => {
       const fs = await import("fs");
       const path = await import("path");
-      const proxyPath = path.resolve("src/middleware.ts");
+      const proxyPath = path.resolve("src/proxy.ts");
       const content = fs.readFileSync(proxyPath, "utf-8");
 
       expect(content).toContain("/api/billing/webhook");
