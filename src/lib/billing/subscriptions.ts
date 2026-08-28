@@ -122,7 +122,10 @@ export async function upgradeSubscription(subscriptionId: string, newPlanId: str
   if (!newPlan.isActive) throw new Error("Target plan is not active");
 
   const oldPlan = sub.plan;
-  const isUpgrade = (newPlan.sortOrder > oldPlan.sortOrder) || Number(newPlan.priceMonthly ?? 0) > Number(oldPlan.priceMonthly ?? 0);
+  const isUpgrade =
+    newPlan.sortOrder > oldPlan.sortOrder ||
+    Number(newPlan.priceMonthly ?? 0) > Number(oldPlan.priceMonthly ?? 0) ||
+    Number(newPlan.priceYearly ?? 0) > Number(oldPlan.priceYearly ?? 0);
 
   if (!isUpgrade) {
     throw new Error("This is not an upgrade. Use downgrade instead.");
@@ -150,7 +153,10 @@ export async function downgradeSubscription(subscriptionId: string, newPlanId: s
   const newPlan = await db.plan.findUnique({ where: { id: newPlanId } });
   if (!newPlan) throw new Error("Target plan not found");
 
-  const isDowngrade = (newPlan.sortOrder < sub.plan.sortOrder) || Number(newPlan.priceMonthly ?? 0) < Number(sub.plan.priceMonthly ?? 0);
+  const isDowngrade =
+    (newPlan.sortOrder < sub.plan.sortOrder) ||
+    Number(newPlan.priceMonthly ?? 0) < Number(sub.plan.priceMonthly ?? 0) ||
+    Number(newPlan.priceYearly ?? 0) < Number(sub.plan.priceYearly ?? 0);
 
   if (!isDowngrade) {
     throw new Error("This is not a downgrade. Use upgrade instead.");

@@ -87,7 +87,10 @@ export async function setPlanFeatures(planId: string, features: Array<{ featureK
 
 export function calculatePrice(plan: { priceMonthly: unknown; priceYearly: unknown }, interval: string): number {
   if (interval === "YEARLY") {
-    return Number(plan.priceYearly ?? plan.priceMonthly) * 12;
+    // priceYearly is the total annual amount billed once (e.g. 6990 for
+    // a 699/month plan), never a per-month unit price. The UI and
+    // billing-config treat it as the annual total, so return it as-is.
+    return Number(plan.priceYearly ?? plan.priceMonthly);
   }
   return Number(plan.priceMonthly ?? 0);
 }

@@ -100,11 +100,13 @@ describe("Billing - Plan Management", () => {
     );
   });
 
-  it("should calculate monthly price from yearly", async () => {
+  it("should treat priceYearly as the total annual amount billed once", async () => {
+    // priceYearly (290) is the total billed once per year for a 29/month
+    // plan (two months free) — it is NOT a per-month unit (290*12).
     const plan = { priceMonthly: 29, priceYearly: 290 };
     const yearly = calculatePrice(plan, "YEARLY");
     const monthly = calculateMonthlyPrice(plan, "YEARLY");
-    expect(yearly).toBe(290 * 12);
+    expect(yearly).toBe(290);
     expect(monthly).toBeCloseTo(290 / 12, 2);
   });
 });
