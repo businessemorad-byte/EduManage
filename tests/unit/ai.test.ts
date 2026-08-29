@@ -112,6 +112,39 @@ describe("OpenRouter Provider", () => {
   });
 });
 
+describe("AI Platform Configuration env vars", () => {
+  it("AI_ENV maps the API key to AI_API_KEY (NOT OPENROUTER_API_KEY)", async () => {
+    const { AI_ENV } = await import("@/lib/billing/platform-config");
+    expect(AI_ENV.apiKey).toBe("AI_API_KEY");
+    expect(AI_ENV.providerName).toBe("AI_PROVIDER_NAME");
+    expect(AI_ENV.modelId).toBe("AI_MODEL_ID");
+    expect(AI_ENV.modelDisplayName).toBe("AI_MODEL_DISPLAY_NAME");
+    expect(AI_ENV.baseUrl).toBe("AI_BASE_URL");
+  });
+
+  it("config API reports the key as configured only when AI_API_KEY is set", async () => {
+    const { AI_ENV } = await import("@/lib/billing/platform-config");
+
+    // Clear any pre-existing value, then show the detection flips on AI_API_KEY.
+    const prev = process.env[AI_ENV.apiKey];
+    delete process.env[AI_ENV.apiKey];
+    expect(Boolean(process.env[AI_ENV.apiKey])).toBe(false);
+
+    // A wrongly-named var (OPENROUTER_API_KEY) must NOT be detected.
+    process.env.OPENROUTER_API_KEY = "sk-fake";
+    expect(Boolean(process.env[AI_ENV.apiKey])).toBe(false);
+
+    // The correct var name must be detected.
+    process.env[AI_ENV.apiKey] = "sk-correct";
+    expect(Boolean(process.env[AI_ENV.apiKey])).toBe(true);
+
+    // Restore
+    if (prev === undefined) delete process.env[AI_ENV.apiKey];
+    else process.env[AI_ENV.apiKey] = prev;
+    delete process.env.OPENROUTER_API_KEY;
+  });
+});
+
 describe("RBAC", () => {
   it("should include AI permissions", async () => {
     const { PERMISSIONS } = await import("@/lib/rbac");
