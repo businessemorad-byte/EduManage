@@ -28,13 +28,13 @@ const CARDS = [
 
 function StatCard({ label, value, icon: Icon, trend }: { label: string; value: string | number; icon: React.ReactNode; trend?: number }) {
   return (
-    <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5 flex items-center gap-4">
-      <div className="h-10 w-10 rounded-lg bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center">
+    <div className="rounded-xl border border-zinc-200 bg-white p-5 flex items-center gap-4">
+      <div className="h-10 w-10 rounded-lg bg-brand-50 flex items-center justify-center">
         {Icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">{label}</p>
-        <p className="text-xl font-bold text-zinc-900 dark:text-white">{value}</p>
+        <p className="text-xs text-zinc-500">{label}</p>
+        <p className="text-xl font-bold text-zinc-900">{value}</p>
       </div>
       {trend !== undefined && (
         <div className={"flex items-center gap-1 text-xs font-medium " + (trend >= 0 ? "text-emerald-600" : "text-rose-600")}>
@@ -61,10 +61,10 @@ export default function ReportsPage() {
       <div className="space-y-6">
         <PageHeader icon={<BarChart3 />} title="Reports & Analytics" description="Organization performance at a glance" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map(i => <div key={i} className="h-24 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />)}
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-24 rounded-xl bg-zinc-100 animate-pulse" />)}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-32 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />)}
+          {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-32 rounded-xl bg-zinc-100 animate-pulse" />)}
         </div>
       </div>
     );
@@ -74,9 +74,9 @@ export default function ReportsPage() {
     return (
       <div className="space-y-6">
         <PageHeader icon={<BarChart3 />} title="Reports & Analytics" description="Organization performance at a glance" />
-        <div className="rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/20 p-8 text-center">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-8 text-center">
           <AlertCircle className="h-8 w-8 text-rose-500 mx-auto mb-3" />
-          <p className="text-sm font-medium text-rose-700 dark:text-rose-400">{error}</p>
+          <p className="text-sm font-medium text-rose-700">{error}</p>
           <button onClick={() => window.location.reload()} className="mt-3 px-4 py-2 text-xs font-medium bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors">Retry</button>
         </div>
       </div>
@@ -98,12 +98,12 @@ export default function ReportsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {CARDS.map(card => (
-          <Link key={card.href} href={card.href} className="group block rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 hover:shadow-lg hover:border-brand-200 dark:hover:border-brand-800 transition-all duration-200">
+          <Link key={card.href} href={card.href} className="group block rounded-xl border border-zinc-200 bg-white p-6 hover:shadow-lg hover:border-brand-200 transition-all duration-200">
             <div className={"h-10 w-10 rounded-lg bg-gradient-to-br " + card.color + " flex items-center justify-center mb-4"}>
               <card.icon className="h-5 w-5 text-white" />
             </div>
-            <h3 className="text-sm font-semibold text-zinc-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">{card.title}</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{card.desc}</p>
+            <h3 className="text-sm font-semibold text-zinc-900 group-hover:text-brand-600 transition-colors">{card.title}</h3>
+            <p className="text-xs text-zinc-500 mt-1">{card.desc}</p>
           </Link>
         ))}
       </div>

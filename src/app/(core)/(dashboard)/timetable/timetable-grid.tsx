@@ -26,12 +26,12 @@ const DAY_FULL: Record<string, string> = {
   THURSDAY: "Thursday", FRIDAY: "Friday", SATURDAY: "Saturday", SUNDAY: "Sunday",
 };
 const COLORS = [
-  { border: "border-l-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20", text: "text-blue-800 dark:text-blue-300", sub: "text-blue-600/70 dark:text-blue-400/70" },
-  { border: "border-l-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-900/20", text: "text-emerald-800 dark:text-emerald-300", sub: "text-emerald-600/70 dark:text-emerald-400/70" },
-  { border: "border-l-violet-500", bg: "bg-violet-50 dark:bg-violet-900/20", text: "text-violet-800 dark:text-violet-300", sub: "text-violet-600/70 dark:text-violet-400/70" },
-  { border: "border-l-amber-500", bg: "bg-amber-50 dark:bg-amber-900/20", text: "text-amber-800 dark:text-amber-300", sub: "text-amber-600/70 dark:text-amber-400/70" },
-  { border: "border-l-rose-500", bg: "bg-rose-50 dark:bg-rose-900/20", text: "text-rose-800 dark:text-rose-300", sub: "text-rose-600/70 dark:text-rose-400/70" },
-  { border: "border-l-cyan-500", bg: "bg-cyan-50 dark:bg-cyan-900/20", text: "text-cyan-800 dark:text-cyan-300", sub: "text-cyan-600/70 dark:text-cyan-400/70" },
+  { border: "border-l-blue-500", bg: "bg-blue-50", text: "text-blue-800", sub: "text-blue-600/70" },
+  { border: "border-l-emerald-500", bg: "bg-emerald-50", text: "text-emerald-800", sub: "text-emerald-600/70" },
+  { border: "border-l-violet-500", bg: "bg-violet-50", text: "text-violet-800", sub: "text-violet-600/70" },
+  { border: "border-l-amber-500", bg: "bg-amber-50", text: "text-amber-800", sub: "text-amber-600/70" },
+  { border: "border-l-rose-500", bg: "bg-rose-50", text: "text-rose-800", sub: "text-rose-600/70" },
+  { border: "border-l-cyan-500", bg: "bg-cyan-50", text: "text-cyan-800", sub: "text-cyan-600/70" },
 ];
 
 export function TimetableGrid() {
@@ -87,20 +87,20 @@ export function TimetableGrid() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <select value={filterTeacher} onChange={(e) => setFilterTeacher(e.target.value)} className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+        <select value={filterTeacher} onChange={(e) => setFilterTeacher(e.target.value)} className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm">
           <option value="">All Teachers</option>
           {teachers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
         </select>
-        <select value={filterRoom} onChange={(e) => setFilterRoom(e.target.value)} className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+        <select value={filterRoom} onChange={(e) => setFilterRoom(e.target.value)} className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm">
           <option value="">All Rooms</option>
           {rooms.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
         </select>
-        <select value={filterGroup} onChange={(e) => setFilterGroup(e.target.value)} className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+        <select value={filterGroup} onChange={(e) => setFilterGroup(e.target.value)} className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm">
           <option value="">All Groups</option>
           {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
         </select>
         {hasFilters && (
-          <button onClick={() => { setFilterTeacher(""); setFilterRoom(""); setFilterGroup(""); }} className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-400 dark:hover:bg-zinc-800">Clear</button>
+          <button onClick={() => { setFilterTeacher(""); setFilterRoom(""); setFilterGroup(""); }} className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-50">Clear</button>
         )}
         <div className="ml-auto">
           <a href="/sessions/new" className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700">
@@ -113,10 +113,10 @@ export function TimetableGrid() {
         <EmptyState icon={<Calendar className="h-7 w-7" />} title="No sessions scheduled" description="Create sessions to build your timetable." action={<a href="/sessions/new" className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">+ New Session</a>} />
       ) : (
         <div className="overflow-x-auto">
-          <div className="grid min-w-[1000px] grid-cols-7 gap-px rounded-xl border border-zinc-200 bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-700">
+          <div className="grid min-w-[1000px] grid-cols-7 gap-px rounded-xl border border-zinc-200 bg-zinc-200">
             {DAYS.map((day) => (
-              <div key={day} className="min-h-[160px] bg-white dark:bg-zinc-900">
-                <div className="sticky top-0 border-b border-zinc-200 bg-zinc-50 px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400">
+              <div key={day} className="min-h-[160px] bg-white">
+                <div className="sticky top-0 border-b border-zinc-200 bg-zinc-50 px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-zinc-500">
                   {DAY_FULL[day]}
                 </div>
                 <div className="space-y-1.5 p-2">

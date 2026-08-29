@@ -52,7 +52,7 @@ function AdmissionsListInner() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
         {error}
       </div>
     );
@@ -98,7 +98,7 @@ function AdmissionsListInner() {
                 key: "applicantName",
                 header: "Applicant",
                 render: (a: Admission) => (
-                  <span className="font-medium text-zinc-900 dark:text-white">{a.applicantName}</span>
+                  <span className="font-medium text-zinc-900">{a.applicantName}</span>
                 ),
               },
               {

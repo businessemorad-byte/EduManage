@@ -42,8 +42,8 @@ const ACTION_TYPES = [
   { label: "In-App Message", value: "in_app" },
 ];
 
-const inputCls = "w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand-500";
-const selectCls = "w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500";
+const inputCls = "w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg bg-white text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand-500";
+const selectCls = "w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg bg-white text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-500";
 
 export default function CreateAutomationRulePage() {
   const router = useRouter();
@@ -94,21 +94,21 @@ export default function CreateAutomationRulePage() {
   return (
     <div className="space-y-6 p-6 max-w-3xl mx-auto">
       <PageHeader title="Create Automation Rule" description="Set up a new automation rule" icon={<Zap className="h-5 w-5" />}
-        action={<Link href="/automation/rules" className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"><ArrowLeft className="h-4 w-4" />Back to Rules</Link>}
+        action={<Link href="/automation/rules" className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-zinc-600 hover:text-zinc-900 rounded-lg hover:bg-zinc-100 transition-colors"><ArrowLeft className="h-4 w-4" />Back to Rules</Link>}
       />
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 space-y-4">
-          <h2 className="text-sm font-semibold text-zinc-900 dark:text-white">Basic Information</h2>
+        <div className="rounded-xl border border-zinc-200 bg-white p-6 space-y-4">
+          <h2 className="text-sm font-semibold text-zinc-900">Basic Information</h2>
           <div>
-            <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Rule Name *</label>
+            <label className="block text-xs font-medium text-zinc-500 mb-1.5">Rule Name *</label>
             <input type="text" required placeholder="e.g. Notify on new student" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} />
           </div>
           <div>
-            <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Description</label>
+            <label className="block text-xs font-medium text-zinc-500 mb-1.5">Description</label>
             <textarea placeholder="Optional description..." rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputCls} />
           </div>
           <div>
-            <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Trigger Event *</label>
+            <label className="block text-xs font-medium text-zinc-500 mb-1.5">Trigger Event *</label>
             <select required value={form.trigger} onChange={(e) => setForm({ ...form, trigger: e.target.value })} className={selectCls}>
               <option value="">Select an event...</option>
               {EVENT_TYPES.map((et) => (<option key={et.value} value={et.value}>{et.label}</option>))}
@@ -116,9 +116,9 @@ export default function CreateAutomationRulePage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 space-y-4">
+        <div className="rounded-xl border border-zinc-200 bg-white p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-zinc-900 dark:text-white">Conditions (Optional)</h2>
+            <h2 className="text-sm font-semibold text-zinc-900">Conditions (Optional)</h2>
             <button type="button" onClick={addCondition} className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700"><Plus className="h-3 w-3" />Add</button>
           </div>
           {conditions.map((c, i) => (
@@ -133,13 +133,13 @@ export default function CreateAutomationRulePage() {
           ))}
         </div>
 
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 space-y-4">
+        <div className="rounded-xl border border-zinc-200 bg-white p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-zinc-900 dark:text-white">Actions</h2>
+            <h2 className="text-sm font-semibold text-zinc-900">Actions</h2>
             <button type="button" onClick={addAction} className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700"><Plus className="h-3 w-3" />Add</button>
           </div>
           {actions.map((a, i) => (
-            <div key={i} className="space-y-2 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/50">
+            <div key={i} className="space-y-2 p-3 rounded-lg bg-zinc-50">
               <div className="flex gap-2 items-center">
                 <select value={a.type} onChange={(e) => updateActionType(i, e.target.value)} className={selectCls + " flex-1"}>
                   {ACTION_TYPES.map((at) => (<option key={at.value} value={at.value}>{at.label}</option>))}
@@ -177,7 +177,7 @@ export default function CreateAutomationRulePage() {
         </div>
 
         <div className="flex justify-end gap-3">
-          <Link href="/automation/rules" className="px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">Cancel</Link>
+          <Link href="/automation/rules" className="px-4 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 rounded-lg hover:bg-zinc-100 transition-colors">Cancel</Link>
           <button type="submit" disabled={saving || !form.name || !form.trigger} className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             {saving ? "Creating..." : "Create Rule"}
           </button>

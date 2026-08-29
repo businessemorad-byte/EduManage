@@ -31,14 +31,14 @@ function PeopleReportInner() {
     fetch("/api/reports/people?" + params.toString()).then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(setData).catch(() => setError("Unable to load people report. Please try again.")).finally(() => setLoading(false));
   }, [startDate, endDate]);
 
-  if (loading) return <div className="space-y-6"><PageHeader icon={<Users />} title="People Report" description="Students, staff & group breakdown" /><div className="grid grid-cols-2 lg:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />)}</div></div>;
-  if (error) return <div className="space-y-6"><PageHeader icon={<Users />} title="People Report" description="Students, staff & group breakdown" /><div className="rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/20 p-8 text-center"><AlertCircle className="h-8 w-8 text-rose-500 mx-auto mb-3" /><p className="text-sm font-medium text-rose-700 dark:text-rose-400">{error}</p><button onClick={() => window.location.reload()} className="mt-3 px-4 py-2 text-xs font-medium bg-rose-600 text-white rounded-lg hover:bg-rose-700">Retry</button></div></div>;
+  if (loading) return <div className="space-y-6"><PageHeader icon={<Users />} title="People Report" description="Students, staff & group breakdown" /><div className="grid grid-cols-2 lg:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 rounded-xl bg-zinc-100 animate-pulse" />)}</div></div>;
+  if (error) return <div className="space-y-6"><PageHeader icon={<Users />} title="People Report" description="Students, staff & group breakdown" /><div className="rounded-xl border border-rose-200 bg-rose-50 p-8 text-center"><AlertCircle className="h-8 w-8 text-rose-500 mx-auto mb-3" /><p className="text-sm font-medium text-rose-700">{error}</p><button onClick={() => window.location.reload()} className="mt-3 px-4 py-2 text-xs font-medium bg-rose-600 text-white rounded-lg hover:bg-rose-700">Retry</button></div></div>;
   if (!data) return null;
 
   return (
     <div className="space-y-6">
       <PageHeader icon={<Users />} title="People Report" description="Students, staff & group breakdown" action={<ExportButton reportType="people" startDate={startDate} endDate={endDate} />} />
-      <Suspense fallback={<div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse" />}><DateRangePicker basePath="/reports/people" /></Suspense>
+      <Suspense fallback={<div className="h-10 bg-zinc-100 rounded-lg animate-pulse" />}><DateRangePicker basePath="/reports/people" /></Suspense>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Total Students", value: data.totalStudents },
@@ -46,9 +46,9 @@ function PeopleReportInner() {
           { label: "Inactive Students", value: data.inactiveStudents },
           { label: "New Registrations", value: data.newRegistrations },
         ].map(s => (
-          <div key={s.label} className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5">
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">{s.label}</p>
-            <p className="text-2xl font-bold text-zinc-900 dark:text-white mt-1">{s.value}</p>
+          <div key={s.label} className="rounded-xl border border-zinc-200 bg-white p-5">
+            <p className="text-xs text-zinc-500">{s.label}</p>
+            <p className="text-2xl font-bold text-zinc-900 mt-1">{s.value}</p>
           </div>
         ))}
       </div>

@@ -45,7 +45,7 @@ export default function LevelDetailPage() {
           description="View level details."
           icon={<BookOpen className="h-5 w-5" />}
         />
-        <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center">
           <p className="text-sm text-zinc-500">{error || "Not found"}</p>
           <button onClick={() => router.back()} className="mt-3 text-sm font-medium text-brand-600 hover:text-brand-700">
             Go back
@@ -62,7 +62,7 @@ export default function LevelDetailPage() {
         description="Level details"
         icon={<BookOpen className="h-5 w-5" />}
         action={
-          <button onClick={() => router.back()} className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
+          <button onClick={() => router.back()} className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
         }
@@ -70,55 +70,55 @@ export default function LevelDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Information</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Information</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex items-center gap-3 text-sm">
                 <BookOpen className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Name</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{level.name}</p>
+                  <p className="font-medium text-zinc-900">{level.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Hash className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Code</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{level.code}</p>
+                  <p className="font-medium text-zinc-900">{level.code}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Hash className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Sort Order</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{level.sortOrder}</p>
+                  <p className="font-medium text-zinc-900">{level.sortOrder}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <BookOpen className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Academic Year</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{level.academicYear ? level.academicYear.name : "—"}</p>
+                  <p className="font-medium text-zinc-900">{level.academicYear ? level.academicYear.name : "—"}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Linked Data</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Linked Data</h3>
             <div className="grid gap-4 sm:grid-cols-2">
-              <button onClick={() => router.push(`/groups?levelId=${level.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50">
+              <button onClick={() => router.push(`/groups?levelId=${level.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50">
                 <Users className="h-5 w-5 text-rose-500" />
                 <div>
                   <p className="text-xs text-zinc-500">Groups</p>
-                  <p className="text-lg font-bold text-zinc-900 dark:text-white">{level._count.groups}</p>
+                  <p className="text-lg font-bold text-zinc-900">{level._count.groups}</p>
                 </div>
               </button>
-              <button onClick={() => router.push(`/subjects?levelId=${level.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50">
+              <button onClick={() => router.push(`/subjects?levelId=${level.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50">
                 <GraduationCap className="h-5 w-5 text-purple-500" />
                 <div>
                   <p className="text-xs text-zinc-500">Subjects</p>
-                  <p className="text-lg font-bold text-zinc-900 dark:text-white">{level._count.subjects}</p>
+                  <p className="text-lg font-bold text-zinc-900">{level._count.subjects}</p>
                 </div>
               </button>
             </div>
@@ -126,8 +126,8 @@ export default function LevelDetailPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Status</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Status</h3>
             <StatusBadge status={level.isActive ? "ACTIVE" : "INACTIVE"} />
             <div className="mt-4 space-y-2 text-sm text-zinc-500">
               <div className="flex items-center gap-2">

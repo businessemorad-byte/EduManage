@@ -43,9 +43,9 @@ function RevenueChart({ data }: { data: { month: string; amount: number }[] }) {
   const max = Math.max(...data.map((d) => d.amount), 1);
 
   return (
-    <div className="rounded-xl border bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-xl border bg-white p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Revenue (Last 6 Months)</h3>
+        <h3 className="text-sm font-semibold text-zinc-900">Revenue (Last 6 Months)</h3>
         <span className="text-xs text-zinc-400">DH</span>
       </div>
       <div className="flex items-end gap-2" style={{ height: 160 }}>
@@ -54,7 +54,7 @@ function RevenueChart({ data }: { data: { month: string; amount: number }[] }) {
           const monthLabel = SHORT_MONTHS[parseInt(d.month.split("-")[1], 10) - 1];
           return (
             <div key={d.month} className="flex flex-1 flex-col items-center gap-1">
-              <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+              <span className="text-[10px] font-medium text-zinc-500">
                 {d.amount > 0 ? `${(d.amount / 1000).toFixed(0)}k` : "—"}
               </span>
               <div
@@ -93,7 +93,7 @@ export function FinanceDashboard() {
   return (
     <div className="space-y-6">
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-center text-red-600 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-center text-red-600">
           {error}
         </div>
       )}
@@ -111,14 +111,14 @@ export function FinanceDashboard() {
         <div className="lg:col-span-2">
           {monthlyRevenue.length > 0 && <RevenueChart data={monthlyRevenue} />}
         </div>
-        <div className="rounded-xl border bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-          <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Outstanding Balances</h3>
+        <div className="rounded-xl border bg-white p-6">
+          <h3 className="mb-4 text-sm font-semibold text-zinc-900">Outstanding Balances</h3>
           {outstanding.length === 0 ? (
             <EmptyState icon={<AlertCircle className="h-7 w-7" />} title="All clear" description="No outstanding invoices." />
           ) : (
             <div className="space-y-3">
               {outstanding.slice(0, 5).map((o) => (
-                <div key={o.id} className="rounded-lg border p-3 dark:border-zinc-700">
+                <div key={o.id} className="rounded-lg border p-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">{o.studentName}</span>
                     <span className="text-sm font-semibold text-amber-600">{Number(o.outstanding).toLocaleString()} DH</span>
@@ -134,15 +134,15 @@ export function FinanceDashboard() {
         </div>
       </div>
 
-      <div className="rounded-xl border bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-        <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Recent Payments</h3>
+      <div className="rounded-xl border bg-white p-6">
+        <h3 className="mb-4 text-sm font-semibold text-zinc-900">Recent Payments</h3>
         {payments.length === 0 ? (
           <EmptyState icon={<DollarSign className="h-7 w-7" />} title="No payments yet" description="Payments will appear here." />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b dark:border-zinc-700">
+                <tr className="border-b">
                   <th className="pb-2 text-left font-medium text-zinc-500">Student</th>
                   <th className="pb-2 text-right font-medium text-zinc-500">Amount</th>
                   <th className="pb-2 text-left font-medium text-zinc-500">Method</th>
@@ -152,7 +152,7 @@ export function FinanceDashboard() {
               </thead>
               <tbody>
                 {payments.map((p) => (
-                  <tr key={p.id} className="border-b dark:border-zinc-800">
+                  <tr key={p.id} className="border-b">
                     <td className="py-3 font-medium">{p.invoice.studentName}</td>
                     <td className="py-3 text-right">{Number(p.amount).toLocaleString()} DH</td>
                     <td className="py-3 text-zinc-500">{p.method.replace("_", " ")}</td>

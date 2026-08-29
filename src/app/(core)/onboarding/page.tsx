@@ -45,7 +45,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 dark:bg-zinc-950">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur EduManage</h1>
@@ -56,13 +56,13 @@ export default function OnboardingPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="name" className="block text-sm font-medium text-zinc-700">
               Nom de l&apos;organisation
             </label>
             <input
@@ -72,12 +72,12 @@ export default function OnboardingPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: École Al Andalus"
-              className="mt-1 block w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+              className="mt-1 block w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label className="block text-sm font-medium text-zinc-700">
               Type d&apos;organisation
             </label>
             <div className="mt-2 space-y-2">
@@ -86,8 +86,8 @@ export default function OnboardingPage() {
                   key={orgType.value}
                   className={`flex cursor-pointer items-start rounded-md border p-3 transition-colors ${
                     type === orgType.value
-                      ? "border-black bg-zinc-100 dark:border-white dark:bg-zinc-800"
-                      : "border-zinc-200 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-500"
+                      ? "border-black bg-zinc-100"
+                      : "border-zinc-200 hover:border-zinc-400"
                   }`}
                 >
                   <input
@@ -99,7 +99,7 @@ export default function OnboardingPage() {
                     className="mt-0.5"
                   />
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                    <p className="text-sm font-medium text-zinc-900">
                       {orgType.label}
                     </p>
                     <p className="text-xs text-zinc-500">{orgType.description}</p>
@@ -112,7 +112,7 @@ export default function OnboardingPage() {
           <button
             type="submit"
             disabled={loading || !name || !type}
-            className="w-full rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+            className="w-full rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
           >
             {loading ? "Création en cours..." : "Créer l'organisation"}
           </button>

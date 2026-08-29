@@ -87,8 +87,8 @@ export default function StudentProgressPage() {
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">Student Progress Notes</h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">View academic progress and teacher feedback for students.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Student Progress Notes</h1>
+        <p className="mt-1 text-sm text-zinc-500">View academic progress and teacher feedback for students.</p>
       </div>
       <Suspense fallback={<LoadingState />}>
         <StudentProgressListInner />

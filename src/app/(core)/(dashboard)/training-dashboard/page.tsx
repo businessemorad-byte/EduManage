@@ -67,9 +67,9 @@ function TrainingDashboardInner() {
           { label: "Active Programs", value: dashboard.activePrograms, color: "text-blue-600" },
           { label: "Active Cohorts", value: dashboard.activeCohorts, color: "text-emerald-600" },
           { label: "Trainers", value: dashboard.totalTrainers, color: "text-amber-600" },
-          { label: "Monthly Revenue", value: `${Number(dashboard.monthlyRevenue).toLocaleString()} DA`, color: "text-zinc-900 dark:text-zinc-100" },
+          { label: "Monthly Revenue", value: `${Number(dashboard.monthlyRevenue).toLocaleString()} DA`, color: "text-zinc-900" },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <div key={stat.label} className="rounded-lg border border-zinc-200 bg-white p-4">
             <p className="text-xs text-zinc-500">{stat.label}</p>
             <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
           </div>
@@ -77,7 +77,7 @@ function TrainingDashboardInner() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <h2 className="text-lg font-semibold mb-3">Recent Enrollments</h2>
           {dashboard.recentEnrollments.length === 0 ? (
             <p className="text-sm text-zinc-500">No recent enrollments.</p>
@@ -94,7 +94,7 @@ function TrainingDashboardInner() {
           )}
         </div>
 
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <h2 className="text-lg font-semibold mb-3">Upcoming Sessions</h2>
           {dashboard.upcomingSessions.length === 0 ? (
             <p className="text-sm text-zinc-500">No upcoming sessions.</p>
@@ -119,29 +119,29 @@ function TrainingDashboardInner() {
           { label: "Pending Leads", value: dashboard.pendingLeads },
           { label: "Corporate Clients", value: dashboard.corporateClients },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <div key={stat.label} className="rounded-lg border border-zinc-200 bg-white p-4">
             <p className="text-xs text-zinc-500">{stat.label}</p>
-            <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{stat.value}</p>
+            <p className="text-2xl font-bold text-zinc-900">{stat.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-zinc-200 bg-white p-5">
         <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Link href="/training-programs/new" className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+          <Link href="/training-programs/new" className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium transition-colors hover:bg-zinc-50">
             <Plus className="h-4 w-4 text-violet-600" />
             New Program
           </Link>
-          <Link href="/cohorts/new" className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+          <Link href="/cohorts/new" className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium transition-colors hover:bg-zinc-50">
             <Users className="h-4 w-4 text-blue-600" />
             New Cohort
           </Link>
-          <Link href="/trainees" className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+          <Link href="/trainees" className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium transition-colors hover:bg-zinc-50">
             <GraduationCap className="h-4 w-4 text-emerald-600" />
             Add Trainee
           </Link>
-          <Link href="/training-attendance" className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+          <Link href="/training-attendance" className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium transition-colors hover:bg-zinc-50">
             <ClipboardList className="h-4 w-4 text-amber-600" />
             Attendance
           </Link>

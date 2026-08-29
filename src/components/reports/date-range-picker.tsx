@@ -67,7 +67,7 @@ export function DateRangePicker({ basePath }: { basePath: string }) {
           className={"px-3 py-1.5 text-xs font-medium rounded-lg transition-colors " + (
             activePreset === p.value
               ? "bg-brand-600 text-white"
-              : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+              : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
           )}
         >
           {p.label}
@@ -75,9 +75,9 @@ export function DateRangePicker({ basePath }: { basePath: string }) {
       ))}
       {showCustom && (
         <div className="flex items-center gap-2 ml-2">
-          <input id="startDate" type="date" defaultValue={currentStart} className="px-2 py-1 text-xs border border-zinc-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white" />
+          <input id="startDate" type="date" defaultValue={currentStart} className="px-2 py-1 text-xs border border-zinc-200 rounded-lg bg-white text-zinc-900" />
           <span className="text-xs text-zinc-400">to</span>
-          <input id="endDate" type="date" defaultValue={currentEnd} className="px-2 py-1 text-xs border border-zinc-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white" />
+          <input id="endDate" type="date" defaultValue={currentEnd} className="px-2 py-1 text-xs border border-zinc-200 rounded-lg bg-white text-zinc-900" />
           <button onClick={applyCustom} className="px-3 py-1 text-xs font-medium bg-brand-600 text-white rounded-lg hover:bg-brand-700">Apply</button>
         </div>
       )}

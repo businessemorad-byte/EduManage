@@ -84,9 +84,9 @@ function FeePlansListInner() {
               header: "Description",
               render: (p: FeePlan) =>
                 p.description ? (
-                  <span className="block max-w-xs truncate text-zinc-500 dark:text-zinc-400">{p.description}</span>
+                  <span className="block max-w-xs truncate text-zinc-500">{p.description}</span>
                 ) : (
-                  <span className="text-zinc-400 dark:text-zinc-600">—</span>
+                  <span className="text-zinc-400">—</span>
                 ),
             },
             {
@@ -107,7 +107,7 @@ function FeePlansListInner() {
               render: (p: FeePlan) => (
                 <span className="inline-flex items-center gap-1.5">
                   <span className={`h-2 w-2 rounded-full ${p.isActive ? "bg-emerald-500" : "bg-red-500"}`} />
-                  <span className={p.isActive ? "text-zinc-600 dark:text-zinc-300" : "text-zinc-400 dark:text-zinc-500"}>
+                  <span className={p.isActive ? "text-zinc-600" : "text-zinc-400"}>
                     {p.isActive ? "Active" : "Inactive"}
                   </span>
                 </span>

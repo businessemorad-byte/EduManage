@@ -32,18 +32,18 @@ function AcademicReportInner() {
     fetch("/api/reports/academic?" + params.toString()).then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(setData).catch(() => setError("Unable to load academic report.")).finally(() => setLoading(false));
   }, [startDate, endDate]);
 
-  if (loading) return <div className="space-y-6"><PageHeader icon={<BookOpen />} title="Academic Report" description="Grades & performance" /><div className="grid grid-cols-3 gap-4">{[1,2,3].map(i => <div key={i} className="h-24 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />)}</div></div>;
-  if (error) return <div className="space-y-6"><PageHeader icon={<BookOpen />} title="Academic Report" description="Grades & performance" /><div className="rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/20 p-8 text-center"><AlertCircle className="h-8 w-8 text-rose-500 mx-auto mb-3" /><p className="text-sm font-medium text-rose-700 dark:text-rose-400">{error}</p><button onClick={() => window.location.reload()} className="mt-3 px-4 py-2 text-xs font-medium bg-rose-600 text-white rounded-lg hover:bg-rose-700">Retry</button></div></div>;
+  if (loading) return <div className="space-y-6"><PageHeader icon={<BookOpen />} title="Academic Report" description="Grades & performance" /><div className="grid grid-cols-3 gap-4">{[1,2,3].map(i => <div key={i} className="h-24 rounded-xl bg-zinc-100 animate-pulse" />)}</div></div>;
+  if (error) return <div className="space-y-6"><PageHeader icon={<BookOpen />} title="Academic Report" description="Grades & performance" /><div className="rounded-xl border border-rose-200 bg-rose-50 p-8 text-center"><AlertCircle className="h-8 w-8 text-rose-500 mx-auto mb-3" /><p className="text-sm font-medium text-rose-700">{error}</p><button onClick={() => window.location.reload()} className="mt-3 px-4 py-2 text-xs font-medium bg-rose-600 text-white rounded-lg hover:bg-rose-700">Retry</button></div></div>;
   if (!data) return null;
 
   return (
     <div className="space-y-6">
       <PageHeader icon={<BookOpen />} title="Academic Report" description="Grades & performance analysis" action={<ExportButton reportType="academic" startDate={startDate} endDate={endDate} />} />
-      <Suspense fallback={<div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse" />}><DateRangePicker basePath="/reports/academic" /></Suspense>
+      <Suspense fallback={<div className="h-10 bg-zinc-100 rounded-lg animate-pulse" />}><DateRangePicker basePath="/reports/academic" /></Suspense>
       <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5"><p className="text-xs text-zinc-500 dark:text-zinc-400">Total Assessments</p><p className="text-2xl font-bold text-zinc-900 dark:text-white mt-1">{data.totalAssessments}</p></div>
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5"><p className="text-xs text-zinc-500 dark:text-zinc-400">Total Results</p><p className="text-2xl font-bold text-zinc-900 dark:text-white mt-1">{data.totalResults}</p></div>
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5"><p className="text-xs text-zinc-500 dark:text-zinc-400">Overall Average</p><p className="text-2xl font-bold text-zinc-900 dark:text-white mt-1">{data.overallAverage !== null ? data.overallAverage.toFixed(1) + "%" : "N/A"}</p></div>
+        <div className="rounded-xl border border-zinc-200 bg-white p-5"><p className="text-xs text-zinc-500">Total Assessments</p><p className="text-2xl font-bold text-zinc-900 mt-1">{data.totalAssessments}</p></div>
+        <div className="rounded-xl border border-zinc-200 bg-white p-5"><p className="text-xs text-zinc-500">Total Results</p><p className="text-2xl font-bold text-zinc-900 mt-1">{data.totalResults}</p></div>
+        <div className="rounded-xl border border-zinc-200 bg-white p-5"><p className="text-xs text-zinc-500">Overall Average</p><p className="text-2xl font-bold text-zinc-900 mt-1">{data.overallAverage !== null ? data.overallAverage.toFixed(1) + "%" : "N/A"}</p></div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <BarChart title="Average Score by Subject" data={data.bySubject.map(s => ({ label: s.name, value: s.average || 0 }))} />

@@ -82,33 +82,33 @@ function DeliveryLogsInner() {
         <EmptyState title="No delivery logs" description="Messages sent will appear here." />
       ) : (
         <>
-          <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <div className="overflow-x-auto rounded-lg border border-zinc-200">
             <table className="min-w-full text-sm">
-              <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
+              <thead className="border-b border-zinc-200 bg-zinc-50">
                 <tr>
-                  <th className="px-4 py-2 text-left font-medium text-zinc-600 dark:text-zinc-400">Channel</th>
-                  <th className="px-4 py-2 text-left font-medium text-zinc-600 dark:text-zinc-400">Recipient</th>
-                  <th className="px-4 py-2 text-left font-medium text-zinc-600 dark:text-zinc-400">Subject</th>
-                  <th className="px-4 py-2 text-left font-medium text-zinc-600 dark:text-zinc-400">Status</th>
-                  <th className="px-4 py-2 text-left font-medium text-zinc-600 dark:text-zinc-400">Provider</th>
-                  <th className="px-4 py-2 text-left font-medium text-zinc-600 dark:text-zinc-400">Retries</th>
-                  <th className="px-4 py-2 text-left font-medium text-zinc-600 dark:text-zinc-400">Date</th>
+                  <th className="px-4 py-2 text-left font-medium text-zinc-600">Channel</th>
+                  <th className="px-4 py-2 text-left font-medium text-zinc-600">Recipient</th>
+                  <th className="px-4 py-2 text-left font-medium text-zinc-600">Subject</th>
+                  <th className="px-4 py-2 text-left font-medium text-zinc-600">Status</th>
+                  <th className="px-4 py-2 text-left font-medium text-zinc-600">Provider</th>
+                  <th className="px-4 py-2 text-left font-medium text-zinc-600">Retries</th>
+                  <th className="px-4 py-2 text-left font-medium text-zinc-600">Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              <tbody className="divide-y divide-zinc-200">
                 {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
+                  <tr key={log.id} className="hover:bg-zinc-50">
                     <td className="px-4 py-2">
-                      <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium dark:bg-zinc-800">{log.channel}</span>
+                      <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium">{log.channel}</span>
                     </td>
-                    <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">{log.recipientType}</td>
-                    <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400 max-w-[200px] truncate">{log.subject ?? "—"}</td>
+                    <td className="px-4 py-2 text-zinc-600">{log.recipientType}</td>
+                    <td className="px-4 py-2 text-zinc-600 max-w-[200px] truncate">{log.subject ?? "—"}</td>
                     <td className="px-4 py-2">
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                        log.status === "DELIVERED" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        : log.status === "FAILED" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                        : log.status === "SENT" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                        : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
+                        log.status === "DELIVERED" ? "bg-green-100 text-green-700"
+                        : log.status === "FAILED" ? "bg-red-100 text-red-700"
+                        : log.status === "SENT" ? "bg-blue-100 text-blue-700"
+                        : "bg-zinc-100 text-zinc-700"
                       }`}>{log.status}</span>
                     </td>
                     <td className="px-4 py-2 text-xs text-zinc-500">{log.provider ?? "—"}</td>

@@ -54,7 +54,7 @@ function TrainingProgramsListInner() {
         <h1 className="text-2xl font-bold tracking-tight">Training Programs</h1>
         <button
           onClick={() => startTransition(() => router.push("/training-programs/new"))}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
         >
           Add Program
         </button>

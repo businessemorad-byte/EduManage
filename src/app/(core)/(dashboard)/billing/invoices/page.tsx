@@ -36,10 +36,10 @@ export default function InvoicesPage() {
         </select>
       </div>
 
-      <div className="border rounded-lg overflow-hidden bg-white dark:bg-zinc-900">
+      <div className="border rounded-lg overflow-hidden bg-white">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b bg-zinc-50 dark:bg-zinc-800 text-left text-zinc-500">
+            <tr className="border-b bg-zinc-50 text-left text-zinc-500">
               <th className="px-4 py-3 font-medium">Invoice #</th>
               <th className="px-4 py-3 font-medium">Amount</th>
               <th className="px-4 py-3 font-medium">Status</th>
@@ -51,7 +51,7 @@ export default function InvoicesPage() {
             {invoices.length === 0 ? (
               <tr><td colSpan={5} className="px-4 py-8 text-center text-zinc-500">No invoices found</td></tr>
             ) : invoices.map((inv) => (
-              <tr key={inv.id} className="border-b last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+              <tr key={inv.id} className="border-b last:border-0 hover:bg-zinc-50">
                 <td className="px-4 py-3 font-medium">{inv.invoiceNumber}</td>
                 <td className="px-4 py-3">{inv.totalAmount}</td>
                 <td className="px-4 py-3">

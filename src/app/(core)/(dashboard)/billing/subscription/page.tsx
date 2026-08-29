@@ -57,7 +57,7 @@ export default function SubscriptionPage() {
     <div className="p-6 max-w-3xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold tracking-tight">Subscription</h1>
 
-      <div className="border rounded-lg p-6 bg-white dark:bg-zinc-900 space-y-4">
+      <div className="border rounded-lg p-6 bg-white space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm text-zinc-500">Plan</p>
@@ -85,8 +85,8 @@ export default function SubscriptionPage() {
         </div>
 
         {sub.cancelAtPeriodEnd && (
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">Your subscription will be canceled at the end of the current billing period.</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-sm text-yellow-800">Your subscription will be canceled at the end of the current billing period.</p>
             <button onClick={reactivate} disabled={loading} className="mt-2 text-sm text-green-600 hover:underline disabled:opacity-50">Reactivate subscription</button>
           </div>
         )}

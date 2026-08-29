@@ -46,9 +46,9 @@ type StaffData = {
 
 function InfoRow({ label, value }: { label: string; value: string | null | undefined }) {
   return (
-    <div className="flex justify-between py-2.5 border-b border-zinc-50 dark:border-zinc-800/50 last:border-0">
-      <span className="text-sm text-zinc-500 dark:text-zinc-400">{label}</span>
-      <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{value || "—"}</span>
+    <div className="flex justify-between py-2.5 border-b border-zinc-50 last:border-0">
+      <span className="text-sm text-zinc-500">{label}</span>
+      <span className="text-sm font-medium text-zinc-900">{value || "—"}</span>
     </div>
   );
 }
@@ -75,7 +75,7 @@ export function StaffDetail({ staffId }: { staffId: string }) {
   if (error || !staff) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <p className="text-sm font-semibold text-zinc-900 dark:text-white">{error || "Not found"}</p>
+        <p className="text-sm font-semibold text-zinc-900">{error || "Not found"}</p>
         <button onClick={() => router.push("/staff")} className="mt-3 text-sm text-brand-600 hover:text-brand-700">
           Back to Staff
         </button>
@@ -92,7 +92,7 @@ export function StaffDetail({ staffId }: { staffId: string }) {
         <div>
           <button
             onClick={() => startTransition(() => router.push("/staff"))}
-            className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+            className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-700"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Back to Staff
@@ -102,15 +102,15 @@ export function StaffDetail({ staffId }: { staffId: string }) {
       </div>
 
       <div className="flex items-start gap-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-100 text-lg font-bold text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
+        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-100 text-lg font-bold text-brand-700">
           {p.firstName.charAt(0)}{p.lastName.charAt(0)}
         </div>
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+          <h1 className="text-xl font-bold tracking-tight text-zinc-900">
             {p.firstName} {p.middleName ? `${p.middleName} ` : ""}{p.lastName}
           </h1>
-          <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
-            <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-900/20 dark:text-brand-400">
+          <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-zinc-500">
+            <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
               {roleType}
             </span>
             {staff.employeeId && <span>ID: {staff.employeeId}</span>}
@@ -121,8 +121,8 @@ export function StaffDetail({ staffId }: { staffId: string }) {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-zinc-100 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Personal Information</h2>
+          <div className="rounded-xl border border-zinc-100 bg-white p-6">
+            <h2 className="mb-4 text-sm font-semibold text-zinc-900">Personal Information</h2>
             <div>
               <InfoRow label="Email" value={p.email} />
               <InfoRow label="Phone" value={p.phone} />
@@ -133,8 +133,8 @@ export function StaffDetail({ staffId }: { staffId: string }) {
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-100 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Employment</h2>
+          <div className="rounded-xl border border-zinc-100 bg-white p-6">
+            <h2 className="mb-4 text-sm font-semibold text-zinc-900">Employment</h2>
             <div>
               <InfoRow label="Position" value={staff.position} />
               <InfoRow label="Department" value={staff.department} />
@@ -158,30 +158,30 @@ export function StaffDetail({ staffId }: { staffId: string }) {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-zinc-100 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Quick Contact</h2>
+          <div className="rounded-xl border border-zinc-100 bg-white p-6">
+            <h2 className="mb-4 text-sm font-semibold text-zinc-900">Quick Contact</h2>
             <div className="space-y-3">
               {p.email && (
-                <a href={`mailto:${p.email}`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-zinc-800/50">
+                <a href={`mailto:${p.email}`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50">
                   <Mail className="h-4 w-4 text-zinc-400" />
                   {p.email}
                 </a>
               )}
               {p.phone && (
-                <a href={`tel:${p.phone}`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-zinc-800/50">
+                <a href={`tel:${p.phone}`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50">
                   <Phone className="h-4 w-4 text-zinc-400" />
                   {p.phone}
                 </a>
               )}
-              <div className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600">
                 <Building2 className="h-4 w-4 text-zinc-400" />
                 {staff.department || "No department"}
               </div>
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-100 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Details</h2>
+          <div className="rounded-xl border border-zinc-100 bg-white p-6">
+            <h2 className="mb-4 text-sm font-semibold text-zinc-900">Details</h2>
             <div>
               <InfoRow label="Role Type" value={roleType} />
               <InfoRow label="Organization" value={staff.organization.name} />

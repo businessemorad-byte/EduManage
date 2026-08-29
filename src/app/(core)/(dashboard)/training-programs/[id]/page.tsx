@@ -47,7 +47,7 @@ function ProgramDetailInner() {
   if (loading) return <LoadingState />;
   if (!program) return <EmptyState title="Program not found" description="This program may have been deleted." />;
 
-  const cardCls = "rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900";
+  const cardCls = "rounded-lg border border-zinc-200 bg-white p-5";
 
   return (
     <div className="space-y-6">
@@ -56,7 +56,7 @@ function ProgramDetailInner() {
           <h1 className="text-2xl font-bold tracking-tight">{program.name}</h1>
           <p className="mt-1 text-sm text-zinc-500">{program.code ? program.code + " | " : ""}{program.trainingCategory ?? "Uncategorized"}</p>
         </div>
-        <button onClick={() => router.push("/training-programs")} className="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300">
+        <button onClick={() => router.push("/training-programs")} className="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
           Back to Programs
         </button>
       </div>
@@ -82,19 +82,19 @@ function ProgramDetailInner() {
 
       {program.description && (
         <div className={cardCls}>
-          <h2 className="mb-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">Description</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">{program.description}</p>
+          <h2 className="mb-2 text-sm font-semibold text-zinc-700">Description</h2>
+          <p className="text-sm text-zinc-600">{program.description}</p>
         </div>
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className={cardCls}>
-          <h2 className="mb-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">Objectives</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">{program.objectives ?? "Not set"}</p>
+          <h2 className="mb-2 text-sm font-semibold text-zinc-700">Objectives</h2>
+          <p className="text-sm text-zinc-600">{program.objectives ?? "Not set"}</p>
         </div>
         <div className={cardCls}>
-          <h2 className="mb-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">Prerequisites</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">{program.prerequisites ?? "None"}</p>
+          <h2 className="mb-2 text-sm font-semibold text-zinc-700">Prerequisites</h2>
+          <p className="text-sm text-zinc-600">{program.prerequisites ?? "None"}</p>
         </div>
       </div>
 
@@ -115,10 +115,10 @@ function ProgramDetailInner() {
 
       {program.modules.length > 0 && (
         <div className={cardCls}>
-          <h2 className="mb-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300">Modules ({program.modules.length})</h2>
+          <h2 className="mb-3 text-sm font-semibold text-zinc-700">Modules ({program.modules.length})</h2>
           <div className="space-y-2">
             {program.modules.map((m) => (
-              <div key={m.id} className="flex items-center justify-between rounded-lg border border-zinc-100 p-3 dark:border-zinc-800">
+              <div key={m.id} className="flex items-center justify-between rounded-lg border border-zinc-100 p-3">
                 <div>
                   <span className="text-sm font-medium">{m.name}</span>
                   {m.description && <span className="ml-2 text-xs text-zinc-500">{m.description}</span>}
@@ -135,10 +135,10 @@ function ProgramDetailInner() {
 
       {program.groups.length > 0 && (
         <div className={cardCls}>
-          <h2 className="mb-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300">Cohorts ({program.groups.length})</h2>
+          <h2 className="mb-3 text-sm font-semibold text-zinc-700">Cohorts ({program.groups.length})</h2>
           <div className="space-y-2">
             {program.groups.map((g) => (
-              <div key={g.id} className="flex items-center justify-between rounded-lg border border-zinc-100 p-3 dark:border-zinc-800">
+              <div key={g.id} className="flex items-center justify-between rounded-lg border border-zinc-100 p-3">
                 <span className="text-sm font-medium">{g.name}</span>
                 <div className="flex items-center gap-3 text-xs text-zinc-500">
                   <span>{g._count.enrollments}{g.capacity ? "/" + g.capacity : ""} learners</span>
@@ -151,8 +151,8 @@ function ProgramDetailInner() {
       )}
 
       {program.certificateEligibility && (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
-          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Certificate Eligible - Learners completing this program are eligible for certificates.</p>
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+          <p className="text-sm font-medium text-emerald-700">Certificate Eligible - Learners completing this program are eligible for certificates.</p>
         </div>
       )}
     </div>

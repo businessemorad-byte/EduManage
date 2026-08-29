@@ -66,7 +66,7 @@ export default function NewGroupPage() {
   if (loading) return <LoadingState />;
 
   const inputCls =
-    "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100";
+    "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
 
   return (
     <div className="p-8">
@@ -80,19 +80,19 @@ export default function NewGroupPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
           {success && (
-            <div className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+            <div className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700">
               {success}
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Nom *
               </label>
               <input
@@ -103,7 +103,7 @@ export default function NewGroupPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Code *
               </label>
               <input
@@ -116,7 +116,7 @@ export default function NewGroupPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label className="mb-1 block text-sm font-medium text-zinc-700">
               Niveau
             </label>
             <select
@@ -134,7 +134,7 @@ export default function NewGroupPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label className="mb-1 block text-sm font-medium text-zinc-700">
               Capacité
             </label>
             <input
@@ -146,7 +146,7 @@ export default function NewGroupPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label className="mb-1 block text-sm font-medium text-zinc-700">
               Description
             </label>
             <textarea
@@ -161,14 +161,14 @@ export default function NewGroupPage() {
             <button
               type="submit"
               disabled={saving}
-              className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
             >
               {saving ? "Enregistrement..." : "Créer le groupe"}
             </button>
             <button
               type="button"
               onClick={() => router.back()}
-              className="rounded-lg border border-zinc-200 px-5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              className="rounded-lg border border-zinc-200 px-5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
             >
               Annuler
             </button>

@@ -127,22 +127,22 @@ export default function PeopleOverviewPage() {
         ) : null}
       </div>
 
-      <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Modules</h3>
+      <h3 className="mb-4 text-sm font-semibold text-zinc-900">Modules</h3>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {modules.map((mod) => (
           <button
             key={mod.href}
             onClick={() => router.push(mod.href)}
-            className="group flex items-start gap-4 rounded-xl border border-zinc-100 bg-white p-5 text-left transition-all hover:border-brand-200 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-brand-800"
+            className="group flex items-start gap-4 rounded-xl border border-zinc-100 bg-white p-5 text-left transition-all hover:border-brand-200 hover:shadow-md"
           >
-            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition-colors group-hover:bg-brand-100 dark:bg-brand-900/20 dark:text-brand-400">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition-colors group-hover:bg-brand-100">
               {mod.icon}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-zinc-900 dark:text-white">{mod.label}</p>
-              <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{mod.description}</p>
+              <p className="text-sm font-semibold text-zinc-900">{mod.label}</p>
+              <p className="mt-0.5 text-xs text-zinc-500">{mod.description}</p>
             </div>
-            <ArrowUpRight className="mt-1 h-4 w-4 flex-shrink-0 text-zinc-300 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-500 dark:text-zinc-600" />
+            <ArrowUpRight className="mt-1 h-4 w-4 flex-shrink-0 text-zinc-300 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-500" />
           </button>
         ))}
       </div>

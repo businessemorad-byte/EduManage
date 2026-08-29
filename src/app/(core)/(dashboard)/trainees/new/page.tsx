@@ -81,7 +81,7 @@ export default function EnrollTraineePage() {
 
   if (loading) return <LoadingState />;
 
-  const inputCls = "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100";
+  const inputCls = "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
 
   return (
     <div className="p-8">
@@ -92,16 +92,16 @@ export default function EnrollTraineePage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</div>}
-          {success && <div className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">{success}</div>}
+          {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+          {success && <div className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700">{success}</div>}
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Search Student</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Search Student</label>
             <input className={inputCls} value={studentSearch} onChange={(e) => { setStudentSearch(e.target.value); setSelectedStudentId(""); }} placeholder="Type student name..." />
             {studentSearch && !selectedStudentId && (
-              <div className="mt-1 max-h-40 overflow-y-auto rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+              <div className="mt-1 max-h-40 overflow-y-auto rounded-lg border border-zinc-200 bg-white">
                 {filteredStudents.slice(0, 20).map((s) => (
-                  <button key={s.id} type="button" onClick={() => { setSelectedStudentId(s.id); setStudentSearch(`${s.person.firstName} ${s.person.lastName}`); }} className="block w-full px-3 py-2 text-left text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800">
+                  <button key={s.id} type="button" onClick={() => { setSelectedStudentId(s.id); setStudentSearch(`${s.person.firstName} ${s.person.lastName}`); }} className="block w-full px-3 py-2 text-left text-sm hover:bg-zinc-50">
                     {s.person.firstName} {s.person.lastName}
                   </button>
                 ))}
@@ -111,7 +111,7 @@ export default function EnrollTraineePage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Program *</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Program *</label>
             <select className={inputCls} value={selectedProgramId} onChange={(e) => { setSelectedProgramId(e.target.value); setSelectedCohortId(""); }} required>
               <option value="">Select a program</option>
               {programs.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -119,7 +119,7 @@ export default function EnrollTraineePage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cohort (optional)</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Cohort (optional)</label>
             <select className={inputCls} value={selectedCohortId} onChange={(e) => setSelectedCohortId(e.target.value)}>
               <option value="">No cohort (standalone enrollment)</option>
               {filteredCohorts.map((c) => (
@@ -131,10 +131,10 @@ export default function EnrollTraineePage() {
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={saving} className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900">
+            <button type="submit" disabled={saving} className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50">
               {saving ? "Enrolling..." : "Enroll Trainee"}
             </button>
-            <button type="button" onClick={() => router.back()} className="rounded-lg border border-zinc-200 px-5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
+            <button type="button" onClick={() => router.back()} className="rounded-lg border border-zinc-200 px-5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
               Cancel
             </button>
           </div>

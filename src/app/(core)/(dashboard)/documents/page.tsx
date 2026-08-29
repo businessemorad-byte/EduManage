@@ -45,14 +45,14 @@ export default function DocumentsPage() {
       {loading ? (
         <div className="py-8 text-center text-zinc-500">Loading...</div>
       ) : !data?.documents.length ? (
-        <div className="rounded-lg border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-lg border border-zinc-200 bg-white p-8 text-center">
           <p className="text-zinc-500">No documents uploaded yet.</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950">
+              <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500">
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Student</th>
                 <th className="px-4 py-3">Category</th>
@@ -63,7 +63,7 @@ export default function DocumentsPage() {
             </thead>
             <tbody>
               {data.documents.map((doc) => (
-                <tr key={doc.id} className="border-b border-zinc-100 dark:border-zinc-800/50">
+                <tr key={doc.id} className="border-b border-zinc-100">
                   <td className="px-4 py-3 text-sm font-medium">{doc.name}</td>
                   <td className="px-4 py-3 text-sm text-zinc-500">
                     {doc.student.person.firstName} {doc.student.person.lastName}

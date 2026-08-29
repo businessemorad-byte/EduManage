@@ -51,9 +51,9 @@ function TrainingProgressInner() {
           { label: "Average Grade", value: progress.gradesSummary.count > 0 ? `${progress.gradesSummary.average.toFixed(1)}%` : "—" },
           { label: "Certificates", value: progress.certificates.length },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <div key={stat.label} className="rounded-lg border border-zinc-200 bg-white p-4">
             <p className="text-xs text-zinc-500">{stat.label}</p>
-            <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{stat.value}</p>
+            <p className="text-2xl font-bold text-zinc-900">{stat.value}</p>
           </div>
         ))}
       </div>
@@ -63,7 +63,7 @@ function TrainingProgressInner() {
           <h2 className="text-lg font-semibold mb-3">Enrollments</h2>
           <div className="space-y-2">
             {progress.enrollments.map((e) => (
-              <div key={e.id} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+              <div key={e.id} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3">
                 <div>
                   <p className="font-medium">{e.group.name}</p>
                   <p className="text-sm text-zinc-500">{e.group.program.name}</p>
@@ -80,7 +80,7 @@ function TrainingProgressInner() {
           <h2 className="text-lg font-semibold mb-3">Certificates</h2>
           <div className="space-y-2">
             {progress.certificates.map((cert) => (
-              <div key={cert.id} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+              <div key={cert.id} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3">
                 <span className="font-mono text-sm">{cert.certificateNumber}</span>
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-zinc-500">{cert.program?.name ?? "—"}</span>
@@ -97,7 +97,7 @@ function TrainingProgressInner() {
           <h2 className="text-lg font-semibold mb-3">Competencies</h2>
           <div className="space-y-2">
             {progress.competencies.map((comp, i) => (
-              <div key={i} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+              <div key={i} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3">
                 <span className="font-medium">{comp.competency.name}</span>
                 <div className="flex items-center gap-3">
                   {comp.score != null && <span className="text-sm text-zinc-500">{comp.score}%</span>}

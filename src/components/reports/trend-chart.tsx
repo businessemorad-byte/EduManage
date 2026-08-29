@@ -5,9 +5,9 @@ type TrendData = { label: string; value: number };
 export function TrendChart({ data, title, color = "#3b82f6" }: { data: TrendData[]; title?: string; color?: string }) {
   if (!data.length) {
     return (
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5">
-        {title && <h3 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4">{title}</h3>}
-        <p className="text-sm text-zinc-400 dark:text-zinc-500 text-center py-8">No trend data available</p>
+      <div className="rounded-xl border border-zinc-200 bg-white p-5">
+        {title && <h3 className="text-sm font-semibold text-zinc-900 mb-4">{title}</h3>}
+        <p className="text-sm text-zinc-400 text-center py-8">No trend data available</p>
       </div>
     );
   }
@@ -30,8 +30,8 @@ export function TrendChart({ data, title, color = "#3b82f6" }: { data: TrendData
   const areaD = pathD + " L" + points[points.length - 1].x.toFixed(1) + "," + (height - padY) + " L" + points[0].x.toFixed(1) + "," + (height - padY) + " Z";
 
   return (
-    <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5">
-      {title && <h3 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4">{title}</h3>}
+    <div className="rounded-xl border border-zinc-200 bg-white p-5">
+      {title && <h3 className="text-sm font-semibold text-zinc-900 mb-4">{title}</h3>}
       <svg viewBox={"0 0 " + width + " " + height} className="w-full h-32">
         <defs>
           <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
@@ -47,7 +47,7 @@ export function TrendChart({ data, title, color = "#3b82f6" }: { data: TrendData
       </svg>
       <div className="flex justify-between mt-1 px-2">
         {points.map((p, i) => (
-          <span key={i} className="text-[9px] text-zinc-400 dark:text-zinc-500 truncate max-w-[60px]">{p.label}</span>
+          <span key={i} className="text-[9px] text-zinc-400 truncate max-w-[60px]">{p.label}</span>
         ))}
       </div>
     </div>

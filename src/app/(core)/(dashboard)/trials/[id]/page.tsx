@@ -51,7 +51,7 @@ export default function TrialDetailPage() {
           description="View trial session information."
           icon={<Timer className="h-5 w-5" />}
         />
-        <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center">
           <p className="text-sm text-zinc-500">{error || "Trial not found"}</p>
           <button onClick={() => router.back()} className="mt-3 text-sm font-medium text-brand-600 hover:text-brand-700">
             Go back
@@ -72,7 +72,7 @@ export default function TrialDetailPage() {
         description="Trial session detail"
         icon={<Timer className="h-5 w-5" />}
         action={
-          <button onClick={() => router.back()} className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
+          <button onClick={() => router.back()} className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
         }
@@ -80,14 +80,14 @@ export default function TrialDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Student Information</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Student Information</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex items-center gap-3 text-sm">
                 <User className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Student Name</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{trial.lead.studentName}</p>
+                  <p className="font-medium text-zinc-900">{trial.lead.studentName}</p>
                 </div>
               </div>
               {trial.lead.parentName && (
@@ -95,33 +95,33 @@ export default function TrialDetailPage() {
                   <User className="h-4 w-4 text-zinc-400" />
                   <div>
                     <p className="text-zinc-500">Parent</p>
-                    <p className="font-medium text-zinc-900 dark:text-white">{trial.lead.parentName}</p>
+                    <p className="font-medium text-zinc-900">{trial.lead.parentName}</p>
                   </div>
                 </div>
               )}
               {trial.lead.phone && (
                 <div>
                   <p className="text-sm text-zinc-500">Phone</p>
-                  <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-white">{trial.lead.phone}</p>
+                  <p className="mt-1 text-sm font-medium text-zinc-900">{trial.lead.phone}</p>
                 </div>
               )}
               {trial.lead.email && (
                 <div>
                   <p className="text-sm text-zinc-500">Email</p>
-                  <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-white">{trial.lead.email}</p>
+                  <p className="mt-1 text-sm font-medium text-zinc-900">{trial.lead.email}</p>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Session Details</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Session Details</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex items-center gap-3 text-sm">
                 <Calendar className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Date</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">
+                  <p className="font-medium text-zinc-900">
                     {new Date(trial.scheduledDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
                   </p>
                 </div>
@@ -130,14 +130,14 @@ export default function TrialDetailPage() {
                 <Clock className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Time</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{trial.startTime} — {trial.endTime}</p>
+                  <p className="font-medium text-zinc-900">{trial.startTime} — {trial.endTime}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <User className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Teacher</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{teacherName}</p>
+                  <p className="font-medium text-zinc-900">{teacherName}</p>
                 </div>
               </div>
               {trial.subject && (
@@ -145,7 +145,7 @@ export default function TrialDetailPage() {
                   <Target className="h-4 w-4 text-zinc-400" />
                   <div>
                     <p className="text-zinc-500">Subject</p>
-                    <p className="font-medium text-zinc-900 dark:text-white">{trial.subject.name}</p>
+                    <p className="font-medium text-zinc-900">{trial.subject.name}</p>
                   </div>
                 </div>
               )}
@@ -154,7 +154,7 @@ export default function TrialDetailPage() {
                   <MapPin className="h-4 w-4 text-zinc-400" />
                   <div>
                     <p className="text-zinc-500">Room</p>
-                    <p className="font-medium text-zinc-900 dark:text-white">{trial.room.name}</p>
+                    <p className="font-medium text-zinc-900">{trial.room.name}</p>
                   </div>
                 </div>
               )}
@@ -163,48 +163,48 @@ export default function TrialDetailPage() {
                   <Users className="h-4 w-4 text-zinc-400" />
                   <div>
                     <p className="text-zinc-500">Group</p>
-                    <p className="font-medium text-zinc-900 dark:text-white">{trial.group.name}</p>
+                    <p className="font-medium text-zinc-900">{trial.group.name}</p>
                   </div>
                 </div>
               )}
             </div>
             {trial.notes && (
-              <div className="mt-4 rounded-lg bg-zinc-50 p-3 dark:bg-zinc-800/50">
+              <div className="mt-4 rounded-lg bg-zinc-50 p-3">
                 <p className="text-sm text-zinc-500">Notes</p>
-                <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{trial.notes}</p>
+                <p className="mt-1 text-sm text-zinc-700">{trial.notes}</p>
               </div>
             )}
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Status</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Status</h3>
             <StatusBadge status={trial.status} />
             {trial.attended !== null && (
               <div className="mt-3 text-sm text-zinc-500">
-                Attended: <span className="font-medium text-zinc-900 dark:text-white">{trial.attended ? "Yes" : "No"}</span>
+                Attended: <span className="font-medium text-zinc-900">{trial.attended ? "Yes" : "No"}</span>
               </div>
             )}
             {trial.result && (
               <div className="mt-2 text-sm text-zinc-500">
-                Result: <span className="font-medium text-zinc-900 dark:text-white">{trial.result}</span>
+                Result: <span className="font-medium text-zinc-900">{trial.result}</span>
               </div>
             )}
           </div>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Quick Actions</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Quick Actions</h3>
             <div className="space-y-2">
               <button
                 onClick={() => router.push(`/leads/${trial.lead.id}`)}
-                className="flex w-full items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                className="flex w-full items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
               >
                 <Target className="h-4 w-4" /> View Lead
               </button>
               <button
                 onClick={() => router.push(`/leads/${trial.lead.id}`)}
-                className="flex w-full items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100 dark:bg-brand-900/20 dark:text-brand-400"
+                className="flex w-full items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
               >
                 <User className="h-4 w-4" /> Contact Student
               </button>

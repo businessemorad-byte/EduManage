@@ -83,22 +83,22 @@ function EditCohortForm() {
 
   if (loading) return <LoadingState />;
 
-  const inputCls = "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100";
+  const inputCls = "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-4">
-      {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</div>}
+      {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cohort Name</label>
+        <label className="mb-1 block text-sm font-medium text-zinc-700">Cohort Name</label>
         <input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Cohort name" />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Capacity</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Capacity</label>
           <input type="number" min="1" className={inputCls} value={form.capacity} onChange={(e) => setForm({ ...form, capacity: e.target.value })} placeholder="Max learners" />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Status</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Status</label>
           <select className={inputCls} value={form.cohortStatus} onChange={(e) => setForm({ ...form, cohortStatus: e.target.value })}>
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
@@ -106,19 +106,19 @@ function EditCohortForm() {
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Start Date</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Start Date</label>
           <input type="date" className={inputCls} value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">End Date</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">End Date</label>
           <input type="date" className={inputCls} value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
         </div>
       </div>
       <div className="flex gap-3 pt-2">
-        <button type="submit" disabled={pending || saving} className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900">
+        <button type="submit" disabled={pending || saving} className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>
-        <button type="button" onClick={() => router.back()} className="rounded-lg border border-zinc-200 px-5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
+        <button type="button" onClick={() => router.back()} className="rounded-lg border border-zinc-200 px-5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
           Cancel
         </button>
       </div>

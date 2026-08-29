@@ -259,19 +259,19 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
   const sections = isPlatformOwner ? platformNavSections : getOrganizationNavSections(organizationType || "PRIVATE_SCHOOL");
 
   const sidebarContent = (
-    <div className="flex h-full flex-col bg-white dark:bg-zinc-950">
-      <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
+    <div className="flex h-full flex-col bg-white">
+      <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4">
         <Link href="/" className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600">
             <span className="text-sm font-bold text-white">E</span>
           </div>
-          <span className="text-base font-bold tracking-tight text-zinc-900 dark:text-white">
+          <span className="text-base font-bold tracking-tight text-zinc-900">
             EduManage
           </span>
         </Link>
         <button
           onClick={() => setMobileOpen(false)}
-          className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 lg:hidden dark:hover:bg-zinc-800"
+          className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 lg:hidden"
         >
           <X className="h-5 w-5" />
         </button>
@@ -283,8 +283,8 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
           onClick={() => setMobileOpen(false)}
           className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
             (isPlatformOwner ? pathname === "/platform/dashboard" : pathname === "/school/dashboard")
-              ? "bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400"
-              : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-200"
+              ? "bg-brand-50 text-brand-700"
+              : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
           }`}
         >
           <LayoutDashboard className="h-4 w-4" />
@@ -297,8 +297,8 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
             onClick={() => setMobileOpen(false)}
             className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
               pathname === "/people" || pathname.startsWith("/people/")
-                ? "bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400"
-                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-200"
+                ? "bg-brand-50 text-brand-700"
+                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
             }`}
           >
             <Users className="h-4 w-4" />
@@ -314,7 +314,7 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
                 onClick={() => toggleSection(section.label.fr)}
                 className="flex w-full items-center justify-between px-3 py-1.5"
               >
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
                   {section.label.fr}
                 </span>
                 <ChevronDown
@@ -336,11 +336,11 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
                         onClick={() => setMobileOpen(false)}
                         className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
                           isActive(item.href)
-                            ? "bg-brand-50 font-medium text-brand-700 dark:bg-brand-900/20 dark:text-brand-400"
-                            : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-200"
+                            ? "bg-brand-50 font-medium text-brand-700"
+                            : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                         }`}
                       >
-                        <span className={isActive(item.href) ? "text-brand-600 dark:text-brand-400" : "text-zinc-400 dark:text-zinc-500"}>
+                        <span className={isActive(item.href) ? "text-brand-600" : "text-zinc-400"}>
                           {item.icon}
                         </span>
                         {item.label.fr}
@@ -354,10 +354,10 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
         })}
 
         {isPlatformOwner && (
-          <div className="mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+          <div className="mt-3 border-t border-zinc-100 pt-3">
             <div className="flex items-center gap-2 px-3 py-1.5">
               <Crown className="h-3.5 w-3.5 text-amber-500" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-600">
                 Admin
               </span>
             </div>
@@ -372,11 +372,11 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
                   onClick={() => setMobileOpen(false)}
                   className={`mt-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
                     isActive(item.href)
-                      ? "bg-amber-50 font-medium text-amber-700 dark:bg-amber-900/20 dark:text-amber-400"
-                      : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-200"
+                      ? "bg-amber-50 font-medium text-amber-700"
+                      : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                   }`}
                 >
-                  <span className={isActive(item.href) ? "text-amber-600 dark:text-amber-400" : "text-zinc-400 dark:text-zinc-500"}>
+                  <span className={isActive(item.href) ? "text-amber-600" : "text-zinc-400"}>
                     {item.icon}
                   </span>
                   {item.label.fr}
@@ -387,19 +387,19 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
         )}
       </nav>
 
-      <div className="border-t border-zinc-100 px-4 py-4 dark:border-zinc-800">
+      <div className="border-t border-zinc-100 px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700">
             {userName.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-zinc-900 dark:text-white">{userName}</p>
-            <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">{userEmail}</p>
+            <p className="truncate text-sm font-medium text-zinc-900">{userName}</p>
+            <p className="truncate text-xs text-zinc-500">{userEmail}</p>
           </div>
           <form action="/api/auth/logout" method="POST">
             <button
               type="submit"
-              className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+              className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
               title="Sign out"
             >
               <LogOut className="h-4 w-4" />
@@ -414,7 +414,7 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
     <>
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed left-4 top-3.5 z-50 rounded-lg border border-zinc-200 bg-white p-2 text-zinc-600 shadow-sm lg:hidden dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+        className="fixed left-4 top-3.5 z-50 rounded-lg border border-zinc-200 bg-white p-2 text-zinc-600 shadow-sm lg:hidden"
       >
         <Menu className="h-5 w-5" />
       </button>
@@ -427,7 +427,7 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform border-r border-zinc-100 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 dark:border-zinc-800 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform border-r border-zinc-100 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

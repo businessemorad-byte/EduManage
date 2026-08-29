@@ -31,8 +31,8 @@ export default function AutomationOverviewPage() {
       <div className="space-y-6 p-6 max-w-7xl mx-auto">
         <div className="flex items-center justify-between">
           <div>
-            <div className="h-8 w-48 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
-            <div className="h-4 w-64 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse mt-2" />
+            <div className="h-8 w-48 bg-zinc-200 rounded animate-pulse" />
+            <div className="h-4 w-64 bg-zinc-200 rounded animate-pulse mt-2" />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -47,8 +47,8 @@ export default function AutomationOverviewPage() {
   if (error) {
     return (
       <div className="p-6 max-w-7xl mx-auto">
-        <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-6 text-center">
-          <p className="text-sm text-red-600 dark:text-red-400">Failed to load automation stats.</p>
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+          <p className="text-sm text-red-600">Failed to load automation stats.</p>
         </div>
       </div>
     );
@@ -104,9 +104,9 @@ export default function AutomationOverviewPage() {
         />
       </div>
 
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6">
+      <div className="rounded-xl border border-zinc-200 bg-white p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Recent Activity</h2>
+          <h2 className="text-lg font-semibold text-zinc-900">Recent Activity</h2>
           <Link
             href="/automation/logs"
             className="text-sm text-brand-600 hover:text-brand-700 font-medium"
@@ -115,7 +115,7 @@ export default function AutomationOverviewPage() {
           </Link>
         </div>
         {!data?.recentLogs?.length ? (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 py-8 text-center">
+          <p className="text-sm text-zinc-500 py-8 text-center">
             No recent executions. Rules will log activity here when triggered.
           </p>
         ) : (
@@ -123,21 +123,21 @@ export default function AutomationOverviewPage() {
             {data.recentLogs.map((log) => (
               <div
                 key={log.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/50"
+                className="flex items-center justify-between p-3 rounded-lg bg-zinc-50"
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-zinc-900 dark:text-white truncate">
+                  <p className="text-sm font-medium text-zinc-900 truncate">
                     {log.ruleName}
                   </p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+                  <p className="text-xs text-zinc-500 truncate">
                     {log.trigger} · {new Date(log.executedAt).toLocaleString()}
                   </p>
                 </div>
                 <span
                   className={`ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     log.status === "success"
-                      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                      : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-red-50 text-red-700"
                   }`}
                 >
                   {log.status}

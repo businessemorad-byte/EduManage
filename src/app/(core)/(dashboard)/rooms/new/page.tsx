@@ -39,37 +39,37 @@ export default function NewRoomPage() {
   return (
     <div className="animate-fade-in max-w-2xl space-y-6">
       <div className="flex items-center gap-4">
-        <button onClick={() => router.back()} className="rounded-lg border border-zinc-200 p-2 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+        <button onClick={() => router.back()} className="rounded-lg border border-zinc-200 p-2 transition-colors hover:bg-zinc-50">
           <ArrowLeft className="h-4 w-4" />
         </button>
         <PageHeader title="New Room" description="Add a new room or facility." icon={<span className="text-lg">🏫</span>} />
       </div>
 
-      <form onSubmit={handleSubmit} className="rounded-xl border bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-        {error && <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">{error}</div>}
+      <form onSubmit={handleSubmit} className="rounded-xl border bg-white p-6">
+        {error && <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
 
         <div className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Name *</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} required className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" placeholder="e.g. Room 101, Lab A" />
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Name *</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} required className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm" placeholder="e.g. Room 101, Lab A" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Type</label>
-              <select value={type} onChange={(e) => setType(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">Type</label>
+              <select value={type} onChange={(e) => setType(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm">
                 {ROOM_TYPES.map((t) => <option key={t} value={t}>{t.replace("_", " ")}</option>)}
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Capacity</label>
-              <input type="number" min="1" value={capacity} onChange={(e) => setCapacity(Number(e.target.value))} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
+              <label className="mb-1 block text-sm font-medium text-zinc-700">Capacity</label>
+              <input type="number" min="1" value={capacity} onChange={(e) => setCapacity(Number(e.target.value))} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm" />
             </div>
           </div>
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <button type="button" onClick={() => router.back()} className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800">Cancel</button>
+          <button type="button" onClick={() => router.back()} className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-50">Cancel</button>
           <button type="submit" disabled={loading} className="rounded-lg bg-brand-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 disabled:opacity-50">
             {loading ? "Creating..." : "Create Room"}
           </button>

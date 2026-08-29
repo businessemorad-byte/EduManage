@@ -67,7 +67,7 @@ export default function AIActionCenterPage() {
         <button
           onClick={() => setActiveTab("anomalies")}
           className={`rounded-lg px-4 py-2 text-sm font-medium ${
-            activeTab === "anomalies" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+            activeTab === "anomalies" ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-700"
           }`}
         >
           Anomalies ({anomalies.length})
@@ -75,7 +75,7 @@ export default function AIActionCenterPage() {
         <button
           onClick={() => setActiveTab("recommendations")}
           className={`rounded-lg px-4 py-2 text-sm font-medium ${
-            activeTab === "recommendations" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+            activeTab === "recommendations" ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-700"
           }`}
         >
           Recommendations ({recommendations.length})
@@ -88,12 +88,12 @@ export default function AIActionCenterPage() {
             <p className="text-sm text-zinc-500">No anomalies detected.</p>
           ) : (
             anomalies.map((a, i) => (
-              <div key={i} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+              <div key={i} className="rounded-lg border border-zinc-200 bg-white p-4">
                 <div className="flex items-center gap-3">
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    a.severity === "CRITICAL" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                    : a.severity === "WARNING" ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                    : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
+                    a.severity === "CRITICAL" ? "bg-red-100 text-red-700"
+                    : a.severity === "WARNING" ? "bg-amber-100 text-amber-700"
+                    : "bg-zinc-100 text-zinc-700"
                   }`}>{a.severity}</span>
                   <span className="text-xs text-zinc-500">{a.entityType}</span>
                 </div>
@@ -110,7 +110,7 @@ export default function AIActionCenterPage() {
           <div className="flex justify-end">
             <button
               onClick={refreshRecommendations}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
             >
               Refresh
             </button>
@@ -119,12 +119,12 @@ export default function AIActionCenterPage() {
             <p className="text-sm text-zinc-500">No recommendations yet. Click Refresh to generate.</p>
           ) : (
             recommendations.map((r, i) => (
-              <div key={i} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+              <div key={i} className="rounded-lg border border-zinc-200 bg-white p-4">
                 <div className="flex items-center gap-3">
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    r.priority === "HIGH" || r.priority === "CRITICAL" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                    : r.priority === "MEDIUM" ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                    : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
+                    r.priority === "HIGH" || r.priority === "CRITICAL" ? "bg-red-100 text-red-700"
+                    : r.priority === "MEDIUM" ? "bg-amber-100 text-amber-700"
+                    : "bg-zinc-100 text-zinc-700"
                   }`}>{r.priority}</span>
                   <span className="text-xs text-zinc-500">{r.type}</span>
                   {r.status !== "PENDING" && (
@@ -138,13 +138,13 @@ export default function AIActionCenterPage() {
                   <div className="mt-3 flex gap-2">
                     <button
                       onClick={() => updateRecommendation(r.title, "ACCEPTED")}
-                      className="rounded bg-green-100 px-3 py-1 text-xs font-medium text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
+                      className="rounded bg-green-100 px-3 py-1 text-xs font-medium text-green-700 hover:bg-green-200"
                     >
                       Accept
                     </button>
                     <button
                       onClick={() => updateRecommendation(r.title, "DISMISSED")}
-                      className="rounded bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400"
+                      className="rounded bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-200"
                     >
                       Dismiss
                     </button>

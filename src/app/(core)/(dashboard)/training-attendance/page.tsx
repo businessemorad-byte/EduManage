@@ -89,15 +89,15 @@ function TrainingAttendanceInner() {
 
       <div className="flex flex-wrap items-end gap-4">
         <div className="w-64">
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cohort</label>
-          <select className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" value={selectedGroup} onChange={(e) => { setSelectedGroup(e.target.value); setSuccess(""); setError(""); }}>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Cohort</label>
+          <select className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm" value={selectedGroup} onChange={(e) => { setSelectedGroup(e.target.value); setSuccess(""); setError(""); }}>
             <option value="">Select a cohort</option>
             {groups.map((g) => <option key={g.id} value={g.id}>{g.name}{g.program ? " (" + g.program.name + ")" : ""}</option>)}
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Date</label>
-          <input type="date" className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" value={date} onChange={(e) => setDate(e.target.value)} />
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Date</label>
+          <input type="date" className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm" value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
       </div>
 
@@ -108,23 +108,23 @@ function TrainingAttendanceInner() {
       )}
 
       {students.length > 0 && (
-        <div className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-          {error && <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</div>}
-          {success && <div className="mb-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">{success}</div>}
+        <div className="rounded-lg border border-zinc-200 bg-white p-5">
+          {error && <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+          {success && <div className="mb-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700">{success}</div>}
 
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-zinc-100 dark:border-zinc-800">
+              <tr className="border-b border-zinc-100">
                 <th className="pb-2 text-left font-medium text-zinc-500">Trainee</th>
                 <th className="pb-2 text-left font-medium text-zinc-500">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800">
+            <tbody className="divide-y divide-zinc-50">
               {students.map((s) => (
                 <tr key={s.id}>
                   <td className="py-2 font-medium">{s.firstName} {s.lastName}</td>
                   <td className="py-2">
-                    <select className="rounded-lg border border-zinc-200 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100" value={records[s.id] ?? "PRESENT"} onChange={(e) => setRecords({ ...records, [s.id]: e.target.value })}>
+                    <select className="rounded-lg border border-zinc-200 px-2 py-1 text-xs" value={records[s.id] ?? "PRESENT"} onChange={(e) => setRecords({ ...records, [s.id]: e.target.value })}>
                       <option value="PRESENT">Present</option>
                       <option value="ABSENT">Absent</option>
                       <option value="LATE">Late</option>
@@ -137,7 +137,7 @@ function TrainingAttendanceInner() {
           </table>
 
           <div className="mt-4 flex gap-3">
-            <button onClick={handleSubmit} disabled={saving} className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900">
+            <button onClick={handleSubmit} disabled={saving} className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50">
               {saving ? "Saving..." : "Save Attendance"}
             </button>
           </div>

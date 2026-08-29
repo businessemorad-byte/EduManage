@@ -33,7 +33,7 @@ export default function BalancesPage() {
     <div className="animate-fade-in space-y-6">
       <PageHeader title="Student Balances" description="Outstanding balances per student." icon={<PieChart className="h-5 w-5" />} />
 
-      {error && <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-center text-red-600 dark:border-red-800 dark:bg-red-950 dark:text-red-400">{error}</div>}
+      {error && <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-center text-red-600">{error}</div>}
 
       <div className="flex items-center gap-3">
         <div className="w-72">
@@ -58,7 +58,7 @@ export default function BalancesPage() {
             {
               key: "overdueCount", header: "Overdue", render: (b: Balance) => {
                 return b.overdueCount > 0 ? (
-                  <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900 dark:text-red-300">
+                  <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
                     {b.overdueCount}
                   </span>
                 ) : <span className="text-zinc-400">—</span>;

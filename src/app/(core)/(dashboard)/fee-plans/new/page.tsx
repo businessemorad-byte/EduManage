@@ -56,7 +56,7 @@ export default function NewFeePlanPage() {
         action={
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
           >
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
@@ -64,15 +64,15 @@ export default function NewFeePlanPage() {
       />
 
       <div className="mx-auto max-w-lg">
-        <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
           {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="name" className="block text-sm font-medium text-zinc-700">
               Name
             </label>
             <input
@@ -80,12 +80,12 @@ export default function NewFeePlanPage() {
               name="name"
               required
               placeholder="e.g. Monthly Tuition"
-              className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500"
+              className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="description" className="block text-sm font-medium text-zinc-700">
               Description
             </label>
             <textarea
@@ -93,13 +93,13 @@ export default function NewFeePlanPage() {
               name="description"
               rows={3}
               placeholder="What does this fee cover?"
-              className="mt-1 block w-full resize-none rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500"
+              className="mt-1 block w-full resize-none rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="amount" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label htmlFor="amount" className="block text-sm font-medium text-zinc-700">
                 Amount
               </label>
               <input
@@ -110,20 +110,20 @@ export default function NewFeePlanPage() {
                 step="0.01"
                 required
                 placeholder="e.g. 1500"
-                className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500"
+                className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
               />
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Displayed in DH on invoices.</p>
+              <p className="mt-1 text-xs text-zinc-500">Displayed in DH on invoices.</p>
             </div>
 
             <div>
-              <label htmlFor="currency" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label htmlFor="currency" className="block text-sm font-medium text-zinc-700">
                 Currency
               </label>
               <select
                 id="currency"
                 name="currency"
                 defaultValue="USD"
-                className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
               >
                 {CURRENCIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -133,14 +133,14 @@ export default function NewFeePlanPage() {
           </div>
 
           <div>
-            <label htmlFor="frequency" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="frequency" className="block text-sm font-medium text-zinc-700">
               Frequency
             </label>
             <select
               id="frequency"
               name="frequency"
               defaultValue="ONE_TIME"
-              className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+              className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             >
               {FREQUENCIES.map((f) => (
                 <option key={f.value} value={f.value}>{f.label}</option>

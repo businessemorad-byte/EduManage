@@ -57,7 +57,7 @@ export default function AIRecommendationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Recommendations</h1>
-        <button onClick={generate} disabled={generating} className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900">
+        <button onClick={generate} disabled={generating} className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50">
           {generating ? "Generating..." : "Generate Recommendations"}
         </button>
       </div>
@@ -67,13 +67,13 @@ export default function AIRecommendationsPage() {
       ) : (
         <div className="space-y-3">
           {recommendations.map((r) => (
-            <div key={r.id} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+            <div key={r.id} className="rounded-lg border border-zinc-200 bg-white p-4">
               <div className="flex items-center gap-3">
                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                  r.priority === "CRITICAL" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                  : r.priority === "HIGH" ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                  : r.priority === "MEDIUM" ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                  : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
+                  r.priority === "CRITICAL" ? "bg-red-100 text-red-700"
+                  : r.priority === "HIGH" ? "bg-orange-100 text-orange-700"
+                  : r.priority === "MEDIUM" ? "bg-amber-100 text-amber-700"
+                  : "bg-zinc-100 text-zinc-700"
                 }`}>{r.priority}</span>
                 <span className="text-xs text-zinc-500">{r.type}</span>
                 <span className={`text-xs ${r.status === "ACCEPTED" ? "text-green-600" : r.status === "DISMISSED" ? "text-zinc-500" : "text-amber-600"}`}>{r.status}</span>

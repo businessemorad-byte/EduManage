@@ -52,7 +52,7 @@ function CertificatesListInner() {
         <h1 className="text-2xl font-bold tracking-tight">Certificates</h1>
         <button
           onClick={() => startTransition(() => router.push("/certificates/new"))}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
         >
           Issue Certificate
         </button>

@@ -1,12 +1,12 @@
 export function Skeleton({ className = "" }: { className?: string }) {
   return (
-    <div className={`animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-800 ${className}`} />
+    <div className={`animate-pulse rounded-lg bg-zinc-100 ${className}`} />
   );
 }
 
 export function StatCardSkeleton() {
   return (
-    <div className="rounded-xl border border-zinc-100 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-xl border border-zinc-100 bg-white p-5">
       <div className="flex items-start justify-between">
         <div className="space-y-3">
           <Skeleton className="h-4 w-24" />
@@ -21,8 +21,8 @@ export function StatCardSkeleton() {
 
 export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number; cols?: number }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-zinc-100 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="border-b border-zinc-100 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+    <div className="overflow-hidden rounded-xl border border-zinc-100 bg-white">
+      <div className="border-b border-zinc-100 bg-zinc-50 px-4 py-3">
         <div className="flex gap-8">
           {Array.from({ length: cols }).map((_, i) => (
             <Skeleton key={i} className="h-4 w-20" />
@@ -30,7 +30,7 @@ export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number; cols?: nu
         </div>
       </div>
       {Array.from({ length: rows }).map((_, row) => (
-        <div key={row} className="border-b border-zinc-50 px-4 py-3 last:border-0 dark:border-zinc-800/50">
+        <div key={row} className="border-b border-zinc-50 px-4 py-3 last:border-0">
           <div className="flex gap-8">
             {Array.from({ length: cols }).map((_, col) => (
               <Skeleton key={col} className="h-4 w-24" />

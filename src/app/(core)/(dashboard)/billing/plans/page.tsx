@@ -61,7 +61,7 @@ export default function PlansPage() {
         {plans.map((plan) => {
           const price = interval === "YEARLY" ? plan.priceYearly ?? plan.priceMonthly : plan.priceMonthly;
           return (
-            <div key={plan.id} className="border rounded-lg p-6 bg-white dark:bg-zinc-900 flex flex-col">
+            <div key={plan.id} className="border rounded-lg p-6 bg-white flex flex-col">
               <h3 className="text-xl font-semibold">{plan.displayName}</h3>
               {plan.description && <p className="text-sm text-zinc-500 mt-1">{plan.description}</p>}
               <div className="mt-4 mb-6">

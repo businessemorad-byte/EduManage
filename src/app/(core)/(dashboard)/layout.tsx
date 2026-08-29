@@ -22,7 +22,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex min-h-screen bg-zinc-50">
       <Sidebar
         userName={user.name}
         userEmail={user.email}

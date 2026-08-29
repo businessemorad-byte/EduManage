@@ -53,7 +53,7 @@ function CohortDetailInner() {
   if (loading) return <LoadingState />;
   if (!cohort) return <EmptyState title="Cohort not found" description="This cohort may have been deleted." />;
 
-  const cardCls = "rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900";
+  const cardCls = "rounded-lg border border-zinc-200 bg-white p-5";
   const enrollmentCount = cohort._count.enrollments;
   const capacityPercent = cohort.capacity ? Math.round((enrollmentCount / cohort.capacity) * 100) : null;
 
@@ -67,7 +67,7 @@ function CohortDetailInner() {
             {cohort.program?.name ?? "No program"}
           </p>
         </div>
-        <button onClick={() => router.push("/cohorts")} className="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300">
+        <button onClick={() => router.push("/cohorts")} className="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
           Back to Cohorts
         </button>
       </div>
@@ -84,7 +84,7 @@ function CohortDetailInner() {
             {cohort.capacity ? ` / ${cohort.capacity}` : ""}
           </p>
           {capacityPercent !== null && (
-            <div className="mt-2 h-1.5 w-full rounded-full bg-zinc-100 dark:bg-zinc-800">
+            <div className="mt-2 h-1.5 w-full rounded-full bg-zinc-100">
               <div className={`h-1.5 rounded-full ${capacityPercent >= 90 ? "bg-red-500" : capacityPercent >= 70 ? "bg-amber-500" : "bg-emerald-500"}`} style={{ width: `${Math.min(capacityPercent, 100)}%` }} />
             </div>
           )}
@@ -104,20 +104,20 @@ function CohortDetailInner() {
       </div>
 
       <div className={cardCls}>
-        <h2 className="mb-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300">Enrolled Learners ({enrollmentCount})</h2>
+        <h2 className="mb-3 text-sm font-semibold text-zinc-700">Enrolled Learners ({enrollmentCount})</h2>
         {cohort.enrollments.length === 0 ? (
           <p className="text-sm text-zinc-500">No learners enrolled yet.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-zinc-100 dark:border-zinc-800">
+                <tr className="border-b border-zinc-100">
                   <th className="pb-2 text-left font-medium text-zinc-500">Name</th>
                   <th className="pb-2 text-left font-medium text-zinc-500">Email</th>
                   <th className="pb-2 text-left font-medium text-zinc-500">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800">
+              <tbody className="divide-y divide-zinc-50">
                 {cohort.enrollments.map((e) => (
                   <tr key={e.id}>
                     <td className="py-2 font-medium">{e.student.person.firstName} {e.student.person.lastName}</td>
@@ -133,10 +133,10 @@ function CohortDetailInner() {
 
       {cohort.classSessions.length > 0 && (
         <div className={cardCls}>
-          <h2 className="mb-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300">Sessions ({cohort.classSessions.length})</h2>
+          <h2 className="mb-3 text-sm font-semibold text-zinc-700">Sessions ({cohort.classSessions.length})</h2>
           <div className="space-y-2">
             {cohort.classSessions.map((s) => (
-              <div key={s.id} className="flex items-center justify-between rounded-lg border border-zinc-100 p-3 dark:border-zinc-800">
+              <div key={s.id} className="flex items-center justify-between rounded-lg border border-zinc-100 p-3">
                 <span className="text-sm font-medium">{s.name}</span>
                 <span className="text-xs text-zinc-500">{s.startTime} - {s.endTime}</span>
               </div>

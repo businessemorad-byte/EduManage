@@ -40,7 +40,7 @@ export default function CampaignsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Campaigns</h1>
-        <button className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
+        <button className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800">
           Create Campaign
         </button>
       </div>
@@ -51,17 +51,17 @@ export default function CampaignsPage() {
         <>
           <div className="space-y-3">
             {campaigns.map((c) => (
-              <div key={c.id} className="rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+              <div key={c.id} className="rounded-lg border border-zinc-200 bg-white px-4 py-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-medium">{c.name}</h3>
                     {c.description && <p className="mt-1 text-sm text-zinc-500">{c.description}</p>}
                   </div>
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    c.status === "RUNNING" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                    : c.status === "COMPLETED" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                    : c.status === "FAILED" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                    : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
+                    c.status === "RUNNING" ? "bg-green-100 text-green-700"
+                    : c.status === "COMPLETED" ? "bg-blue-100 text-blue-700"
+                    : c.status === "FAILED" ? "bg-red-100 text-red-700"
+                    : "bg-zinc-100 text-zinc-700"
                   }`}>{c.status}</span>
                 </div>
                 <div className="mt-2 flex gap-4 text-xs text-zinc-500">

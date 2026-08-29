@@ -41,9 +41,9 @@ export default function NewDiscountPage() {
   }
 
   const inputClass =
-    "mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500";
+    "mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500";
   const labelClass =
-    "block text-sm font-medium text-zinc-700 dark:text-zinc-300";
+    "block text-sm font-medium text-zinc-700";
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -54,7 +54,7 @@ export default function NewDiscountPage() {
         action={
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
           >
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
@@ -64,10 +64,10 @@ export default function NewDiscountPage() {
       <div className="mx-auto max-w-lg">
         <form
           onSubmit={handleSubmit}
-          className="space-y-5 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+          className="space-y-5 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
         >
           {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
@@ -136,7 +136,7 @@ export default function NewDiscountPage() {
               placeholder="Leave empty for unlimited"
               className={inputClass}
             />
-            <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
+            <p className="mt-1 text-xs text-zinc-400">
               Leave empty for unlimited uses.
             </p>
           </div>

@@ -41,7 +41,7 @@ export function FilterBar({ filters }: FilterBarProps) {
           key={filter.key}
           value={searchParams.get(filter.key) ?? ""}
           onChange={(e) => handleChange(filter.key, e.target.value)}
-          className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700 transition-colors focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:focus:border-brand-600 dark:focus:ring-brand-900/30"
+          className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700 transition-colors focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-100"
         >
           <option value="">{filter.label}</option>
           {filter.options.map((opt) => (

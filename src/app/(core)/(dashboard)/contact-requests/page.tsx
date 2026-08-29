@@ -94,28 +94,28 @@ function ContactRequestsInner() {
         <>
           <div className="space-y-3">
             {requests.map((r) => (
-              <div key={r.id} className="rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+              <div key={r.id} className="rounded-lg border border-zinc-200 bg-white px-4 py-3">
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-sm font-medium">{r.subject}</h3>
-                      <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium dark:bg-zinc-800">
+                      <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium">
                         {r.category}
                       </span>
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                        r.status === "OPEN" ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                        : r.status === "RESOLVED" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
+                        r.status === "OPEN" ? "bg-amber-100 text-amber-700"
+                        : r.status === "RESOLVED" ? "bg-green-100 text-green-700"
+                        : "bg-zinc-100 text-zinc-700"
                       }`}>{r.status}</span>
                     </div>
                     <p className="mt-1 text-sm text-zinc-500">From: {r.senderName} {r.senderEmail && `(${r.senderEmail})`}</p>
-                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">{r.message}</p>
+                    <p className="mt-1 text-sm text-zinc-600 line-clamp-2">{r.message}</p>
                     <p className="mt-1 text-xs text-zinc-500">{new Date(r.createdAt).toLocaleString()}</p>
                   </div>
                   {r.status === "OPEN" && (
                     <button
                       onClick={() => startTransition(() => resolveRequest(r.id))}
-                      className="ml-4 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
+                      className="ml-4 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium hover:bg-zinc-50"
                     >
                       Resolve
                     </button>

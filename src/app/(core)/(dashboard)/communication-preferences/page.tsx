@@ -66,19 +66,19 @@ export default function CommunicationPreferencesPage() {
         <p className="mt-1 text-sm text-zinc-500">Control which notifications you receive and how.</p>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="overflow-x-auto rounded-lg border border-zinc-200 bg-white">
         <table className="w-full text-sm">
-          <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
+          <thead className="border-b border-zinc-200 bg-zinc-50">
             <tr>
-              <th className="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-400">Category</th>
+              <th className="px-4 py-3 text-left font-medium text-zinc-600">Category</th>
               {CHANNELS.map((ch) => (
-                <th key={ch} className="px-4 py-3 text-center font-medium text-zinc-600 dark:text-zinc-400">{CHANNEL_LABELS[ch]}</th>
+                <th key={ch} className="px-4 py-3 text-center font-medium text-zinc-600">{CHANNEL_LABELS[ch]}</th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+          <tbody className="divide-y divide-zinc-100">
             {CATEGORIES.map((cat) => (
-              <tr key={cat} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
+              <tr key={cat} className="hover:bg-zinc-50">
                 <td className="px-4 py-3 font-medium">{CATEGORY_LABELS[cat] ?? cat}</td>
                 {CHANNELS.map((ch) => {
                   const pref = preferences.find((p) => p.category === cat && p.channel === ch);
@@ -89,7 +89,7 @@ export default function CommunicationPreferencesPage() {
                         onClick={() => togglePref(cat, ch, enabled)}
                         disabled={saving}
                         className={`inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          enabled ? "bg-zinc-900 dark:bg-zinc-100" : "bg-zinc-300 dark:bg-zinc-600"
+                          enabled ? "bg-zinc-900" : "bg-zinc-300"
                         }`}
                       >
                         <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${

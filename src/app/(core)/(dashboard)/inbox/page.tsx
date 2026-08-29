@@ -30,14 +30,14 @@ const TYPE_ICONS: Record<string, typeof Info> = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  attendance: "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  finance: "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  academic: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  system: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
-  automation: "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-  communication: "bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
-  billing: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  training: "bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
+  attendance: "bg-amber-50 text-amber-700",
+  finance: "bg-green-50 text-green-700",
+  academic: "bg-blue-50 text-blue-700",
+  system: "bg-zinc-100 text-zinc-600",
+  automation: "bg-purple-50 text-purple-700",
+  communication: "bg-violet-50 text-violet-700",
+  billing: "bg-emerald-50 text-emerald-700",
+  training: "bg-cyan-50 text-cyan-700",
 };
 
 function InboxInner() {
@@ -97,14 +97,14 @@ function InboxInner() {
           <Bell className="h-5 w-5 text-zinc-500" />
           <h1 className="text-2xl font-bold tracking-tight">Inbox</h1>
           {notifications.some((n) => !n.read) && (
-            <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+            <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
               {notifications.filter((n) => !n.read).length} unread
             </span>
           )}
         </div>
         <button
           onClick={() => startTransition(markAllRead)}
-          className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900"
+          className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
         >
           <CheckCheck className="h-4 w-4" /> Mark All Read
         </button>
@@ -154,16 +154,16 @@ function InboxInner() {
                   key={n.id}
                   className={`flex items-start justify-between rounded-lg border px-4 py-3 transition-colors ${
                     n.read
-                      ? "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
-                      : "border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20"
+                      ? "border-zinc-200 bg-white"
+                      : "border-blue-200 bg-blue-50/50"
                   }`}
                 >
                   <div className="flex gap-3 min-w-0 flex-1">
                     <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                      n.type === "ERROR" ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
-                      : n.type === "WARNING" ? "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400"
-                      : n.type === "SUCCESS" ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                      n.type === "ERROR" ? "bg-red-100 text-red-600"
+                      : n.type === "WARNING" ? "bg-amber-100 text-amber-600"
+                      : n.type === "SUCCESS" ? "bg-green-100 text-green-600"
+                      : "bg-zinc-100 text-zinc-500"
                     }`}>
                       <Icon className="h-4 w-4" />
                     </div>
@@ -172,12 +172,12 @@ function InboxInner() {
                         {!n.read && <span className="h-2 w-2 shrink-0 rounded-full bg-blue-500" />}
                         <h3 className="text-sm font-medium">{n.title}</h3>
                         {n.category && (
-                          <span className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[n.category] ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"}`}>
+                          <span className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[n.category] ?? "bg-zinc-100 text-zinc-600"}`}>
                             {n.category}
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">{n.body}</p>
+                      <p className="mt-1 text-sm text-zinc-600 line-clamp-2">{n.body}</p>
                       <div className="mt-1 flex items-center gap-2 text-xs text-zinc-500">
                         <span>{new Date(n.createdAt).toLocaleString()}</span>
                         {n.referenceType && <span className="text-zinc-400">· {n.referenceType}</span>}
@@ -186,9 +186,9 @@ function InboxInner() {
                   </div>
                   <div className="ml-4 flex items-center gap-1">
                     {!n.read && (
-                      <button onClick={() => markRead(n.id)} className="rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950">Mark read</button>
+                      <button onClick={() => markRead(n.id)} className="rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50">Mark read</button>
                     )}
-                    <button onClick={() => archiveItem(n.id)} className="rounded p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800" title="Archive">
+                    <button onClick={() => archiveItem(n.id)} className="rounded p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600" title="Archive">
                       <Archive className="h-3.5 w-3.5" />
                     </button>
                   </div>

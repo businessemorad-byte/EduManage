@@ -61,7 +61,7 @@ export default function LeadDetailPage() {
           description="View lead information."
           icon={<Target className="h-5 w-5" />}
         />
-        <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center">
           <p className="text-sm text-zinc-500">{error || "Lead not found"}</p>
           <button onClick={() => router.back()} className="mt-3 text-sm font-medium text-brand-600 hover:text-brand-700">
             Go back
@@ -78,7 +78,7 @@ export default function LeadDetailPage() {
         description="Lead detail"
         icon={<Target className="h-5 w-5" />}
         action={
-          <button onClick={() => router.back()} className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
+          <button onClick={() => router.back()} className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
         }
@@ -86,14 +86,14 @@ export default function LeadDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Contact Information</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Contact Information</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex items-center gap-3 text-sm">
                 <User className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Student Name</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{lead.studentName}</p>
+                  <p className="font-medium text-zinc-900">{lead.studentName}</p>
                 </div>
               </div>
               {lead.parentName && (
@@ -101,7 +101,7 @@ export default function LeadDetailPage() {
                   <User className="h-4 w-4 text-zinc-400" />
                   <div>
                     <p className="text-zinc-500">Parent Name</p>
-                    <p className="font-medium text-zinc-900 dark:text-white">{lead.parentName}</p>
+                    <p className="font-medium text-zinc-900">{lead.parentName}</p>
                   </div>
                 </div>
               )}
@@ -110,7 +110,7 @@ export default function LeadDetailPage() {
                   <Phone className="h-4 w-4 text-zinc-400" />
                   <div>
                     <p className="text-zinc-500">Phone</p>
-                    <p className="font-medium text-zinc-900 dark:text-white">{lead.phone}</p>
+                    <p className="font-medium text-zinc-900">{lead.phone}</p>
                   </div>
                 </div>
               )}
@@ -119,64 +119,64 @@ export default function LeadDetailPage() {
                   <Mail className="h-4 w-4 text-zinc-400" />
                   <div>
                     <p className="text-zinc-500">Email</p>
-                    <p className="font-medium text-zinc-900 dark:text-white">{lead.email}</p>
+                    <p className="font-medium text-zinc-900">{lead.email}</p>
                   </div>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Lead Details</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Lead Details</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <p className="text-sm text-zinc-500">Source</p>
-                <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-white">{lead.source}</p>
+                <p className="mt-1 text-sm font-medium text-zinc-900">{lead.source}</p>
               </div>
               {lead.branch && (
                 <div className="flex items-center gap-2 text-sm">
                   <MapPin className="h-4 w-4 text-zinc-400" />
                   <div>
                     <p className="text-zinc-500">Branch</p>
-                    <p className="font-medium text-zinc-900 dark:text-white">{lead.branch.name}</p>
+                    <p className="font-medium text-zinc-900">{lead.branch.name}</p>
                   </div>
                 </div>
               )}
               {lead.desiredLevel && (
                 <div>
                   <p className="text-sm text-zinc-500">Desired Level</p>
-                  <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-white">{lead.desiredLevel.name}</p>
+                  <p className="mt-1 text-sm font-medium text-zinc-900">{lead.desiredLevel.name}</p>
                 </div>
               )}
               {lead.preferredSchedule && (
                 <div>
                   <p className="text-sm text-zinc-500">Preferred Schedule</p>
-                  <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-white">{lead.preferredSchedule}</p>
+                  <p className="mt-1 text-sm font-medium text-zinc-900">{lead.preferredSchedule}</p>
                 </div>
               )}
             </div>
             {lead.notes && (
-              <div className="mt-4 rounded-lg bg-zinc-50 p-3 dark:bg-zinc-800/50">
+              <div className="mt-4 rounded-lg bg-zinc-50 p-3">
                 <p className="text-sm text-zinc-500">Notes</p>
-                <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{lead.notes}</p>
+                <p className="mt-1 text-sm text-zinc-700">{lead.notes}</p>
               </div>
             )}
           </div>
 
           {lead.trialSessions.length > 0 && (
-            <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-              <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Trial Sessions</h3>
+            <div className="rounded-xl border border-zinc-200 bg-white p-6">
+              <h3 className="mb-4 text-sm font-semibold text-zinc-900">Trial Sessions</h3>
               <div className="space-y-3">
                 {lead.trialSessions.map((t) => (
                   <button
                     key={t.id}
                     onClick={() => router.push(`/trials/${t.id}`)}
-                    className="flex w-full items-center justify-between rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50"
+                    className="flex w-full items-center justify-between rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50"
                   >
                     <div className="flex items-center gap-3">
                       <Calendar className="h-4 w-4 text-zinc-400" />
                       <div>
-                        <p className="text-sm font-medium text-zinc-900 dark:text-white">
+                        <p className="text-sm font-medium text-zinc-900">
                           {new Date(t.scheduledDate).toLocaleDateString()} • {t.startTime} — {t.endTime}
                         </p>
                         <p className="text-xs text-zinc-500">
@@ -194,8 +194,8 @@ export default function LeadDetailPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Status</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Status</h3>
             <StatusBadge status={lead.status} />
             <div className="mt-4 space-y-2 text-sm text-zinc-500">
               <div className="flex items-center gap-2">
@@ -206,11 +206,11 @@ export default function LeadDetailPage() {
           </div>
 
           {lead.student && (
-            <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-              <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Converted Student</h3>
+            <div className="rounded-xl border border-zinc-200 bg-white p-6">
+              <h3 className="mb-4 text-sm font-semibold text-zinc-900">Converted Student</h3>
               <button
                 onClick={() => router.push(`/students/${lead.student!.id}`)}
-                className="flex w-full items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100 dark:bg-brand-900/20 dark:text-brand-400"
+                className="flex w-full items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
               >
                 <ExternalLink className="h-4 w-4" />
                 View Student Profile

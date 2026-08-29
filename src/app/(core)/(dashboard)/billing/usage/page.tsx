@@ -25,7 +25,7 @@ export default function UsagePage() {
     <div className="p-6 max-w-5xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold tracking-tight">Usage</h1>
 
-      <div className="border rounded-lg p-6 bg-white dark:bg-zinc-900 space-y-4">
+      <div className="border rounded-lg p-6 bg-white space-y-4">
         {usage.length === 0 ? (
           <p className="text-zinc-500">No usage data available</p>
         ) : usage.map((item) => (
@@ -36,7 +36,7 @@ export default function UsagePage() {
             {item.limit !== null ? (
               <>
                 <div className="flex-1">
-                  <div className="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-3">
+                  <div className="w-full bg-zinc-200 rounded-full h-3">
                     <div
                       className={`h-3 rounded-full ${
                         (item.percentage ?? 0) > 90 ? "bg-red-500" :

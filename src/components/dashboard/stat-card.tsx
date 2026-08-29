@@ -21,17 +21,17 @@ const gradients = {
 
 export function StatCard({ label, value, subtitle, icon, trend, gradient = "blue" }: StatCardProps) {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-zinc-200 bg-white p-5 transition-all hover:shadow-md dark:border-zinc-700/50 dark:bg-zinc-800/80">
+    <div className="group relative overflow-hidden rounded-xl border border-zinc-200 bg-white p-5 transition-all hover:shadow-md">
       <div className={`absolute right-0 top-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-gradient-to-br ${gradients[gradient]} opacity-[0.07] transition-transform group-hover:scale-110`} />
       <div className="relative">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">{label}</p>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+            <p className="text-sm font-medium text-zinc-500">{label}</p>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-900">
               {value}
             </p>
             {subtitle && (
-              <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">{subtitle}</p>
+              <p className="mt-1 text-xs text-zinc-400">{subtitle}</p>
             )}
           </div>
           {icon && (
@@ -44,12 +44,12 @@ export function StatCard({ label, value, subtitle, icon, trend, gradient = "blue
           <div className="mt-3 flex items-center gap-1.5">
             <span
               className={`text-xs font-semibold ${
-                trend.positive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+                trend.positive ? "text-emerald-600" : "text-rose-600"
               }`}
             >
               {trend.positive ? "+" : ""}{trend.value}
             </span>
-            <span className="text-xs text-zinc-400 dark:text-zinc-500">vs last month</span>
+            <span className="text-xs text-zinc-400">vs last month</span>
           </div>
         )}
       </div>

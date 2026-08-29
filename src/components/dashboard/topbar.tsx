@@ -80,21 +80,21 @@ export function TopBar({ userName }: TopBarProps) {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-zinc-100 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
+    <header className="sticky top-0 z-30 border-b border-zinc-100 bg-white/80 backdrop-blur-md">
       <div className="flex h-14 items-center justify-between px-6 lg:px-8">
         <div className="ml-10 lg:ml-0">
           <nav className="flex items-center gap-1 text-sm">
             {breadcrumbs.map((crumb, i) => (
               <span key={crumb.href} className="flex items-center gap-1">
-                {i > 0 && <span className="text-zinc-300 dark:text-zinc-600">/</span>}
+                {i > 0 && <span className="text-zinc-300">/</span>}
                 {i === breadcrumbs.length - 1 ? (
-                  <span className="font-medium text-zinc-900 dark:text-white">
+                  <span className="font-medium text-zinc-900">
                     {crumb.label}
                   </span>
                 ) : (
                   <Link
                     href={crumb.href}
-                    className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
+                    className="text-zinc-400 hover:text-zinc-600"
                   >
                     {crumb.label}
                   </Link>
@@ -109,14 +109,14 @@ export function TopBar({ userName }: TopBarProps) {
           <div ref={searchRef} className="relative">
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="rounded-lg p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+              className="rounded-lg p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
             >
               <Search className="h-4 w-4" />
             </button>
             {searchOpen && (
               <form
                 onSubmit={handleSearch}
-                className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-zinc-200 bg-white p-2 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
+                className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-zinc-200 bg-white p-2 shadow-lg"
               >
                 <div className="flex items-center gap-2">
                   <Search className="h-4 w-4 text-zinc-400" />
@@ -125,7 +125,7 @@ export function TopBar({ userName }: TopBarProps) {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Rechercher..."
-                    className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400 dark:text-zinc-100"
+                    className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
                   />
                   <button
                     type="button"
@@ -143,7 +143,7 @@ export function TopBar({ userName }: TopBarProps) {
           <div ref={notifRef} className="relative">
             <button
               onClick={loadNotifications}
-              className="relative rounded-lg p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+              className="relative rounded-lg p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
             >
               <Bell className="h-4 w-4" />
               {unreadCount > 0 && (
@@ -153,9 +153,9 @@ export function TopBar({ userName }: TopBarProps) {
               )}
             </button>
             {notifOpen && (
-              <div className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
-                <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-3 dark:border-zinc-800">
-                  <span className="text-sm font-semibold text-zinc-900 dark:text-white">
+              <div className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-zinc-200 bg-white shadow-lg">
+                <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-3">
+                  <span className="text-sm font-semibold text-zinc-900">
                     Notifications
                   </span>
                   <button
@@ -174,15 +174,15 @@ export function TopBar({ userName }: TopBarProps) {
                     notifications.slice(0, 10).map((n) => (
                       <div
                         key={n.id}
-                        className={`border-b border-zinc-50 px-4 py-3 last:border-0 dark:border-zinc-800 ${n.read ? "opacity-60" : ""}`}
+                        className={`border-b border-zinc-50 px-4 py-3 last:border-0 ${n.read ? "opacity-60" : ""}`}
                       >
-                        <p className="text-sm font-medium text-zinc-900 dark:text-white">
+                        <p className="text-sm font-medium text-zinc-900">
                           {n.title}
                         </p>
-                        <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
+                        <p className="mt-0.5 text-xs text-zinc-500 line-clamp-2">
                           {n.message}
                         </p>
-                        <p className="mt-1 text-[10px] text-zinc-400 dark:text-zinc-500">
+                        <p className="mt-1 text-[10px] text-zinc-400">
                           {new Date(n.createdAt).toLocaleDateString("fr-FR")}
                         </p>
                       </div>

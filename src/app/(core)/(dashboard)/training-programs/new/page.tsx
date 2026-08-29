@@ -42,68 +42,68 @@ function NewProgramForm() {
     startTransition(() => router.push("/training-programs/" + data.program.id));
   };
 
-  const inputCls = "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100";
+  const inputCls = "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-4">
-      {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</div>}
+      {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Program Name *</label>
+        <label className="mb-1 block text-sm font-medium text-zinc-700">Program Name *</label>
         <input required className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Web Development Bootcamp" />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Code</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Code</label>
           <input className={inputCls} value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} placeholder="e.g. WDB-2026" />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Duration</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Duration</label>
           <input className={inputCls} value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} placeholder="e.g. 3 months" />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Category</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Category</label>
           <select className={inputCls} value={form.trainingCategory} onChange={(e) => setForm({ ...form, trainingCategory: e.target.value })}>
             {categories.map((c) => <option key={c} value={c}>{c.replace("_", " ")}</option>)}
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Level</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Level</label>
           <select className={inputCls} value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })}>
             {levels.map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
         </div>
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</label>
+        <label className="mb-1 block text-sm font-medium text-zinc-700">Description</label>
         <textarea rows={3} className={inputCls} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Program description..." />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Objectives</label>
+        <label className="mb-1 block text-sm font-medium text-zinc-700">Objectives</label>
         <textarea rows={3} className={inputCls} value={form.objectives} onChange={(e) => setForm({ ...form, objectives: e.target.value })} placeholder="Learning objectives..." />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Prerequisites</label>
+        <label className="mb-1 block text-sm font-medium text-zinc-700">Prerequisites</label>
         <textarea rows={2} className={inputCls} value={form.prerequisites} onChange={(e) => setForm({ ...form, prerequisites: e.target.value })} placeholder="Prerequisites..." />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Price (DA)</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Price (DA)</label>
           <input type="number" min="0" className={inputCls} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="0" />
         </div>
         <div className="flex items-end pb-1">
-          <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+          <label className="flex items-center gap-2 text-sm text-zinc-700">
             <input type="checkbox" checked={form.certificateEligibility} onChange={(e) => setForm({ ...form, certificateEligibility: e.target.checked })} className="h-4 w-4 rounded border-zinc-300" />
             Certificate Eligible
           </label>
         </div>
       </div>
       <div className="flex gap-3 pt-2">
-        <button type="submit" disabled={pending} className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900">
+        <button type="submit" disabled={pending} className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50">
           {pending ? "Creating..." : "Create Program"}
         </button>
-        <button type="button" onClick={() => router.back()} className="rounded-lg border border-zinc-200 px-5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
+        <button type="button" onClick={() => router.back()} className="rounded-lg border border-zinc-200 px-5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
           Cancel
         </button>
       </div>

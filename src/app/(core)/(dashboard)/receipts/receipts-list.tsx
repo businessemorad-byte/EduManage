@@ -67,7 +67,7 @@ function ReceiptsListInner() {
       <DataTable
         columns={[
           { key: "receiptNumber", header: "Receipt #", render: (r: Receipt) => <span className="font-medium font-mono text-sm">{r.receiptNumber}</span> },
-          { key: "invoiceNumber", header: "Invoice #", render: (r: Receipt) => <span className="font-mono text-sm text-zinc-500 dark:text-zinc-400">{r.invoice.invoiceNumber}</span> },
+          { key: "invoiceNumber", header: "Invoice #", render: (r: Receipt) => <span className="font-mono text-sm text-zinc-500">{r.invoice.invoiceNumber}</span> },
           { key: "student", header: "Student", render: (r: Receipt) => <span className="font-medium">{r.invoice.studentName}</span> },
           { key: "amount", header: "Amount", render: (r: Receipt) => <span className="font-semibold text-green-600">{`${Number(r.amount).toLocaleString()} DH`}</span> },
           { key: "method", header: "Method", render: (r: Receipt) => r.method },

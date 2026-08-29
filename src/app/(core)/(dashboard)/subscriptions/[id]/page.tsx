@@ -55,7 +55,7 @@ export default function SubscriptionDetailPage() {
   return (
     <div className="animate-fade-in space-y-6">
       <div className="flex items-center gap-4">
-        <button onClick={() => router.back()} className="rounded-lg border border-zinc-200 p-2 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+        <button onClick={() => router.back()} className="rounded-lg border border-zinc-200 p-2 transition-colors hover:bg-zinc-50">
           <ArrowLeft className="h-4 w-4" />
         </button>
         <PageHeader title={`Subscription: ${studentName}`} description={`${MONTHS[subscription.month - 1]} ${subscription.year}`} icon={<CalendarDays className="h-5 w-5" />} />
@@ -63,8 +63,8 @@ export default function SubscriptionDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <div className="rounded-xl border bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Subscription Details</h3>
+          <div className="rounded-xl border bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Subscription Details</h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between"><span className="text-zinc-500">Student</span><span className="font-medium">{studentName}</span></div>
               <div className="flex justify-between"><span className="text-zinc-500">Fee Plan</span><span>{subscription.feePlan.name}</span></div>
@@ -73,15 +73,15 @@ export default function SubscriptionDetailPage() {
               {Number(subscription.discountAmount) > 0 && (
                 <div className="flex justify-between"><span className="text-zinc-500">Discount</span><span className="text-rose-600">-{Number(subscription.discountAmount).toLocaleString()} DH</span></div>
               )}
-              <div className="border-t pt-2 dark:border-zinc-700"><div className="flex justify-between font-semibold"><span>Net Amount</span><span>{netAmount.toLocaleString()} DH</span></div></div>
+              <div className="border-t pt-2"><div className="flex justify-between font-semibold"><span>Net Amount</span><span>{netAmount.toLocaleString()} DH</span></div></div>
               {subscription.dueDate && <div className="flex justify-between"><span className="text-zinc-500">Due Date</span><span>{new Date(subscription.dueDate).toLocaleDateString()}</span></div>}
             </div>
           </div>
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-xl border bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Status</h3>
+          <div className="rounded-xl border bg-white p-6">
+            <h3 className="mb-3 text-sm font-semibold text-zinc-900">Status</h3>
             <StatusBadge status={subscription.status} />
           </div>
 

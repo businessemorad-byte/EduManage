@@ -45,7 +45,7 @@ export default function AcademicYearDetailPage() {
           description="View academic year details."
           icon={<CalendarDays className="h-5 w-5" />}
         />
-        <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center">
           <p className="text-sm text-zinc-500">{error || "Not found"}</p>
           <button onClick={() => router.back()} className="mt-3 text-sm font-medium text-brand-600 hover:text-brand-700">
             Go back
@@ -62,7 +62,7 @@ export default function AcademicYearDetailPage() {
         description="Academic year details"
         icon={<CalendarDays className="h-5 w-5" />}
         action={
-          <button onClick={() => router.back()} className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
+          <button onClick={() => router.back()} className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
         }
@@ -70,62 +70,62 @@ export default function AcademicYearDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Information</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Information</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex items-center gap-3 text-sm">
                 <CalendarDays className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Name</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{year.name}</p>
+                  <p className="font-medium text-zinc-900">{year.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Calendar className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">Start Date</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{new Date(year.startDate).toLocaleDateString()}</p>
+                  <p className="font-medium text-zinc-900">{new Date(year.startDate).toLocaleDateString()}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Calendar className="h-4 w-4 text-zinc-400" />
                 <div>
                   <p className="text-zinc-500">End Date</p>
-                  <p className="font-medium text-zinc-900 dark:text-white">{year.endDate ? new Date(year.endDate).toLocaleDateString() : "—"}</p>
+                  <p className="font-medium text-zinc-900">{year.endDate ? new Date(year.endDate).toLocaleDateString() : "—"}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Linked Data</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Linked Data</h3>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <button onClick={() => router.push(`/levels?academicYearId=${year.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50">
+              <button onClick={() => router.push(`/levels?academicYearId=${year.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50">
                 <BookOpen className="h-5 w-5 text-brand-500" />
                 <div>
                   <p className="text-xs text-zinc-500">Levels</p>
-                  <p className="text-lg font-bold text-zinc-900 dark:text-white">{year._count.levels}</p>
+                  <p className="text-lg font-bold text-zinc-900">{year._count.levels}</p>
                 </div>
               </button>
-              <button onClick={() => router.push(`/subjects?academicYearId=${year.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50">
+              <button onClick={() => router.push(`/subjects?academicYearId=${year.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50">
                 <Hash className="h-5 w-5 text-purple-500" />
                 <div>
                   <p className="text-xs text-zinc-500">Subjects</p>
-                  <p className="text-lg font-bold text-zinc-900 dark:text-white">{year._count.subjects}</p>
+                  <p className="text-lg font-bold text-zinc-900">{year._count.subjects}</p>
                 </div>
               </button>
-              <button onClick={() => router.push(`/groups?academicYearId=${year.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50">
+              <button onClick={() => router.push(`/groups?academicYearId=${year.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50">
                 <Users className="h-5 w-5 text-rose-500" />
                 <div>
                   <p className="text-xs text-zinc-500">Groups</p>
-                  <p className="text-lg font-bold text-zinc-900 dark:text-white">{year._count.groups}</p>
+                  <p className="text-lg font-bold text-zinc-900">{year._count.groups}</p>
                 </div>
               </button>
-              <button onClick={() => router.push(`/enrollments?academicYearId=${year.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50">
+              <button onClick={() => router.push(`/enrollments?academicYearId=${year.id}`)} className="flex items-center gap-3 rounded-lg border border-zinc-100 p-3 text-left hover:bg-zinc-50">
                 <ClipboardCheck className="h-5 w-5 text-amber-500" />
                 <div>
                   <p className="text-xs text-zinc-500">Enrollments</p>
-                  <p className="text-lg font-bold text-zinc-900 dark:text-white">{year._count.enrollments}</p>
+                  <p className="text-lg font-bold text-zinc-900">{year._count.enrollments}</p>
                 </div>
               </button>
             </div>
@@ -133,8 +133,8 @@ export default function AcademicYearDetailPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Status</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Status</h3>
             <StatusBadge status={year.isCurrent ? "ACTIVE" : "INACTIVE"} />
             <div className="mt-4 space-y-2 text-sm text-zinc-500">
               <div className="flex items-center gap-2">
@@ -144,16 +144,16 @@ export default function AcademicYearDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Quick Actions</h3>
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Quick Actions</h3>
             <div className="space-y-2">
-              <button onClick={() => router.push(`/levels/new?academicYearId=${year.id}`)} className="flex w-full items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100 dark:bg-brand-900/20 dark:text-brand-400">
+              <button onClick={() => router.push(`/levels/new?academicYearId=${year.id}`)} className="flex w-full items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100">
                 + Add Level
               </button>
-              <button onClick={() => router.push(`/subjects/new?academicYearId=${year.id}`)} className="flex w-full items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100 dark:bg-brand-900/20 dark:text-brand-400">
+              <button onClick={() => router.push(`/subjects/new?academicYearId=${year.id}`)} className="flex w-full items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100">
                 + Add Subject
               </button>
-              <button onClick={() => router.push(`/groups/new?academicYearId=${year.id}`)} className="flex w-full items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100 dark:bg-brand-900/20 dark:text-brand-400">
+              <button onClick={() => router.push(`/groups/new?academicYearId=${year.id}`)} className="flex w-full items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100">
                 + Add Group
               </button>
             </div>

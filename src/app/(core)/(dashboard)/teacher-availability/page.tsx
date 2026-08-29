@@ -32,8 +32,8 @@ type Availability = {
 type StaffOption = { id: string; name: string; role: string };
 
 const inputClasses =
-  "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100";
-const labelClasses = "mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300";
+  "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm";
+const labelClasses = "mb-1 block text-sm font-medium text-zinc-700";
 
 export default function TeacherAvailabilityPage() {
   const router = useRouter();
@@ -156,10 +156,10 @@ export default function TeacherAvailabilityPage() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="mb-6 space-y-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+          className="mb-6 space-y-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
         >
           {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
@@ -243,7 +243,7 @@ export default function TeacherAvailabilityPage() {
                 setError(null);
                 setShowForm(false);
               }}
-              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800"
+              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-50"
             >
               Cancel
             </button>
@@ -252,7 +252,7 @@ export default function TeacherAvailabilityPage() {
       )}
 
       {error && !showForm && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
           {error}
         </div>
       )}
@@ -307,7 +307,7 @@ export default function TeacherAvailabilityPage() {
               render: (a: Availability) => (
                 <button
                   onClick={() => handleDelete(a.id)}
-                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
                   title="Delete availability"
                 >
                   <Trash2 className="h-4 w-4" />

@@ -47,7 +47,7 @@ export default function AIInsightsPage() {
             key={cat}
             onClick={() => { setFilter(cat); setLoading(true); }}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium ${
-              filter === cat ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+              filter === cat ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-700"
             }`}
           >
             {cat || "All"}
@@ -60,7 +60,7 @@ export default function AIInsightsPage() {
       ) : (
         <div className="space-y-2">
           {insights.map((i) => (
-            <div key={i.id} className={`rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950 ${!i.isRead ? "border-l-4 border-l-blue-500" : ""}`}>
+            <div key={i.id} className={`rounded-lg border border-zinc-200 bg-white p-4 ${!i.isRead ? "border-l-4 border-l-blue-500" : ""}`}>
               <div className="flex items-center gap-3">
                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                   i.severity === "CRITICAL" ? "bg-red-100 text-red-700"

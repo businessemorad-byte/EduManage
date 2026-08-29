@@ -41,13 +41,13 @@ export default function ReportCardsPage() {
       {loading ? (
         <div className="py-8 text-center text-zinc-500">Loading...</div>
       ) : !data?.reportCards.length ? (
-        <div className="rounded-lg border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-lg border border-zinc-200 bg-white p-8 text-center">
           <p className="text-zinc-500">No report cards generated yet.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {data.reportCards.map((rc) => (
-            <div key={rc.id} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+            <div key={rc.id} className="rounded-lg border border-zinc-200 bg-white p-4">
               <div className="mb-3 flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold">{rc.student.person.firstName} {rc.student.person.lastName}</h3>
@@ -76,7 +76,7 @@ export default function ReportCardsPage() {
                   </thead>
                   <tbody>
                     {rc.items.map((item) => (
-                      <tr key={item.id} className="border-t border-zinc-100 dark:border-zinc-800/50">
+                      <tr key={item.id} className="border-t border-zinc-100">
                         <td className="py-1">{item.subjectName}</td>
                         <td className="py-1 font-medium">{item.average.toFixed(2)}</td>
                         <td className="py-1 text-zinc-500">{item.coefficient}</td>

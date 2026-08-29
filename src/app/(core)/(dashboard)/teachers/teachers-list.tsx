@@ -60,7 +60,7 @@ function TeachersListInner() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
         {error}
       </div>
     );
@@ -72,7 +72,7 @@ function TeachersListInner() {
         <h1 className="text-2xl font-bold tracking-tight">Teachers</h1>
         <button
           onClick={() => startTransition(() => router.push("/staff/new?roleType=teacher"))}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
         >
           Add Teacher
         </button>

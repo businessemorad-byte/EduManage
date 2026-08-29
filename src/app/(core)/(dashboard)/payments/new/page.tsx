@@ -79,19 +79,19 @@ export default function NewPaymentPage() {
   return (
     <div className="animate-fade-in max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
-        <button onClick={() => router.back()} className="rounded-lg border border-zinc-200 p-2 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+        <button onClick={() => router.back()} className="rounded-lg border border-zinc-200 p-2 transition-colors hover:bg-zinc-50">
           <ArrowLeft className="h-4 w-4" />
         </button>
         <PageHeader title="Record Payment" description="Record a payment against an invoice." icon={<CreditCard className="h-5 w-5" />} />
       </div>
 
-      <form onSubmit={handleSubmit} className="rounded-xl border bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-        {error && <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">{error}</div>}
+      <form onSubmit={handleSubmit} className="rounded-xl border bg-white p-6">
+        {error && <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
 
         <div className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Invoice *</label>
-            <select value={invoiceId} onChange={(e) => setInvoiceId(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Invoice *</label>
+            <select value={invoiceId} onChange={(e) => setInvoiceId(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm">
               <option value="">Select an invoice</option>
               {eligible.map((inv) => {
                 const outstanding = Number(inv.totalAmount) - Number(inv.paidAmount);
@@ -105,7 +105,7 @@ export default function NewPaymentPage() {
           </div>
 
           {selectedInvoice && (
-            <div className="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-800">
+            <div className="rounded-lg bg-zinc-50 p-4">
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div><span className="text-zinc-500">Total</span><div className="font-medium">{Number(selectedInvoice.totalAmount).toLocaleString()} DH</div></div>
                 <div><span className="text-zinc-500">Paid</span><div className="font-medium text-green-600">{Number(selectedInvoice.paidAmount).toLocaleString()} DH</div></div>
@@ -116,12 +116,12 @@ export default function NewPaymentPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Amount (DH) *</label>
-              <input type="number" step="0.01" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" placeholder="0.00" />
+              <label className="mb-1 block text-sm font-medium text-zinc-700">Amount (DH) *</label>
+              <input type="number" step="0.01" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm" placeholder="0.00" />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Method *</label>
-              <select value={method} onChange={(e) => setMethod(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">Method *</label>
+              <select value={method} onChange={(e) => setMethod(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm">
                 <option value="CASH">Cash</option>
                 <option value="BANK_TRANSFER">Bank Transfer</option>
                 <option value="CARD">Card</option>
@@ -133,18 +133,18 @@ export default function NewPaymentPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Reference</label>
-            <input type="text" value={reference} onChange={(e) => setReference(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" placeholder="Transaction reference (optional)" />
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Reference</label>
+            <input type="text" value={reference} onChange={(e) => setReference(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm" placeholder="Transaction reference (optional)" />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Notes</label>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" placeholder="Optional notes" />
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Notes</label>
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm" placeholder="Optional notes" />
           </div>
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <button type="button" onClick={() => router.back()} className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800">Cancel</button>
+          <button type="button" onClick={() => router.back()} className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-50">Cancel</button>
           <button type="submit" disabled={submitting} className="rounded-lg bg-green-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-700 disabled:opacity-50">
             {submitting ? "Recording..." : "Record Payment"}
           </button>

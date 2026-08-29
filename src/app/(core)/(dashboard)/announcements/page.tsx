@@ -90,7 +90,7 @@ function AnnouncementsInner() {
           <Megaphone className="h-5 w-5 text-zinc-500" />
           <h1 className="text-2xl font-bold tracking-tight">Announcements</h1>
         </div>
-        <Link href="/announcements/new" className="flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900">
+        <Link href="/announcements/new" className="flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800">
           <Plus className="h-4 w-4" /> New Announcement
         </Link>
       </div>
@@ -117,21 +117,21 @@ function AnnouncementsInner() {
         <>
           <div className="space-y-3">
             {announcements.map((a) => (
-              <div key={a.id} className="rounded-lg border border-zinc-200 bg-white px-5 py-4 dark:border-zinc-800 dark:bg-zinc-950">
+              <div key={a.id} className="rounded-lg border border-zinc-200 bg-white px-5 py-4">
                 <div className="flex items-start justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="text-sm font-semibold">{a.title}</h3>
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                        a.status === "PUBLISHED" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        : a.status === "ARCHIVED" ? "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                        a.status === "PUBLISHED" ? "bg-green-100 text-green-700"
+                        : a.status === "ARCHIVED" ? "bg-zinc-100 text-zinc-500"
+                        : "bg-amber-100 text-amber-700"
                       }`}>{a.status}</span>
-                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
                         {AUDIENCE_LABELS[a.audience] ?? a.audience}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">{a.content}</p>
+                    <p className="mt-1 text-sm text-zinc-600 line-clamp-2">{a.content}</p>
                     <div className="mt-2 flex gap-3 text-xs text-zinc-500">
                       {a.publishedAt && <span>Published: {new Date(a.publishedAt).toLocaleDateString()}</span>}
                       <span>Created: {new Date(a.createdAt).toLocaleDateString()}</span>
@@ -141,19 +141,19 @@ function AnnouncementsInner() {
                   </div>
                   <div className="ml-4 flex items-center gap-1">
                     {a.status === "DRAFT" && (
-                      <button onClick={() => startTransition(() => publish(a.id))} className="rounded-lg p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-950" title="Publish">
+                      <button onClick={() => startTransition(() => publish(a.id))} className="rounded-lg p-1.5 text-green-600 hover:bg-green-50" title="Publish">
                         <Send className="h-4 w-4" />
                       </button>
                     )}
-                    <Link href={`/announcements/new?edit=${a.id}`} className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800" title="Edit">
+                    <Link href={`/announcements/new?edit=${a.id}`} className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100" title="Edit">
                       <Pencil className="h-4 w-4" />
                     </Link>
                     {a.status !== "ARCHIVED" && (
-                      <button onClick={() => startTransition(() => archive(a.id))} className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800" title="Archive">
+                      <button onClick={() => startTransition(() => archive(a.id))} className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100" title="Archive">
                         <Archive className="h-4 w-4" />
                       </button>
                     )}
-                    <button onClick={() => startTransition(() => remove(a.id))} className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950" title="Delete">
+                    <button onClick={() => startTransition(() => remove(a.id))} className="rounded-lg p-1.5 text-red-500 hover:bg-red-50" title="Delete">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>

@@ -57,7 +57,7 @@ function DiscountsListInner() {
         <div>
           <span className="font-medium">{d.name}</span>
           {d.description && (
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">{d.description}</p>
+            <p className="text-xs text-zinc-400">{d.description}</p>
           )}
         </div>
       ),
@@ -66,7 +66,7 @@ function DiscountsListInner() {
       key: "type",
       header: "Type",
       render: (d: Discount) => (
-        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
           {d.type === "PERCENTAGE" ? "%" : "DH"}
         </span>
       ),
@@ -84,7 +84,7 @@ function DiscountsListInner() {
       key: "usage",
       header: "Usage",
       render: (d: Discount) => (
-        <span className="text-zinc-500 dark:text-zinc-400">
+        <span className="text-zinc-500">
           {d.maxUses != null ? `${d.usedCount} / ${d.maxUses}` : "Unlimited"}
         </span>
       ),
@@ -97,7 +97,7 @@ function DiscountsListInner() {
           <span
             className={`h-2 w-2 rounded-full ${d.isActive ? "bg-emerald-500" : "bg-red-500"}`}
           />
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+          <span className="text-xs text-zinc-500">
             {d.isActive ? "Active" : "Inactive"}
           </span>
         </span>

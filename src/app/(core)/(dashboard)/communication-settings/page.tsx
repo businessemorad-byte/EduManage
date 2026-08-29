@@ -70,49 +70,49 @@ export default function CommunicationSettingsPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold tracking-tight">Communication Settings</h1>
 
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="rounded-lg border border-zinc-200 bg-white p-6">
         <h2 className="mb-4 text-lg font-semibold">General</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Sender Name</label>
+            <label className="block text-sm font-medium text-zinc-700">Sender Name</label>
             <input
               type="text"
               value={settings.senderName ?? ""}
               onChange={(e) => setSettings({ ...settings, senderName: e.target.value })}
-              className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Sender Email</label>
+            <label className="block text-sm font-medium text-zinc-700">Sender Email</label>
             <input
               type="email"
               value={settings.senderEmail ?? ""}
               onChange={(e) => setSettings({ ...settings, senderEmail: e.target.value })}
-              className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Reply-To Email</label>
+            <label className="block text-sm font-medium text-zinc-700">Reply-To Email</label>
             <input
               type="email"
               value={settings.replyToEmail ?? ""}
               onChange={(e) => setSettings({ ...settings, replyToEmail: e.target.value })}
-              className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Timezone</label>
+            <label className="block text-sm font-medium text-zinc-700">Timezone</label>
             <input
               type="text"
               value={settings.timezone}
               onChange={(e) => setSettings({ ...settings, timezone: e.target.value })}
-              className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             />
           </div>
         </div>
       </div>
 
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="rounded-lg border border-zinc-200 bg-white p-6">
         <h2 className="mb-4 text-lg font-semibold">Channel Toggles</h2>
         <div className="space-y-3">
           {([
@@ -121,7 +121,7 @@ export default function CommunicationSettingsPage() {
             ["whatsappEnabled", "WhatsApp", "Send WhatsApp messages via configured provider"],
             ["pushEnabled", "Push Notifications", "Show in-app push notifications"],
           ] as const).map(([key, label, desc]) => (
-            <label key={key} className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-3 dark:border-zinc-800">
+            <label key={key} className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-3">
               <div>
                 <span className="text-sm font-medium">{label}</span>
                 <p className="text-xs text-zinc-500">{desc}</p>
@@ -140,29 +140,29 @@ export default function CommunicationSettingsPage() {
       <button
         onClick={saveSettings}
         disabled={saving}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
       >
         {saving ? "Saving..." : "Save Settings"}
       </button>
 
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="rounded-lg border border-zinc-200 bg-white p-6">
         <h2 className="mb-4 text-lg font-semibold">Providers</h2>
         {providers.length === 0 ? (
           <p className="text-sm text-zinc-500">No providers configured. Add a provider to enable email/SMS delivery.</p>
         ) : (
           <div className="space-y-2">
             {providers.map((p) => (
-              <div key={p.id} className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-3 dark:border-zinc-800">
+              <div key={p.id} className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-3">
                 <div>
                   <span className="text-sm font-medium">{p.name}</span>
-                  <span className="ml-2 inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium dark:bg-zinc-800">{p.channel}</span>
+                  <span className="ml-2 inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium">{p.channel}</span>
                   <span className="ml-2 text-xs text-zinc-500">{p.provider}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`h-2 w-2 rounded-full ${p.status === "ACTIVE" ? "bg-green-500" : "bg-zinc-400"}`} />
                   <button
                     onClick={() => testProvider(p.id)}
-                    className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
+                    className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium hover:bg-zinc-50"
                   >
                     Test
                   </button>

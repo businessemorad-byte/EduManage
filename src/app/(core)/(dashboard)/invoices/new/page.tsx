@@ -69,9 +69,9 @@ export default function NewInvoicePage() {
   }
 
   const inputClass =
-    "mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500";
+    "mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500";
   const labelClass =
-    "block text-sm font-medium text-zinc-700 dark:text-zinc-300";
+    "block text-sm font-medium text-zinc-700";
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -82,7 +82,7 @@ export default function NewInvoicePage() {
         action={
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
           >
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
@@ -92,10 +92,10 @@ export default function NewInvoicePage() {
       <div className="mx-auto max-w-2xl">
         <form
           onSubmit={handleSubmit}
-          className="space-y-5 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+          className="space-y-5 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
         >
           {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
@@ -152,7 +152,7 @@ export default function NewInvoicePage() {
                   <button
                     type="button"
                     onClick={() => removeItem(idx)}
-                    className="rounded-md px-2 text-sm text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
+                    className="rounded-md px-2 text-sm text-red-500 transition-colors hover:bg-red-50 hover:text-red-700"
                   >
                     ✕
                   </button>
@@ -162,13 +162,13 @@ export default function NewInvoicePage() {
             <button
               type="button"
               onClick={addItem}
-              className="text-sm font-medium text-brand-600 transition-colors hover:text-brand-700 dark:text-brand-400"
+              className="text-sm font-medium text-brand-600 transition-colors hover:text-brand-700"
             >
               + Add item
             </button>
           </div>
 
-          <div className="rounded-lg bg-zinc-50 p-4 text-right text-lg font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white">
+          <div className="rounded-lg bg-zinc-50 p-4 text-right text-lg font-semibold text-zinc-900">
             {`Total: ${total.toLocaleString()} DH`}
           </div>
 
@@ -196,7 +196,7 @@ export default function NewInvoicePage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="rounded-xl border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              className="rounded-xl border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
             >
               Cancel
             </button>

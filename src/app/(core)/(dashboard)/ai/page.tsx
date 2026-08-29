@@ -41,27 +41,27 @@ export default function AIDashboardPage() {
       <h1 className="text-2xl font-bold tracking-tight">AI Intelligence</h1>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <p className="text-xs font-medium text-zinc-500">Students</p>
-          <p className="mt-1 text-2xl font-bold text-zinc-900 dark:text-zinc-100">{data.overview.students.activeStudents}</p>
+          <p className="mt-1 text-2xl font-bold text-zinc-900">{data.overview.students.activeStudents}</p>
         </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <p className="text-xs font-medium text-zinc-500">Attendance</p>
           <p className="mt-1 text-2xl font-bold text-green-600">{data.overview.attendance.overallRate}%</p>
         </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <p className="text-xs font-medium text-zinc-500">Revenue</p>
           <p className="mt-1 text-2xl font-bold text-blue-600">{data.overview.financial.totalRevenue.toLocaleString()}</p>
         </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <p className="text-xs font-medium text-zinc-500">Avg Grade</p>
           <p className="mt-1 text-2xl font-bold text-purple-600">{data.overview.academic.overallAvgGrade}%</p>
         </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <p className="text-xs font-medium text-zinc-500">Anomalies</p>
           <p className="mt-1 text-2xl font-bold text-amber-600">{data.anomalies.length}</p>
         </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <p className="text-xs font-medium text-zinc-500">AI Credits</p>
           <p className="mt-1 text-2xl font-bold text-cyan-600">{creditPct}%</p>
           <p className="text-xs text-zinc-500">{data.credits.used}/{data.credits.monthly} used</p>
@@ -69,19 +69,19 @@ export default function AIDashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Link href="/ai/chat" className="rounded-lg border border-zinc-200 bg-white p-4 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900">
+        <Link href="/ai/chat" className="rounded-lg border border-zinc-200 bg-white p-4 hover:bg-zinc-50">
           <h3 className="font-semibold">AI Chat</h3>
           <p className="text-sm text-zinc-500">Ask questions about your data</p>
         </Link>
-        <Link href="/ai/control-center" className="rounded-lg border border-zinc-200 bg-white p-4 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900">
+        <Link href="/ai/control-center" className="rounded-lg border border-zinc-200 bg-white p-4 hover:bg-zinc-50">
           <h3 className="font-semibold">Control Center</h3>
           <p className="text-sm text-zinc-500">Executive dashboard</p>
         </Link>
-        <Link href="/ai/action-center" className="rounded-lg border border-zinc-200 bg-white p-4 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900">
+        <Link href="/ai/action-center" className="rounded-lg border border-zinc-200 bg-white p-4 hover:bg-zinc-50">
           <h3 className="font-semibold">Action Center</h3>
           <p className="text-sm text-zinc-500">Anomalies & recommendations</p>
         </Link>
-        <Link href="/ai/knowledge" className="rounded-lg border border-zinc-200 bg-white p-4 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900">
+        <Link href="/ai/knowledge" className="rounded-lg border border-zinc-200 bg-white p-4 hover:bg-zinc-50">
           <h3 className="font-semibold">Knowledge Base</h3>
           <p className="text-sm text-zinc-500">Manage documents</p>
         </Link>
@@ -94,12 +94,12 @@ export default function AIDashboardPage() {
         ) : (
           <div className="space-y-2">
             {data.anomalies.slice(0, 5).map((a, i) => (
-              <div key={i} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+              <div key={i} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-3">
                 <div className="flex items-center gap-3">
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    a.severity === "CRITICAL" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                    : a.severity === "WARNING" ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                    : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
+                    a.severity === "CRITICAL" ? "bg-red-100 text-red-700"
+                    : a.severity === "WARNING" ? "bg-amber-100 text-amber-700"
+                    : "bg-zinc-100 text-zinc-700"
                   }`}>{a.severity}</span>
                   <span className="text-sm">{a.title}</span>
                 </div>

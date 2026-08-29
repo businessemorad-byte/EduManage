@@ -57,7 +57,7 @@ export default function InvoiceDetailPage() {
   return (
     <div className="animate-fade-in space-y-6">
       <div className="flex items-center gap-4">
-        <button onClick={() => router.back()} className="rounded-lg border border-zinc-200 p-2 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+        <button onClick={() => router.back()} className="rounded-lg border border-zinc-200 p-2 transition-colors hover:bg-zinc-50">
           <ArrowLeft className="h-4 w-4" />
         </button>
         <PageHeader
@@ -69,21 +69,21 @@ export default function InvoiceDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <div className="rounded-xl border bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Invoice Items</h3>
+          <div className="rounded-xl border bg-white p-6">
+            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Invoice Items</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b dark:border-zinc-700">
-                    <th className="pb-2 text-left font-medium text-zinc-600 dark:text-zinc-400">Description</th>
-                    <th className="pb-2 text-right font-medium text-zinc-600 dark:text-zinc-400">Qty</th>
-                    <th className="pb-2 text-right font-medium text-zinc-600 dark:text-zinc-400">Unit Price</th>
-                    <th className="pb-2 text-right font-medium text-zinc-600 dark:text-zinc-400">Amount</th>
+                  <tr className="border-b">
+                    <th className="pb-2 text-left font-medium text-zinc-600">Description</th>
+                    <th className="pb-2 text-right font-medium text-zinc-600">Qty</th>
+                    <th className="pb-2 text-right font-medium text-zinc-600">Unit Price</th>
+                    <th className="pb-2 text-right font-medium text-zinc-600">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
                   {invoice.items.map((item) => (
-                    <tr key={item.id} className="border-b dark:border-zinc-800">
+                    <tr key={item.id} className="border-b">
                       <td className="py-3">{item.description}</td>
                       <td className="py-3 text-right">{item.quantity}</td>
                       <td className="py-3 text-right">{Number(item.unitPrice).toLocaleString()} DH</td>
@@ -93,26 +93,26 @@ export default function InvoiceDetailPage() {
                 </tbody>
               </table>
             </div>
-            <div className="mt-4 space-y-2 border-t pt-4 dark:border-zinc-700">
-              <div className="flex justify-between text-sm"><span className="text-zinc-600 dark:text-zinc-400">Subtotal</span><span>{Number(invoice.subtotal).toLocaleString()} DH</span></div>
+            <div className="mt-4 space-y-2 border-t pt-4">
+              <div className="flex justify-between text-sm"><span className="text-zinc-600">Subtotal</span><span>{Number(invoice.subtotal).toLocaleString()} DH</span></div>
               {Number(invoice.discountAmount) > 0 && (
-                <div className="flex justify-between text-sm"><span className="text-zinc-600 dark:text-zinc-400">Discount</span><span className="text-red-600">-{Number(invoice.discountAmount).toLocaleString()} DH</span></div>
+                <div className="flex justify-between text-sm"><span className="text-zinc-600">Discount</span><span className="text-red-600">-{Number(invoice.discountAmount).toLocaleString()} DH</span></div>
               )}
               <div className="flex justify-between text-base font-semibold"><span>Total</span><span>{Number(invoice.totalAmount).toLocaleString()} DH</span></div>
-              <div className="flex justify-between text-sm"><span className="text-zinc-600 dark:text-zinc-400">Paid</span><span className="text-green-600">{Number(invoice.paidAmount).toLocaleString()} DH</span></div>
+              <div className="flex justify-between text-sm"><span className="text-zinc-600">Paid</span><span className="text-green-600">{Number(invoice.paidAmount).toLocaleString()} DH</span></div>
               {outstanding > 0 && <div className="flex justify-between text-sm font-semibold"><span className="text-amber-600">Outstanding</span><span className="text-amber-600">{outstanding.toLocaleString()} DH</span></div>}
             </div>
           </div>
 
           {invoice.payments.length > 0 && (
-            <div className="rounded-xl border bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-              <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Payment History</h3>
+            <div className="rounded-xl border bg-white p-6">
+              <h3 className="mb-4 text-sm font-semibold text-zinc-900">Payment History</h3>
               <div className="space-y-3">
                 {invoice.payments.map((p) => (
-                  <div key={p.id} className="flex items-center justify-between rounded-lg border p-3 dark:border-zinc-700">
+                  <div key={p.id} className="flex items-center justify-between rounded-lg border p-3">
                     <div className="flex items-center gap-3">
                       <StatusBadge status={p.status} />
-                      <span className="text-sm text-zinc-600 dark:text-zinc-400">{p.method}</span>
+                      <span className="text-sm text-zinc-600">{p.method}</span>
                     </div>
                     <div className="text-right">
                       <div className="font-medium">{Number(p.amount).toLocaleString()} DH</div>
@@ -126,14 +126,14 @@ export default function InvoiceDetailPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-xl border bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Details</h3>
+          <div className="rounded-xl border bg-white p-6">
+            <h3 className="mb-3 text-sm font-semibold text-zinc-900">Details</h3>
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-2"><User className="h-4 w-4 text-zinc-400" /><span>{invoice.student.person.firstName} {invoice.student.person.lastName}</span></div>
               <div className="flex items-center gap-2"><FileText className="h-4 w-4 text-zinc-400" /><StatusBadge status={invoice.status} /></div>
               {invoice.dueDate && <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-zinc-400" /><span>Due: {new Date(invoice.dueDate).toLocaleDateString()}</span></div>}
               {invoice.feePlan && <div className="flex items-center gap-2"><Package className="h-4 w-4 text-zinc-400" /><span>{invoice.feePlan.name}</span></div>}
-              {invoice.notes && <div className="mt-2 rounded-lg bg-zinc-50 p-3 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">{invoice.notes}</div>}
+              {invoice.notes && <div className="mt-2 rounded-lg bg-zinc-50 p-3 text-xs text-zinc-600">{invoice.notes}</div>}
             </div>
           </div>
 

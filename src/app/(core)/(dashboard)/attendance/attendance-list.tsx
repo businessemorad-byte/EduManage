@@ -29,7 +29,7 @@ export function AttendanceList() {
         <h1 className="text-2xl font-bold tracking-tight">Attendance</h1>
         <a
           href="/attendance/mark"
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
         >
           Mark Attendance
         </a>

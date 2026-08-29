@@ -53,9 +53,9 @@ function RetentionInner() {
           { label: "Paused", value: metrics.paused, color: "text-amber-600" },
           { label: "Completed", value: metrics.completed, color: "text-blue-600" },
           { label: "Dropped", value: metrics.dropped, color: "text-red-600" },
-          { label: "Retention Rate", value: `${metrics.retentionRate.toFixed(1)}%`, color: "text-zinc-900 dark:text-zinc-100" },
+          { label: "Retention Rate", value: `${metrics.retentionRate.toFixed(1)}%`, color: "text-zinc-900" },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <div key={stat.label} className="rounded-lg border border-zinc-200 bg-white p-4">
             <p className="text-xs text-zinc-500">{stat.label}</p>
             <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
           </div>
