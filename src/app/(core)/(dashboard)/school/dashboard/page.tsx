@@ -18,6 +18,7 @@ import {
   Calendar,
   Building2,
   TrendingUp,
+  Megaphone,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -75,10 +76,11 @@ export default function SchoolDashboardPage() {
   }
 
   const quickActions = [
-    { label: "Élèves", href: "/students", icon: <GraduationCap className="h-4 w-4" /> },
-    { label: "Présences", href: "/attendance", icon: <BarChart3 className="h-4 w-4" /> },
-    { label: "Finance", href: "/finance", icon: <Wallet className="h-4 w-4" /> },
-    { label: "Emploi du temps", href: "/timetable", icon: <Calendar className="h-4 w-4" /> },
+    { label: "Ajouter un élève", href: "/students/new", icon: <GraduationCap className="h-4 w-4" /> },
+    { label: "Marquer les présences", href: "/attendance/mark", icon: <ClipboardCheck className="h-4 w-4" /> },
+    { label: "Enregistrer un paiement", href: "/payments/new", icon: <CreditCard className="h-4 w-4" /> },
+    { label: "Créer une annonce", href: "/announcements/new", icon: <Megaphone className="h-4 w-4" /> },
+    { label: "Voir l'emploi du temps", href: "/timetable", icon: <Calendar className="h-4 w-4" /> },
   ];
 
   return (
@@ -182,7 +184,7 @@ export default function SchoolDashboardPage() {
 
       <div className="rounded-xl border border-zinc-100 bg-white p-5">
         <h3 className="mb-3 text-sm font-semibold text-zinc-900">Actions rapides</h3>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {quickActions.map((action) => (
             <Link
               key={action.href}

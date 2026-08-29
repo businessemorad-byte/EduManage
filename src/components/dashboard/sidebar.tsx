@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -10,7 +10,6 @@ import {
   UserCheck,
   Baby,
   Target,
-  Timer,
   ClipboardCheck,
   BookOpen,
   Award,
@@ -28,7 +27,6 @@ import {
   Coins,
   TrendingUp,
   AwardIcon,
-  Search,
   GraduationCapIcon,
   UsersIcon,
   Trophy,
@@ -36,23 +34,13 @@ import {
   FileSignature,
   LineChart,
   MessageSquare,
-  Mail,
   Send,
   FileOutput,
-  Phone,
-  Truck,
   Settings,
   Brain,
-  Bot,
-  Shield,
-  Crosshair,
   BookMarked,
-  Sparkles,
-  PieChart,
-  FileBarChart,
   Crown,
   ChevronDown,
-  ChevronRight,
   X,
   Menu,
   LogOut,
@@ -68,156 +56,157 @@ type NavItem = {
 };
 
 type NavSection = {
+  id: string;
   label: { fr: string; en: string };
+  icon: React.ReactNode;
   items: NavItem[];
 };
 
-const getOrganizationNavSections = (organizationType: string): NavSection[] => {
-  const baseSections = [
-    {
-      label: { fr: "Personnes", en: "People" },
-      items: [
-        { label: { fr: "Élèves", en: "Students" }, href: "/students", icon: <GraduationCap className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Enseignants", en: "Teachers" }, href: "/teachers", icon: <UserCheck className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL"] },
-        { label: { fr: "Personnel", en: "Staff" }, href: "/staff", icon: <Users className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL"] },
-        { label: { fr: "Parents", en: "Parents" }, href: "/parents", icon: <Baby className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Prospects", en: "Leads" }, href: "/leads", icon: <Target className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-      ],
-    },
-    {
-      label: { fr: "Apprentissage", en: "Learning" },
-      items: [
-        { label: { fr: "Programmes", en: "Programs" }, href: "/programs", icon: <FileText className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Classes", en: "Classes" }, href: "/groups", icon: <Users className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL"] },
-        { label: { fr: "Niveaux", en: "Levels" }, href: "/levels", icon: <BookOpen className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL"] },
-        { label: { fr: "Salles", en: "Rooms" }, href: "/rooms", icon: <Building2 className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL"] },
-        { label: { fr: "Inscriptions", en: "Enrollments" }, href: "/enrollments", icon: <ClipboardCheck className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Devoirs", en: "Homework" }, href: "/homework", icon: <FileOutput className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL"] },
-      ],
-    },
-    {
-      label: { fr: "Présences & Évaluations", en: "Attendance & Grades" },
-      items: [
-        { label: { fr: "Présences", en: "Attendance" }, href: "/attendance", icon: <BarChart3 className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Évaluations", en: "Assessments" }, href: "/assessments", icon: <FileText className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Bulletins", en: "Report Cards" }, href: "/report-cards", icon: <AwardIcon className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Carnet", en: "Notebook" }, href: "/attendance/mark", icon: <ClipboardCheck className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-      ],
-    },
-    {
-      label: { fr: "Finance", en: "Finance" },
-      items: [
-        { label: { fr: "Vue d'ensemble", en: "Overview" }, href: "/finance", icon: <BarChart3 className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Factures", en: "Invoices" }, href: "/invoices", icon: <FileText className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Paiements", en: "Payments" }, href: "/payments", icon: <CreditCard className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Reçus", en: "Receipts" }, href: "/receipts", icon: <FileOutput className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Abonnements", en: "Subscriptions" }, href: "/subscriptions", icon: <CalendarDays className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-      ],
-    },
-    {
-      label: { fr: "Emploi du temps", en: "Schedule" },
-      items: [
-        { label: { fr: "Emploi du temps", en: "Timetable" }, href: "/timetable", icon: <Calendar className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Sessions", en: "Sessions" }, href: "/sessions", icon: <CalendarDays className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER"] },
-        { label: { fr: "Disponibilité", en: "Availability" }, href: "/teacher-availability", icon: <Clock className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL"] },
-      ],
-    },
-  ];
+const PS = "PRIVATE_SCHOOL";
+const SC = "SUPPORT_CENTER";
+const TC = "TRAINING_CENTER";
 
-  const baseCommunicationSection = {
-    label: { fr: "Communication", en: "Communication" },
-    items: [
-      { label: { fr: "Boîte de réception", en: "Inbox" }, href: "/inbox", icon: <Mail className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER", "TRAINING_CENTER"] },
-      { label: { fr: "Messages", en: "Messages" }, href: "/messages", icon: <MessageSquare className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER", "TRAINING_CENTER"] },
-      { label: { fr: "Annonces", en: "Announcements" }, href: "/announcements", icon: <Megaphone className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER", "TRAINING_CENTER"] },
-      { label: { fr: "Campagnes", en: "Campaigns" }, href: "/campaigns", icon: <Send className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER", "TRAINING_CENTER"] },
-    ],
-  };
-
-  const baseAnalyticsSection = {
-    label: { fr: "Analytics", en: "Analytics" },
-    items: [
-      { label: { fr: "Vue d'ensemble", en: "Overview" }, href: "/reports", icon: <BarChart3 className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER", "TRAINING_CENTER"] },
-      { label: { fr: "Personnes", en: "People" }, href: "/reports/people", icon: <Users className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER", "TRAINING_CENTER"] },
-      { label: { fr: "Académique", en: "Academic" }, href: "/reports/academic", icon: <BookOpen className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER", "TRAINING_CENTER"] },
-      { label: { fr: "Présences", en: "Attendance" }, href: "/reports/attendance", icon: <ClipboardCheck className="h-4 w-4" />, showFor: ["PRIVATE_SCHOOL", "SUPPORT_CENTER", "TRAINING_CENTER"] },
-    ],
-  };
-
-  const baseAdvancedSection: NavSection = {
-    label: { fr: "Avancé", en: "Advanced" },
-    items: [],
-  };
-
-  const effectiveOrganizationType = organizationType || "PRIVATE_SCHOOL";
-
-  switch (effectiveOrganizationType) {
-    case "PRIVATE_SCHOOL":
-      return [
-        baseSections[0], // Personnes
-        baseSections[1], // Apprentissage
-        baseSections[2], // Présences & Évaluations
-        baseSections[3], // Finance
-        baseSections[4], // Emploi du temps
-        baseCommunicationSection,
-        baseAnalyticsSection,
-      ];
-    case "SUPPORT_CENTER":
-      return [
-        baseSections[0], // Personnes
-        baseSections[1], // Apprentissage
-        baseSections[2], // Présences & Évaluations
-        baseSections[3], // Finance
-        baseSections[4], // Emploi du temps
-        baseCommunicationSection,
-        baseAnalyticsSection,
-      ];
-    case "TRAINING_CENTER":
-      baseAdvancedSection.items = [
-        { label: { fr: "Centre de formation", en: "Training Dashboard" }, href: "/training-dashboard", icon: <LayoutDashboard className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Programmes", en: "Programs" }, href: "/training-programs", icon: <GraduationCapIcon className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Modules", en: "Modules" }, href: "/modules", icon: <BookOpen className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Cohortes", en: "Cohorts" }, href: "/cohorts", icon: <UsersIcon className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Formateurs", en: "Trainers" }, href: "/trainers", icon: <UserCheck className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Compétences", en: "Competencies" }, href: "/competencies", icon: <Trophy className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Affectations", en: "Assignments" }, href: "/training-assignments", icon: <Briefcase className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Matériaux", en: "Materials" }, href: "/training-materials", icon: <FolderOpen className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Certificats", en: "Certificates" }, href: "/certificates", icon: <Award className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Progression", en: "Progress" }, href: "/training-progress", icon: <LineChart className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Clients corporate", en: "Corporate Clients" }, href: "/corporate-clients", icon: <Building2 className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-        { label: { fr: "Propositions", en: "Proposals" }, href: "/proposals", icon: <FileSignature className="h-4 w-4" />, showFor: ["TRAINING_CENTER"] },
-      ];
-      return [
-        baseCommunicationSection,
-        baseAnalyticsSection,
-        baseAdvancedSection,
-      ];
-    case "PLATFORM_OWNER":
-      return [
-        {
-          label: { fr: "Plateforme", en: "Platform" },
-          items: [
-            { label: { fr: "Tableau de bord", en: "Dashboard" }, href: "/platform/dashboard", icon: <LayoutDashboard className="h-4 w-4" />, showFor: ["PLATFORM_OWNER"] },
-            { label: { fr: "Facturation", en: "Billing" }, href: "/platform/billing", icon: <CreditCard className="h-4 w-4" />, showFor: ["PLATFORM_OWNER"] },
-          ],
-        },
-      ];
-    default:
-      return [
-        baseSections[0], // Personnes
-        baseSections[1], // Apprentissage
-        baseSections[2], // Présences & Évaluations
-        baseSections[3], // Finance
-        baseSections[4], // Emploi du temps
-        baseCommunicationSection,
-        baseAnalyticsSection,
-      ];
-  }
+// ─── Route → section mapping (used to keep the current route's section open) ───
+const SECTION_ROUTES: Record<string, string[]> = {
+  dashboard: ["/school/dashboard", "/training-dashboard", "/platform"],
+  people: ["/people", "/students", "/teachers", "/staff", "/parents", "/leads", "/trainers", "/trainees"],
+  academic: ["/academics", "/academic-years", "/programs", "/groups", "/levels", "/subjects", "/rooms", "/enrollments", "/homework", "/report-cards", "/training-programs", "/modules", "/cohorts", "/competencies", "/certificates"],
+  daily: ["/timetable", "/sessions", "/attendance", "/assessments", "/teacher-availability", "/training-attendance", "/training-progress"],
+  finance: ["/finance", "/invoices", "/payments", "/receipts", "/subscriptions", "/refunds", "/billing", "/corporate-clients", "/proposals"],
+  communication: ["/inbox", "/messages", "/announcements", "/campaigns", "/communication-dashboard", "/contact-requests", "/delivery-logs"],
+  reports: ["/reports"],
+  settings: ["/ai", "/automation", "/templates", "/communication-settings", "/communication-preferences", "/discounts", "/fee-plans", "/promotions", "/retention", "/student-progress", "/documents", "/notifications", "/compensation", "/training-materials", "/training-assignments", "/school/search"],
 };
+
+function sectionForPath(pathname: string): string | null {
+  for (const [id, prefixes] of Object.entries(SECTION_ROUTES)) {
+    if (prefixes.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+      return id;
+    }
+  }
+  return null;
+}
+
+// ─── Organization-aware sections (grouped to reduce overwhelm) ───
+const getOrganizationNavSections = (): NavSection[] => [
+  {
+    id: "dashboard",
+    label: { fr: "Tableau de bord", en: "Dashboard" },
+    icon: <LayoutDashboard className="h-4 w-4" />,
+    items: [
+      { label: { fr: "Tableau de bord", en: "Dashboard" }, href: "/school/dashboard", icon: <LayoutDashboard className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Tableau de bord", en: "Dashboard" }, href: "/training-dashboard", icon: <LayoutDashboard className="h-4 w-4" />, showFor: [TC] },
+    ],
+  },
+  {
+    id: "people",
+    label: { fr: "Personnes", en: "People" },
+    icon: <Users className="h-4 w-4" />,
+    items: [
+      { label: { fr: "Élèves", en: "Students" }, href: "/students", icon: <GraduationCap className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Enseignants", en: "Teachers" }, href: "/teachers", icon: <UserCheck className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Personnel", en: "Staff" }, href: "/staff", icon: <Users className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Parents", en: "Parents" }, href: "/parents", icon: <Baby className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Prospects", en: "Leads" }, href: "/leads", icon: <Target className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Formateurs", en: "Trainers" }, href: "/trainers", icon: <UserCheck className="h-4 w-4" />, showFor: [TC] },
+      { label: { fr: "Apprenants", en: "Trainees" }, href: "/trainees", icon: <GraduationCap className="h-4 w-4" />, showFor: [TC] },
+    ],
+  },
+  {
+    id: "academic",
+    label: { fr: "Académique", en: "Academic" },
+    icon: <BookOpen className="h-4 w-4" />,
+    items: [
+      { label: { fr: "Programmes", en: "Programs" }, href: "/programs", icon: <FileText className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Classes", en: "Classes" }, href: "/groups", icon: <UsersIcon className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Niveaux", en: "Levels" }, href: "/levels", icon: <BookOpen className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Matières", en: "Subjects" }, href: "/subjects", icon: <BookMarked className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Salles", en: "Rooms" }, href: "/rooms", icon: <Building2 className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Inscriptions", en: "Enrollments" }, href: "/enrollments", icon: <ClipboardCheck className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Bulletins", en: "Report Cards" }, href: "/report-cards", icon: <AwardIcon className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Devoirs", en: "Homework" }, href: "/homework", icon: <FileOutput className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Programmes", en: "Programs" }, href: "/training-programs", icon: <GraduationCapIcon className="h-4 w-4" />, showFor: [TC] },
+      { label: { fr: "Modules", en: "Modules" }, href: "/modules", icon: <BookOpen className="h-4 w-4" />, showFor: [TC] },
+      { label: { fr: "Cohortes", en: "Cohorts" }, href: "/cohorts", icon: <UsersIcon className="h-4 w-4" />, showFor: [TC] },
+      { label: { fr: "Compétences", en: "Competencies" }, href: "/competencies", icon: <Trophy className="h-4 w-4" />, showFor: [TC] },
+      { label: { fr: "Certificats", en: "Certificates" }, href: "/certificates", icon: <Award className="h-4 w-4" />, showFor: [TC] },
+    ],
+  },
+  {
+    id: "daily",
+    label: { fr: "Gestion quotidienne", en: "Everyday" },
+    icon: <ClipboardCheck className="h-4 w-4" />,
+    items: [
+      { label: { fr: "Emploi du temps", en: "Timetable" }, href: "/timetable", icon: <Calendar className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Sessions", en: "Sessions" }, href: "/sessions", icon: <CalendarDays className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Présences", en: "Attendance" }, href: "/attendance", icon: <BarChart3 className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Carnet", en: "Notebook" }, href: "/attendance/mark", icon: <ClipboardCheck className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Évaluations", en: "Assessments" }, href: "/assessments", icon: <FileText className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Disponibilité", en: "Availability" }, href: "/teacher-availability", icon: <Clock className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Présences", en: "Attendance" }, href: "/training-attendance", icon: <ClipboardCheck className="h-4 w-4" />, showFor: [TC] },
+      { label: { fr: "Progression", en: "Progress" }, href: "/training-progress", icon: <LineChart className="h-4 w-4" />, showFor: [TC] },
+    ],
+  },
+  {
+    id: "finance",
+    label: { fr: "Finance", en: "Finance" },
+    icon: <Wallet className="h-4 w-4" />,
+    items: [
+      { label: { fr: "Vue d'ensemble", en: "Overview" }, href: "/finance", icon: <BarChart3 className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Factures", en: "Invoices" }, href: "/invoices", icon: <FileText className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Paiements", en: "Payments" }, href: "/payments", icon: <CreditCard className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Abonnements", en: "Subscriptions" }, href: "/subscriptions", icon: <CalendarDays className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Clients corporate", en: "Corporate Clients" }, href: "/corporate-clients", icon: <Building2 className="h-4 w-4" />, showFor: [TC] },
+      { label: { fr: "Propositions", en: "Proposals" }, href: "/proposals", icon: <FileSignature className="h-4 w-4" />, showFor: [TC] },
+    ],
+  },
+  {
+    id: "communication",
+    label: { fr: "Communication", en: "Communication" },
+    icon: <MessageSquare className="h-4 w-4" />,
+    items: [
+      { label: { fr: "Messages", en: "Messages" }, href: "/messages", icon: <MessageSquare className="h-4 w-4" />, showFor: [PS, SC, TC] },
+      { label: { fr: "Annonces", en: "Announcements" }, href: "/announcements", icon: <Megaphone className="h-4 w-4" />, showFor: [PS, SC, TC] },
+      { label: { fr: "Campagnes", en: "Campaigns" }, href: "/campaigns", icon: <Send className="h-4 w-4" />, showFor: [PS, SC, TC] },
+    ],
+  },
+  {
+    id: "reports",
+    label: { fr: "Rapports", en: "Reports" },
+    icon: <BarChart3 className="h-4 w-4" />,
+    items: [
+      { label: { fr: "Vue d'ensemble", en: "Overview" }, href: "/reports", icon: <BarChart3 className="h-4 w-4" />, showFor: [PS, SC, TC] },
+    ],
+  },
+  {
+    id: "settings",
+    label: { fr: "Paramètres", en: "Settings" },
+    icon: <Settings className="h-4 w-4" />,
+    items: [
+      { label: { fr: "Centre IA", en: "AI Center" }, href: "/ai", icon: <Brain className="h-4 w-4" />, showFor: [PS, SC, TC] },
+      { label: { fr: "Automatisation", en: "Automation" }, href: "/automation", icon: <Zap className="h-4 w-4" />, showFor: [PS, SC, TC] },
+      { label: { fr: "Modèles", en: "Templates" }, href: "/templates", icon: <FileText className="h-4 w-4" />, showFor: [PS, SC, TC] },
+      { label: { fr: "Documents", en: "Documents" }, href: "/documents", icon: <FolderOpen className="h-4 w-4" />, showFor: [PS, SC, TC] },
+      { label: { fr: "Notifications", en: "Notifications" }, href: "/notifications", icon: <Bell className="h-4 w-4" />, showFor: [PS, SC, TC] },
+      { label: { fr: "Réglages comm.", en: "Comm. settings" }, href: "/communication-settings", icon: <Sliders className="h-4 w-4" />, showFor: [PS, SC, TC] },
+      { label: { fr: "Préférences comm.", en: "Comm. preferences" }, href: "/communication-preferences", icon: <Sliders className="h-4 w-4" />, showFor: [PS, SC, TC] },
+      { label: { fr: "Avantages", en: "Discounts" }, href: "/discounts", icon: <Coins className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Plans tarifaires", en: "Fee Plans" }, href: "/fee-plans", icon: <CreditCard className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Promotions", en: "Promotions" }, href: "/promotions", icon: <Megaphone className="h-4 w-4" />, showFor: [PS, SC] },
+      { label: { fr: "Rétention", en: "Retention" }, href: "/retention", icon: <TrendingUp className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Suivi élèves", en: "Student progress" }, href: "/student-progress", icon: <TrendingUp className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Rémunération", en: "Compensation" }, href: "/compensation", icon: <Wallet className="h-4 w-4" />, showFor: [PS] },
+      { label: { fr: "Matériaux", en: "Materials" }, href: "/training-materials", icon: <FolderOpen className="h-4 w-4" />, showFor: [TC] },
+      { label: { fr: "Affectations", en: "Assignments" }, href: "/training-assignments", icon: <Briefcase className="h-4 w-4" />, showFor: [TC] },
+    ],
+  },
+];
 
 const platformNavSections: NavSection[] = [
   {
+    id: "platform",
     label: { fr: "Plateforme", en: "Platform" },
+    icon: <LayoutDashboard className="h-4 w-4" />,
     items: [
       { label: { fr: "Tableau de bord", en: "Dashboard" }, href: "/platform/dashboard", icon: <LayoutDashboard className="h-4 w-4" />, showFor: ["PLATFORM_OWNER"] },
       { label: { fr: "Facturation", en: "Billing" }, href: "/platform/billing", icon: <CreditCard className="h-4 w-4" />, showFor: ["PLATFORM_OWNER"] },
@@ -235,28 +224,51 @@ type SidebarProps = {
 export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  const [openId, setOpenId] = useState<string | null>(null);
 
-  const toggleSection = useCallback((label: string) => {
-    setCollapsedSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(label)) {
-        next.delete(label);
-      } else {
-        next.add(label);
-      }
-      return next;
-    });
+  // All sections collapsed by default; open the section of the current route.
+  useEffect(() => {
+    setOpenId(sectionForPath(pathname));
+  }, [pathname]);
+
+  const toggleSection = useCallback((id: string) => {
+    setOpenId((current) => (current === id ? null : id));
   }, []);
 
   const isActive = (href: string) => {
-    if (href === "/platform/dashboard" || href === "/school/dashboard" || href === "/academics" || href === "/finance") {
+    if (href === "/platform/dashboard" || href === "/school/dashboard" || href === "/training-dashboard" || href === "/academics" || href === "/finance") {
       return pathname === href;
     }
     return pathname === href || pathname.startsWith(href + "/");
   };
 
-  const sections = isPlatformOwner ? platformNavSections : getOrganizationNavSections(organizationType || "PRIVATE_SCHOOL");
+  const sections = isPlatformOwner
+    ? platformNavSections
+    : getOrganizationNavSections()
+        .map((section) => ({
+          ...section,
+          items: section.items.filter((item) => item.showFor.includes(organizationType || PS)),
+        }))
+        .filter((section) => section.items.length > 0);
+
+  const renderLink = (item: NavItem) => {
+    const active = isActive(item.href);
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={() => setMobileOpen(false)}
+        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+          active
+            ? "bg-brand-50 font-medium text-brand-700"
+            : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+        }`}
+      >
+        <span className={active ? "text-brand-600" : "text-zinc-400"}>{item.icon}</span>
+        {item.label.fr}
+      </Link>
+    );
+  };
 
   const sidebarContent = (
     <div className="flex h-full flex-col bg-white">
@@ -265,9 +277,7 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600">
             <span className="text-sm font-bold text-white">E</span>
           </div>
-          <span className="text-base font-bold tracking-tight text-zinc-900">
-            EduManage
-          </span>
+          <span className="text-base font-bold tracking-tight text-zinc-900">EduManage</span>
         </Link>
         <button
           onClick={() => setMobileOpen(false)}
@@ -278,75 +288,26 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-3">
-        <Link
-          href={isPlatformOwner ? "/platform/dashboard" : "/school/dashboard"}
-          onClick={() => setMobileOpen(false)}
-          className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-            (isPlatformOwner ? pathname === "/platform/dashboard" : pathname === "/school/dashboard")
-              ? "bg-brand-50 text-brand-700"
-              : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
-          }`}
-        >
-          <LayoutDashboard className="h-4 w-4" />
-          Tableau de bord
-        </Link>
-
-        {!isPlatformOwner && (
-          <Link
-            href="/people"
-            onClick={() => setMobileOpen(false)}
-            className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-              pathname === "/people" || pathname.startsWith("/people/")
-                ? "bg-brand-50 text-brand-700"
-                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
-            }`}
-          >
-            <Users className="h-4 w-4" />
-            Personnes
-          </Link>
-        )}
-
         {sections.map((section) => {
-          const isCollapsed = collapsedSections.has(section.label.fr);
+          const open = openId === section.id;
           return (
-            <div key={section.label.fr} className="mt-3">
+            <div key={section.id} className="mt-1">
               <button
-                onClick={() => toggleSection(section.label.fr)}
-                className="flex w-full items-center justify-between px-3 py-1.5"
+                onClick={() => toggleSection(section.id)}
+                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                  open ? "bg-brand-50 text-brand-700" : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                }`}
+                aria-expanded={open}
               >
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
-                  {section.label.fr}
-                </span>
+                <span className={open ? "text-brand-600" : "text-zinc-400"}>{section.icon}</span>
+                <span className="flex-1 text-left">{section.label.fr}</span>
                 <ChevronDown
-                  className={`h-3 w-3 text-zinc-400 transition-transform duration-200 ${
-                    isCollapsed ? "-rotate-90" : ""
-                  }`}
+                  className={`h-4 w-4 text-zinc-400 transition-transform duration-200 ${open ? "" : "-rotate-90"}`}
                 />
               </button>
-              {!isCollapsed && (
-                <div className="mt-0.5 space-y-0.5">
-                  {section.items.map((item) => {
-                    const filteredItems = item.showFor.includes(organizationType || "PRIVATE_SCHOOL");
-                    if (!filteredItems) return null;
-
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                          isActive(item.href)
-                            ? "bg-brand-50 font-medium text-brand-700"
-                            : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
-                        }`}
-                      >
-                        <span className={isActive(item.href) ? "text-brand-600" : "text-zinc-400"}>
-                          {item.icon}
-                        </span>
-                        {item.label.fr}
-                      </Link>
-                    );
-                  })}
+              {open && (
+                <div className="mt-0.5 space-y-0.5 border-l border-zinc-100 pl-2 ml-3.5">
+                  {section.items.map(renderLink)}
                 </div>
               )}
             </div>
@@ -354,35 +315,29 @@ export function Sidebar({ userName, userEmail, isPlatformOwner, organizationType
         })}
 
         {isPlatformOwner && (
-          <div className="mt-3 border-t border-zinc-100 pt-3">
+          <div className="mt-4 border-t border-zinc-100 pt-3">
             <div className="flex items-center gap-2 px-3 py-1.5">
               <Crown className="h-3.5 w-3.5 text-amber-500" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-600">
-                Admin
-              </span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-600">Admin</span>
             </div>
-            {platformNavSections[0].items.map((item) => {
-              const filteredItems = item.showFor.includes("PLATFORM_OWNER");
-              if (!filteredItems) return null;
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`mt-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                    isActive(item.href)
-                      ? "bg-amber-50 font-medium text-amber-700"
-                      : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
-                  }`}
-                >
-                  <span className={isActive(item.href) ? "text-amber-600" : "text-zinc-400"}>
-                    {item.icon}
-                  </span>
-                  {item.label.fr}
-                </Link>
-              );
-            })}
+            <div className="mt-0.5 space-y-0.5">
+              {platformNavSections[0].items.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                      active ? "bg-amber-50 font-medium text-amber-700" : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                    }`}
+                  >
+                    <span className={active ? "text-amber-600" : "text-zinc-400"}>{item.icon}</span>
+                    {item.label.fr}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
       </nav>
