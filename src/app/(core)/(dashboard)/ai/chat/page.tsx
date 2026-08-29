@@ -25,11 +25,26 @@ export default function AIChatPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/ai/chat")
       .then((r) => r.json())
-      .then(setConversations)
+      .then((data) => {
+        setConversations(Array.isArray(data) ? data : []);
+        // Auto-select the most recent conversation so the chat is immediately usable.
+        if (Array.isArray(data) && data.length > 0) {
+          setActiveConversation(data[0].id);
+          return fetch(`/api/ai/chat?conversationId=${data[0].id}`);
+        }
+        return null;
+      })
+      .then((res) => (res ? res.json() : null))
+      .then((conv) => {
+        if (conv?.messages) {
+          setMessages(conv.messages);
+        }
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -42,20 +57,36 @@ export default function AIChatPage() {
   };
 
   const createConversation = async () => {
+    setError(null);
     const res = await fetch("/api/ai/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "create" }),
     });
     const conv = await res.json();
+    if (!res.ok || !conv?.id) {
+      setError(conv?.error ?? "Impossible de créer une conversation.");
+      return null;
+    }
     setConversations((prev) => [conv, ...prev]);
     setActiveConversation(conv.id);
     setMessages([]);
+    return conv;
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || !activeConversation || sending) return;
+    if (!input.trim() || sending) return;
     const msg = input.trim();
+    setError(null);
+
+    // Ensure an active conversation exists, auto-creating one if needed.
+    let conversationId = activeConversation;
+    if (!conversationId) {
+      const conv = await createConversation();
+      if (!conv?.id) return;
+      conversationId = conv.id;
+    }
+
     setInput("");
     setSending(true);
 
@@ -72,9 +103,13 @@ export default function AIChatPage() {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ conversationId: activeConversation, message: msg }),
+        body: JSON.stringify({ conversationId, message: msg }),
       });
       const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error ?? "Erreur lors de l'envoi du message.");
+        return;
+      }
       if (data.content) {
         setMessages((prev) => [
           ...prev,
@@ -82,7 +117,7 @@ export default function AIChatPage() {
         ]);
       }
     } catch {
-      // error handling
+      setError("Impossible de contacter le serveur. Veuillez réessayer.");
     } finally {
       setSending(false);
     }
@@ -112,9 +147,14 @@ export default function AIChatPage() {
 
       <div className="flex flex-1 flex-col rounded-lg border border-zinc-200 bg-white">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.length === 0 && (
+          {messages.length === 0 && !error && (
             <div className="flex h-full items-center justify-center text-zinc-500">
               <p>Start a conversation with the AI assistant.</p>
+            </div>
+          )}
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
             </div>
           )}
           {messages.map((m) => (
@@ -142,7 +182,7 @@ export default function AIChatPage() {
             />
             <button
               onClick={sendMessage}
-              disabled={sending || !activeConversation}
+              disabled={sending || !input.trim()}
               className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
             >
               {sending ? "..." : "Send"}
