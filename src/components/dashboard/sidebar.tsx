@@ -144,14 +144,14 @@ const getOrganizationNavSections = (organizationType: string): NavSection[] => {
     ],
   };
 
-  const baseAdvancedSection = {
+  const baseAdvancedSection: NavSection = {
     label: { fr: "Avancé", en: "Advanced" },
     items: [],
   };
 
-  const organizationType = organizationType || "PRIVATE_SCHOOL";
+  const effectiveOrganizationType = organizationType || "PRIVATE_SCHOOL";
 
-  switch (organizationType) {
+  switch (effectiveOrganizationType) {
     case "PRIVATE_SCHOOL":
       return [
         baseSections[0], // Personnes
